@@ -60,56 +60,12 @@ class SoftballPageLayoutNav extends React.Component {
             </NavItem>
           </NavExpandable>
           <NavExpandable title="Teams" groupId="grpTeams" isActive={activeGroup === 'grpTeams'}>
-            <NavExpandable title="8U" groupId="grpTeams8u" isActive={activeGroup === 'grpTeams8u'}>
-              <NavItem groupId="grpTeams" itemId="grpTeams8uA" isActive={activeItem === 'grpTeams8uA'} to="#">
-                Team A
-              </NavItem>
-              <NavItem groupId="grpTeams" itemId="grpTeams8uB" isActive={activeItem === 'grpTeams8uB'} to="#">
-                Team B
-              </NavItem>
-            </NavExpandable>
-            <NavExpandable title="10U" groupId="grpTeams10u" isActive={activeGroup === 'grpTeams10u'} to
-="#">
-              <NavItem groupId="grpTeams" itemId="grpTeams10uA" isActive={activeItem === 'grpTeams10uA'} to="#">
-                Team A
-              </NavItem>
-              <NavItem groupId="grpTeams" itemId="grpTeams10uB" isActive={activeItem === 'grpTeams10uB'} to="#">
-                Team B
-              </NavItem>
-            </NavExpandable>
-            <NavExpandable title="12U" groupId="grpTeams12u" isActive={activeGroup === 'grpTeams12u'} to
-="#">
-              <NavItem groupId="grpTeams" itemId="grpTeams12uA" isActive={activeItem === 'grpTeams12uA'} to="#">
-                Team A
-              </NavItem>
-              <NavItem groupId="grpTeams" itemId="grpTeams12uB" isActive={activeItem === 'grpTeams12uB'} to="#">
-                Team B
-              </NavItem>
-            </NavExpandable>
-            <NavExpandable title="14U" groupId="grpTeams14u" isActive={activeGroup === 'grpTeams14u'}>
-              <NavItem groupId="grpTeams" itemId="grpTeams14uA" isActive={activeItem === 'grpTeams14uA'} to="#">
-                Team A
-              </NavItem>
-              <NavItem groupId="grpTeams" itemId="grpTeams14uB" isActive={activeItem === 'grpTeams14uB'} to="#">
-                Team B
-              </NavItem>
-            </NavExpandable>
-            <NavExpandable title="16U" groupId="grpTeams16u" isActive={activeGroup === 'grpTeams16u'}>
-              <NavItem groupId="grpTeams" itemId="grpTeams16uA" isActive={activeItem === 'grpTeams16uA'} to="#">
-                Team A
-              </NavItem>
-              <NavItem groupId="grpTeams" itemId="grpTeams16uB" isActive={activeItem === 'grpTeams16uB'} to="#">
-                Team B
-              </NavItem>
-            </NavExpandable>
-            <NavExpandable title="Travel Teams" groupId="grpTravel" isActive={activeGroup === 'grpTravel'}>
-              <NavItem groupId="grpTravel" itemId="grpTravel10u" isActive={activeItem === 'grpTravel10u'} to="#">
-                10U
-              </NavItem>
-              <NavItem groupId="grpTravel" itemId="grpTravel12u" isActive={activeItem === 'grpTravel12u'} to="#">
-                12U
-              </NavItem>
-            </NavExpandable>
+            <NavItem itemId="grpRecTeams" groupId="grpRecTeams" to="#">
+	      Rec Teams
+	    </NavItem>
+            <NavItem itemId="grpTravelTeams" groupId="grpTravelTeams" to="#">
+	      Travel Teams
+	    </NavItem>
           </NavExpandable>
           <NavItem itemId="itemFields" isActive={activeItem === 'itemFields'} to="#">
             Field Information
