@@ -1,8 +1,9 @@
-import ReactDOM from 'react-dom';
+import ReactDOM from "react-dom";
 import "@patternfly/react-core/dist/styles/base.css";
-import '../fonts.css';
+import { useNavigate } from "react-router-dom";
+// import '../fonts.css';
 
-import React from 'react';
+import React from "react";
 import {
   Backdrop,
   BackgroundImage,
@@ -21,114 +22,112 @@ import {
   PageToggleButton,
   SkipToContent,
   TextContent,
-  Text
-} from '@patternfly/react-core';
-import SoftballMasthead from './SoftballMasthead';
-import BoardMinutes from './BoardMinutes';
+  Text,
+} from "@patternfly/react-core";
+import SoftballMasthead from "./SoftballMasthead";
+import BoardMinutes from "./BoardMinutes";
 
-class SoftballPageLayoutNav extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeGroup: 'itemHome',
-      activeItem: 'itemHome'
-    };
+const SoftballPageLayoutNav = ({ children }) => {
+  const navigate = useNavigate();
 
-    this.onNavSelect = result => {
-      this.setState({
-        activeItem: result.itemId,
-        activeGroup: result.groupId
-      });
-    };
-  }
+  const [activeGroup, setActiveGroup] = React.useState("itemHome");
+  const [activeItem, setActiveItem] = React.useState("itemHome");
 
-  render() {
-    const { activeItem, activeGroup } = this.state;
-    const backdrop = () => <Backdrop />;
-    const PageNav = (
-      <Nav onSelect={this.onNavSelect} aria-label="Nav">
-        <NavList>
-            <NavItem itemId="itemHome" isActive={activeItem === 'itemHome'} to="/">
-              Home
-            </NavItem>
-	    <NavExpandable title="About Us" groupId="grpAbout" isActive={activeGroup === 'grpAbout'}>
-            <NavItem groupId="grpAbout" itemId="grpAboutMinutes" isActive={activeItem === 'grpAboutMinutes'} to="/boardminutes">
-              Board Meeting & Minutes
-            </NavItem>
-            <NavItem groupId="grpAbout" itemId="grpAboutMembers" isActive={activeItem === 'grpAboutMembers'} to="/boardmembers">
-              Board Members
-            </NavItem>
-          </NavExpandable>
-          <NavExpandable title="Teams" groupId="grpTeams" isActive={activeGroup === 'grpTeams'}>
-            <NavItem itemId="grpRecTeams" groupId="grpRecTeams" to="#">
-	      Rec Teams
-	    </NavItem>
-            <NavItem itemId="grpTravelTeams" groupId="grpTravelTeams" to="#">
-	      Travel Teams
-	    </NavItem>
-          </NavExpandable>
-          <NavItem itemId="itemFields" isActive={activeItem === 'itemFields'} to="/fieldinfo">
-            Field Information
-          </NavItem>
-          <NavItem itemId="itemForms" isActive={activeItem === 'itemForms'} to="#">
-            Forms & Documents
-          </NavItem>
-          <NavItem itemId="itemShop" isActive={activeItem === 'itemShop'} to="#">
-            Shop
-          </NavItem>
-          <NavItem itemId="itemFAQ" isActive={activeItem === 'itemFAQ'} to="#">
-            FAQ
-          </NavItem>
-          <NavItem itemId="itemSponsors" isActive={activeItem === 'itemSponsors'} to="#">
-            Sponsors
-          </NavItem>
-        </NavList>
-      </Nav>
-    );
+  const onNavSelect = ({ itemId, groupId }) => {
+    setActiveGroup(groupId);
+    setActiveItem(itemId);
+    switch (itemId) {
+      case "itemHome":
+        navigate("/");
+        break;
+      case "grpAboutMinutes":
+        navigate("/boardminutes");
+        break;
+      case "grpAboutMembers":
+        navigate("/boardmembers");
+        break;
+      case "itemFieldInfo":
+        navigate("/fieldinfo");
+        break;
+      default:
+        navigate("/not-found");
+    }
+  };
 
-    const Sidebar = <PageSidebar nav={PageNav} />;
-    const pageId = 'main-content-page-layout-expandable-nav';
-//    const PageSkipToContent = <SkipToContent href={`#${pageId}`}>Skip to content</SkipToContent>;
+  const backdrop = () => <Backdrop />;
 
-    return (
-      <React.Fragment>
-        <Page
-          header={<SoftballMasthead />}
-          sidebar={Sidebar}
-          isManagedSidebar
-//          skipToContent={PageSkipToContent}
-//          breadcrumb={DashboardBreadcrumb}
-          mainContainerId={pageId}
+  const PageNav = (
+    <Nav onSelect={onNavSelect} aria-label="Nav">
+      <NavList>
+        <NavItem itemId="itemHome" isActive={activeItem === "itemHome"}>
+          Home
+        </NavItem>
+        <NavExpandable
+          title="About Us"
+          groupId="grpAbout"
+          isActive={activeGroup === "grpAbout"}
         >
-          <PageSection variant={PageSectionVariants.light}>
-	    {this.props.children}
-          </PageSection>
-        </Page>
-      </React.Fragment>
-//<PageSection variant={PageSectionVariants.light}>
-//            <TextContent>
-//              <Text component="h1">Main title</Text>
-//              <Text component="p">
-//                Body text should be Overpass Regular at 16px. It should have leading of 24px because <br />
-//                of its relative line height of 1.5.
-//              </Text>
-//            </TextContent>
-//          </PageSection>
-//          <PageSection>
-//            <Gallery hasGutter>
-//              {Array.apply(0, Array(10)).map((x, i) => (
-//                <GalleryItem key={i}>
-//                  <Card>
-//                    <CardBody>This is a card</CardBody>
-//                  </Card>
-//                </GalleryItem>
-//              ))}
-//            </Gallery>
-//          </PageSection>
-//        </Page>
-//      </React.Fragment>
-    );
-  }
-}
+          <NavItem
+            groupId="grpAbout"
+            itemId="grpAboutMinutes"
+            isActive={activeItem === "grpAboutMinutes"}
+          >
+            Board Meeting & Minutes
+          </NavItem>
+          <NavItem
+            groupId="grpAbout"
+            itemId="grpAboutMembers"
+            isActive={activeItem === "grpAboutMembers"}
+          >
+            Board Members
+          </NavItem>
+        </NavExpandable>
+        <NavExpandable
+          title="Teams"
+          groupId="grpTeams"
+          isActive={activeGroup === "grpTeams"}
+        >
+          <NavItem itemId="grpRecTeams" groupId="grpRecTeams">
+            Rec Teams
+          </NavItem>
+          <NavItem itemId="grpTravelTeams" groupId="grpTravelTeams">
+            Travel Teams
+          </NavItem>
+        </NavExpandable>
+        <NavItem itemId="itemFields" isActive={activeItem === "itemFields"}>
+          Field Information
+        </NavItem>
+        <NavItem itemId="itemForms" isActive={activeItem === "itemForms"}>
+          Forms & Documents
+        </NavItem>
+        <NavItem itemId="itemShop" isActive={activeItem === "itemShop"}>
+          Shop
+        </NavItem>
+        <NavItem itemId="itemFAQ" isActive={activeItem === "itemFAQ"}>
+          FAQ
+        </NavItem>
+        <NavItem itemId="itemSponsors" isActive={activeItem === "itemSponsors"}>
+          Sponsors
+        </NavItem>
+      </NavList>
+    </Nav>
+  );
+
+  const Sidebar = <PageSidebar nav={PageNav} />;
+  const pageId = "main-content-page-layout-expandable-nav";
+
+  return (
+    <Page
+      header={<SoftballMasthead />}
+      sidebar={Sidebar}
+      isManagedSidebar
+      mainContainerId={pageId}
+    >
+      <PageSection variant={PageSectionVariants.light}>
+        {children}
+      </PageSection>
+    </Page>
+  );
+};
 
 export default SoftballPageLayoutNav;
