@@ -5,6 +5,7 @@ import {
   MastheadBrand,
   MastheadMain,
   MastheadToggle,
+  MastheadContent,
   PageToggleButton
 } from '@patternfly/react-core';
 import { Outlet, Link } from 'react-router-dom';
@@ -26,6 +27,7 @@ class SoftballMasthead extends React.Component {
             <Brand src={Image} alt="EHTYS Logo" width="50" height="50" />
           </MastheadBrand>
         </MastheadMain>
+        <MastheadContent>Egg Harbor Township Youth Softball</MastheadContent>
       </Masthead>
     );
   }

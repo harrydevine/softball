@@ -1,22 +1,29 @@
 import ReactDOM from 'react-dom';
 
 import React from 'react';
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  PageSection
-} from '@patternfly/react-core';
+import ContactCard from "./ContactCard";
+import contacts from "./contacts";
+
+function createCard(contact) {
+  return (
+    <ContactCard
+      key={contact.id}
+      name={contact.name}
+      image={contact.imgURL}
+      tel={contact.phone}
+      email={contact.email}
+      title={contact.title}
+    />
+  );
+}
 
 class BoardMembers extends React.Component {
 
   render() {
     return (
 	<div>
-          <Card>
-            <CardTitle>Board Members</CardTitle>
-            <CardBody> Board Members should go here!</CardBody>
-          </Card>
+	  <h1 className="heading">2022 Board Members</h1>
+	  {contacts.map(createCard)}
 	</div>
     );
   }

@@ -1,7 +1,11 @@
 import * as React from 'react';
+import {
+  Card,
+  CardBody,
+  CardTitle
+} from '@patternfly/react-core';
 import { Outlet, Link } from 'react-router-dom';
 import SoftballPageLayoutNav from './pages/SoftballPageLayoutNav';
-import BoardMinutes from './pages/BoardMinutes';
 
 export default function App() {
   return (

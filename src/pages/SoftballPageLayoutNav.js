@@ -25,7 +25,7 @@ import {
   Text,
 } from "@patternfly/react-core";
 import SoftballMasthead from "./SoftballMasthead";
-import BoardMinutes from "./BoardMinutes";
+import SoftballBackgroundImage from "./SoftballBackgroundImage";
 
 const SoftballPageLayoutNav = ({ children }) => {
   const navigate = useNavigate();
@@ -55,7 +55,8 @@ const SoftballPageLayoutNav = ({ children }) => {
   };
 
   const backdrop = () => <Backdrop />;
-
+  const background = () => <SoftballBackgroundImage />;
+  
   const PageNav = (
     <Nav onSelect={onNavSelect} aria-label="Nav">
       <NavList>
@@ -94,7 +95,7 @@ const SoftballPageLayoutNav = ({ children }) => {
             Travel Teams
           </NavItem>
         </NavExpandable>
-        <NavItem itemId="itemFields" isActive={activeItem === "itemFields"}>
+        <NavItem itemId="itemFieldInfo" isActive={activeItem === "itemFieldInfo"}>
           Field Information
         </NavItem>
         <NavItem itemId="itemForms" isActive={activeItem === "itemForms"}>
