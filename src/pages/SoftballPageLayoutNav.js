@@ -1,16 +1,8 @@
-import ReactDOM from "react-dom";
 import "@patternfly/react-core/dist/styles/base.css";
 import { useNavigate } from "react-router-dom";
-// import '../fonts.css';
 
 import React from "react";
 import {
-  Backdrop,
-  BackgroundImage,
-  Card,
-  CardBody,
-  Gallery,
-  GalleryItem,
   Nav,
   NavExpandable,
   NavItem,
@@ -18,14 +10,9 @@ import {
   Page,
   PageSection,
   PageSectionVariants,
-  PageSidebar,
-  PageToggleButton,
-  SkipToContent,
-  TextContent,
-  Text,
+  PageSidebar
 } from "@patternfly/react-core";
 import SoftballMasthead from "./SoftballMasthead";
-import SoftballBackgroundImage from "./SoftballBackgroundImage";
 
 const SoftballPageLayoutNav = ({ children }) => {
   const navigate = useNavigate();
@@ -49,13 +36,14 @@ const SoftballPageLayoutNav = ({ children }) => {
       case "itemFieldInfo":
         navigate("/fieldinfo");
         break;
+      case "grpRecTeams":
+        navigate("/recteams");
+        break;
       default:
         navigate("/not-found");
     }
   };
 
-  const backdrop = () => <Backdrop />;
-  const background = () => <SoftballBackgroundImage />;
   
   const PageNav = (
     <Nav onSelect={onNavSelect} aria-label="Nav">
@@ -64,7 +52,7 @@ const SoftballPageLayoutNav = ({ children }) => {
           Home
         </NavItem>
         <NavExpandable
-          title="About Us"
+          title="Board Information"
           groupId="grpAbout"
           isActive={activeGroup === "grpAbout"}
         >

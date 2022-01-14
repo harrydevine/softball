@@ -1,11 +1,9 @@
-import ReactDOM from 'react-dom';
 
 import React from 'react';
 import {
   Card,
   CardBody,
-  CardTitle,
-  PageSection
+  CardTitle
 } from '@patternfly/react-core';
 
 class FieldInfo extends React.Component {

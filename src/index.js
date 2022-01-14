@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import BoardMinutes from './pages/BoardMinutes';
 import BoardMembers from './pages/BoardMembers';
 import FieldInfo from './pages/FieldInfo';
+import RecTeams from './pages/RecTeams';
 import './App.css';
 
 const rootElement = document.getElementById('root');
@@ -17,6 +18,7 @@ ReactDOM.render(
         <Route path="boardminutes" element={<BoardMinutes />} />
         <Route path="boardmembers" element={<BoardMembers />} />
         <Route path="fieldinfo" element={<FieldInfo />} />
+        <Route path="recteams" element={<RecTeams />} />
         <Route
           path="*"
           element={

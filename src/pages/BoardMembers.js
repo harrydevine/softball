@@ -1,5 +1,3 @@
-import ReactDOM from 'react-dom';
-
 import React from 'react';
 import ContactCard from "./ContactCard";
 import contacts from "./contacts";

@@ -1,5 +1,3 @@
-import ReactDOM from 'react-dom';
-
 import React from 'react';
 import {
   Banner,
@@ -7,7 +5,6 @@ import {
   CardBody,
   CardTitle
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
 
 class Dashboard extends React.Component {
 
@@ -17,7 +14,7 @@ class Dashboard extends React.Component {
 	<Banner variant="info">Latest News</Banner>
         <Card isSelectable>
           <CardTitle><u>Spring 2022 Signups!</u></CardTitle>
-          <CardBody>Click <a href="https://ehtsoftballbaberuth.sportssignup.com/site/" target="_blank">here</a> to sign up for the 2022 Spring season!</CardBody>
+          <CardBody>Click <a href="https://ehtsoftballbaberuth.sportssignup.com/site/" target="_blank" rel="noreferrer">here</a> to sign up for the 2022 Spring season!</CardBody>
         </Card>
 	<Card isSelectable>
           <CardTitle><u>Next Board Meeting</u></CardTitle>

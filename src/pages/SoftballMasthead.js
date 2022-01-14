@@ -8,7 +8,7 @@ import {
   MastheadContent,
   PageToggleButton
 } from '@patternfly/react-core';
-import { Outlet, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import BarsIcon from '@patternfly/react-icons/dist/js/icons/bars-icon';
 import Image from "../tornados.png";
 
