@@ -94,12 +94,12 @@ const RecTeams = ({ children }) => {
 	               id="tabRecTeamsSecondary"
 	             >
 	              <Tab 
-	                eventkey={10}
+	                eventKey={10}
 	                title={<TabTitleText>Naughton 8U</TabTitleText>} 
 	                tabContentId={`tabContent${10}`}
 	              />
                       <Tab
-                        eventkey={11}
+                        eventKey={11}
                         title={<TabTitleText>Kellet 8U</TabTitleText>}
                         tabContentId={`tabContent${11}`}
                       />	    
