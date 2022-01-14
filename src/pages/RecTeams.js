@@ -18,10 +18,9 @@ import {
 } from '@patternfly/react-core';
 
 const RecTeams = ({ children }) => {
-//class RecTeams extends React.Component {
 
   const [activeTabKey, setActiveTabKey] = React.useState(0);
-  const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(10);
+  const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(11);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
@@ -51,33 +50,33 @@ const RecTeams = ({ children }) => {
 	    <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams">
               <Tab 
 	        eventKey={0} 
-	        title={<TabTitleText>6U</TabTitleText>} 
-	        tabContentId={`tabContent${0}`} 
+	        title={<TabTitleText>6U</TabTitleText>}
+	        tabContentId={`tabContent${0}`}
 	      />
-              <Tab 
-	        eventKey={1} 
-	        title={<TabTitleText>8U</TabTitleText>} 
-	        tabContentId={`tabContent${1}`} 
+              <Tab
+	        eventKey={1}
+	        title={<TabTitleText>8U</TabTitleText>}
+	        tabContentId={`tabContent${1}`}
 	      />
-              <Tab 
-	        eventKey={2} 
-	        title={<TabTitleText>10U</TabTitleText>} 
-	        tabContentId={`tabContent${2}`} 
+              <Tab
+	        eventKey={2}
+	        title={<TabTitleText>10U</TabTitleText>}
+	        tabContentId={`tabContent${2}`}
 	      />
-              <Tab 
-	        eventKey={3} 
-	        title={<TabTitleText>12U</TabTitleText>} 
-	        tabContentId={`tabContent${3}`} 
+              <Tab
+	        eventKey={3}
+	        title={<TabTitleText>12U</TabTitleText>}
+	        tabContentId={`tabContent${3}`}
 	      />
-              <Tab 
-	        eventKey={4} 
-	        title={<TabTitleText>14U</TabTitleText>} 
-	        tabContentId={`tabContent${4}`} 
+              <Tab
+	        eventKey={4}
+	        title={<TabTitleText>14U</TabTitleText>}
+	        tabContentId={`tabContent${4}`}
 	      />
-              <Tab 
-	        eventKey={5} 
-	        title={<TabTitleText>16U</TabTitleText>} 
-	        tabContentId={`tabContent${5}`} 
+              <Tab
+	        eventKey={5}
+	        title={<TabTitleText>16U</TabTitleText>}
+	        tabContentId={`tabContent${5}`}
 	      />
 	    </Tabs>
 	</PageSection>
