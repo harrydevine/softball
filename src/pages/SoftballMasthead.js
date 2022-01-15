@@ -6,14 +6,44 @@ import {
   MastheadMain,
   MastheadToggle,
   MastheadContent,
-  PageToggleButton
+  PageToggleButton,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import BarsIcon from '@patternfly/react-icons/dist/js/icons/bars-icon';
 import Image from "../tornados.png";
+import { Follow } from 'react-twitter-widgets';
+import YouTubeSubscribe from './YouTubeSubscribe';
 
-class SoftballMasthead extends React.Component {
-  render () {
+const SoftballMasthead = ({ children }) => {
+//class SoftballMasthead extends React.Component {
+//  render () {
+    const headerToolbar = (
+      <Toolbar id="toolbar" isFullHeight isStatic>
+        <ToolbarContent>
+	  <ToolbarGroup
+	    variant="icon-button-group"
+	    alignment={{ default: 'alignRight' }}
+	    spacer={{ default: 'spacerNone', md: 'spacerMd' }}
+	  >
+	    <ToolbarItem>
+              <Follow username="EHTSoftball" />
+	    </ToolbarItem>
+            <ToolbarItem>
+              <YouTubeSubscribe
+	        theme={"default"}
+	        layout={"full"}
+	        count={"default"}
+	      />
+            </ToolbarItem>
+	  </ToolbarGroup>
+	</ToolbarContent>
+      </Toolbar>
+    );
+
     return (
       <Masthead id="ehtys">
         <MastheadToggle>
@@ -27,10 +57,10 @@ class SoftballMasthead extends React.Component {
             <Brand src={Image} alt="EHTYS Logo" width="50" height="50" />
           </MastheadBrand>
         </MastheadMain>
-        <MastheadContent>Egg Harbor Township Youth Softball</MastheadContent>
+        <MastheadContent> Egg Harbor Township Youth Softball {headerToolbar}</MastheadContent>
       </Masthead>
     );
-  }
+//  }
 }
 
 export default SoftballMasthead;

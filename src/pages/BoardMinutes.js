@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   Banner,
+  Bullseye,
+  Spinner,
   Text,
   TextContent
 } from '@patternfly/react-core';
@@ -39,6 +41,22 @@ class BoardMinutes extends React.Component {
 
   render() {
     const { res } = this.state;
+    const rows = [
+      {
+        heightAuto: true,
+	cells: [
+          {
+            props: { colSpan: 2 },
+            title: (
+              <Bullseye>
+                <Spinner size="xl" />
+              </Bullseye>
+            )
+          }
+        ]
+      }
+    ];
+
     return (
 	<div>
 	  <TextContent>
@@ -60,6 +78,7 @@ class BoardMinutes extends React.Component {
           <Banner variant="info">Previous Meeting Minutes</Banner>	    
           <Table
 	    cells={['Date','Minutes']}
+	    rows={rows}
 	    aria-label="Board Meeting Minutes"
 	  >
             <TableHeader />

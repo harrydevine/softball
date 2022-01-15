@@ -83,7 +83,10 @@ const SoftballPageLayoutNav = ({ children }) => {
             Travel Teams
           </NavItem>
         </NavExpandable>
-        <NavItem itemId="itemFieldInfo" isActive={activeItem === "itemFieldInfo"}>
+        <NavItem itemId="itemTournaments" isActive={activeItem === "itemTournaments"}>
+          Tournaments
+        </NavItem>
+	<NavItem itemId="itemFieldInfo" isActive={activeItem === "itemFieldInfo"}>
           Field Information
         </NavItem>
         <NavItem itemId="itemForms" isActive={activeItem === "itemForms"}>
