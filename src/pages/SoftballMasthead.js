@@ -17,6 +17,7 @@ import BarsIcon from '@patternfly/react-icons/dist/js/icons/bars-icon';
 import Image from "../tornados.png";
 import { Follow } from 'react-twitter-widgets';
 import YouTubeSubscribe from './YouTubeSubscribe';
+import SoftballFacebook from './Facebook';
 
 const SoftballMasthead = ({ children }) => {
 //class SoftballMasthead extends React.Component {
@@ -39,6 +40,9 @@ const SoftballMasthead = ({ children }) => {
 	        count={"default"}
 	      />
             </ToolbarItem>
+            <ToolbarItem>
+              <SoftballFacebook />
+            </ToolbarItem>   
 	  </ToolbarGroup>
 	</ToolbarContent>
       </Toolbar>

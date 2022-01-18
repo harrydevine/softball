@@ -14,8 +14,6 @@ import {
   TabContent,
   TabContentBody,
   TabTitleText,
-  Text,
-  TextContent,
   Title
 } from '@patternfly/react-core';
 

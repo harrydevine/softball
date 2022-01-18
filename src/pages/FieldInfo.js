@@ -20,6 +20,7 @@ import {
     TabTitleText,
     Title
 } from '@patternfly/react-core';
+import SoftballGoogleMaps from './GoogleMaps';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import ArrowUpIcon from '@patternfly/react-icons/dist/js/icons/arrow-up-icon';
 import ArrowDownIcon from '@patternfly/react-icons/dist/js/icons/arrow-down-icon';
@@ -139,6 +140,7 @@ const FieldInfo = ({ children }) => {
 	              Childs Kirk Memorial Park
 	              31 Idlewood Ave.
 	              Egg Harbor Township, NJ 08234
+	              <SoftballGoogleMaps center={{ lat: 39.41159, lng: -74.55954 }} />
 
 	              A 7-field softball complex with 2 lighted fields (1 and 5).  Complete with a fully stocked concession stand, restrooms, and ample parking onsite.  Located close to the Garden State Parkway, Atlantic City Expressway, and the Black Horse Pike (Route 322).
 
@@ -163,7 +165,8 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       1700 12th Street
                       Hammonton, NJ 08037
-                    </CardBody>
+	              <SoftballGoogleMaps center={{ lat: 39.60161, lng: -74.84462 }} />
+	            </CardBody>
                     <CardFooter>
                       Directions: This field sits behind the Municipal Building on Route 54.  Head west on Mays Landing Road (from Route 322 West).  Take a left on Route 54 and the Municipal Building is on the right.
                     </CardFooter>
