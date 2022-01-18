@@ -14,7 +14,7 @@ const center = {
 function SoftballGoogleMaps() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: "AIzaSyAMIrqXi1V8To7H0MXosmuxSkB4iSR0hgY"
+    googleMapsApiKey: "YOUR_KEY"
   })
 
   const [map, setMap] = React.useState(null)
