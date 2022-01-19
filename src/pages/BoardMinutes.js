@@ -2,9 +2,13 @@ import React from 'react';
 import {
   Banner,
   Bullseye,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
   Spinner,
   Text,
-  TextContent
+  TextContent,
+  Title
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 
@@ -24,10 +28,10 @@ class BoardMinutes extends React.Component {
 
   fetch() {
     this.setState({ loading: true });
-    fetch(`http://localhost:3000/meetings.json`)
+    fetch("http://localhost:3000/meetings.json")
       .then(resp => resp.json())
-      .then(resp => this.setState({ res: resp, loading: false }))
-      .catch(err => this.setState({ error: err, loading: false }));
+      .then(resp => this.setState({ res: resp, loading: false, error: false }))
+      .catch(err => this.setState({ error: err, loading: false, error: true }));
   }
 
   render() {
@@ -42,6 +46,26 @@ class BoardMinutes extends React.Component {
               <Bullseye>
                 <Spinner size="xl" />
               </Bullseye>
+            )
+          }
+        ]
+      }
+    ];
+    const errorRows = [
+      {
+        heightAuto: true,
+        cells: [
+          {
+            props: { colSpan: 2 },
+            title: (
+              <EmptyState variant={EmptyStateVariant.small}>
+                <Title headingLevel="h2" size="lg">
+                  Unable to connect
+                </Title>
+                <EmptyStateBody>
+                  There was an error retrieving data. Check your connection and reload the page.
+                </EmptyStateBody>
+              </EmptyState>
             )
           }
         ]
@@ -75,7 +99,17 @@ class BoardMinutes extends React.Component {
               <TableBody />
             </Table>
           )}
-          <Banner variant="info">Previous Meeting Minutes</Banner>
+          {!loading && error && (
+            <Table
+              cells={['Date','Time']}
+              rows={errorRows}
+              aria-label="Board Meeting Dates"
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
+          )}
+	  <Banner variant="info">Previous Meeting Minutes</Banner>
           {loading && (
             <Table cells={['Date', 'Minutes']} rows={loadingRows} aria-label="Board Meeting minutes">
               <TableHeader />
