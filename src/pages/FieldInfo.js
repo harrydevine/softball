@@ -18,6 +18,8 @@ import {
     TabContent,
     TabContentBody,
     TabTitleText,
+    TextContent,
+    Text,
     Title
 } from '@patternfly/react-core';
 import SoftballGoogleMaps from './GoogleMaps';
@@ -47,7 +49,7 @@ const FieldInfo = ({ children }) => {
               </Title>
             </FlexItem>
             <FlexItem flex={{ default: 'flexNone' }}>
-              <Label color="green" icon={<CheckCircleIcon />}>Open</Label>
+              <Label color="orange" icon={<CheckCircleIcon />}>Partial</Label>
             </FlexItem>
           </Flex>
         </PageSection>
@@ -126,6 +128,11 @@ const FieldInfo = ({ children }) => {
                   </Card>
                 </LevelItem>
 	      </Level>
+              <Text>{"\n\n\n"}</Text>
+	      <Text component="hr" />
+	      <Text component="center">
+                <img src="/eht_fields.png" height="500" width="500" />  
+	      </Text>
 	    </TabContentBody>
           </TabContent>
           <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
@@ -254,7 +261,9 @@ const FieldInfo = ({ children }) => {
 	    </TabContentBody>
           </TabContent>
           <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
-            <TabContentBody>EHT Field Schedule(s)</TabContentBody>
+            <TabContentBody>
+	      EHT Field availability per team will be shown here!
+	    </TabContentBody>
           </TabContent>
         </PageSection>
       </div>

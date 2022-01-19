@@ -49,7 +49,7 @@ const SoftballMasthead = ({ children }) => {
     );
 
     return (
-      <Masthead id="ehtys">
+      <Masthead id="ehtys" backgroundColor="light">
         <MastheadToggle>
           <PageToggleButton variant="plain" aria-label="Global Navigation">
             <BarsIcon />

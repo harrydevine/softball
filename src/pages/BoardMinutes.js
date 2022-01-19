@@ -2,62 +2,80 @@ import React from 'react';
 import {
   Banner,
   Bullseye,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateVariant,
   Spinner,
   Text,
-  TextContent
+  TextContent,
+  Title
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import {
+  useQuery,
+  QueryClient,
+  QueryClientProvider
+} from 'react-query'
 
-class BoardMinutes extends React.Component {
+const queryClient = new QueryClient();
+
+function MeetingData() {
   constructor(props) {
     super(props);
-//    const [data,setData]=useState([]);
     this.state = {
       res: []
     };
+  };
+
+  const rows = 0;
+  const {isLoading, error, data, isFetching } = useQuery("repoData", () =>
+    fetch("http://localhost/meetings.json").then((res) => res.json())
+  );
+
+  if (isLoading) return <Spinner size="xl" />
+  if (error) {
+   return (
+     rows = [
+        {
+          heightAuto: true,
+          cells: [
+            {
+              props: { colSpan: 2 },
+              title: (
+                <EmptyState variant={EmptyStateVariant.small}>
+                  <Title headingLevel="h2" size="lg">
+                    Unable to connect
+                  </Title>
+                  <EmptyStateBody>
+                    There was an error retrieving data. Check your connection and reload the page.
+                  </EmptyStateBody>
+                </EmptyState>
+              )
+            }
+          ]
+        }
+      ] 
+    )
   }
 
-  getMeetings=()=>{
-    fetch('meetings.json',
-    {
-      headers : {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }
-    ).then(function(response){
-      console.log(response);
-      return response.json();
-    }).then(function(myJson) {
-      console.log(myJson);
-      this.setState({ res: myJson })
-//      setData(myJson);
-    });
-  }
-  
-  getMeetingData() {
-    this.getMeetings();
+  return (
+    rows = {res.map(post => [post.date, post.time])}
+  );
+}
+
+class BoardMinutes extends React.Component {
+
+  constructor(props) {
+    super(props);
   }
 
   render() {
-    const { res } = this.state;
-    const rows = [
-      {
-        heightAuto: true,
-	cells: [
-          {
-            props: { colSpan: 2 },
-            title: (
-              <Bullseye>
-                <Spinner size="xl" />
-              </Bullseye>
-            )
-          }
-        ]
-      }
-    ];
-
     return (
+      <QueryClientProvider client={queryClient}>
+        <MeetingData />
+      </QueryClientProvider>
+
 	<div>
 	  <TextContent>
 	    <Text component="h1">Board Meetings</Text>
@@ -76,7 +94,10 @@ class BoardMinutes extends React.Component {
             <TableBody />
           </Table>
           <Banner variant="info">Previous Meeting Minutes</Banner>	    
-          <Table
+          <QueryClientProvider client={queryClient}>
+            <MeetingData />
+          </QueryClientProvider>
+	  <Table
 	    cells={['Date','Minutes']}
 	    rows={rows}
 	    aria-label="Board Meeting Minutes"
