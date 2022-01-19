@@ -262,7 +262,6 @@ const FieldInfo = ({ children }) => {
           </TabContent>
           <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
             <TabContentBody>
-	      EHT Field availability per team will be shown here!
 	    </TabContentBody>
           </TabContent>
         </PageSection>
