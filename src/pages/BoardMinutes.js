@@ -1,18 +1,13 @@
 import React from 'react';
 import {
   Banner,
-  Bullseye,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateVariant,
-  Spinner,
   Text,
   TextContent,
-  Title
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 
 class BoardMinutes extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -21,56 +16,21 @@ class BoardMinutes extends React.Component {
       error: null
     };
   }
-  
+
   componentDidMount() {
     this.fetch();
   }
 
   fetch() {
     this.setState({ loading: true });
-    fetch("http://localhost:3000/meetings.json")
+    fetch(`http://localhost:3000/meetings.json`)
       .then(resp => resp.json())
-      .then(resp => this.setState({ res: resp, loading: false, error: false }))
-      .catch(err => this.setState({ error: err, loading: false, error: true }));
+      .then(resp => this.setState({ res: resp, loading: false }))
+      .catch(err => this.setState({ error: err, loading: false }));
   }
 
   render() {
     const {res, loading, error} = this.state;
-    const loadingRows = [
-      {
-        heightAuto: true,
-        cells: [
-          {
-            props: { colSpan: 2 },
-            title: (
-              <Bullseye>
-                <Spinner size="xl" />
-              </Bullseye>
-            )
-          }
-        ]
-      }
-    ];
-    const errorRows = [
-      {
-        heightAuto: true,
-        cells: [
-          {
-            props: { colSpan: 2 },
-            title: (
-              <EmptyState variant={EmptyStateVariant.small}>
-                <Title headingLevel="h2" size="lg">
-                  Unable to connect
-                </Title>
-                <EmptyStateBody>
-                  There was an error retrieving data. Check your connection and reload the page.
-                </EmptyStateBody>
-              </EmptyState>
-            )
-          }
-        ]
-      }
-    ];
 
     return (
       <React.Fragment>
@@ -81,7 +41,7 @@ class BoardMinutes extends React.Component {
               Board meetings will take place at the Field House at Childs-Kirk Memorial Park, located at 31 Idlewood Ave.  Meetings will usually take place at 6:30pm on the 3rd Sunday of the month, unless the board members schedule a meeting for a month to take place at another time.
             </Text>
             <Text component="hr" />
-	  </TextContent>
+          </TextContent>
           <Banner variant="info">Upcoming Meetings</Banner>
           {loading && (
             <Table cells={['Date', 'Time']} rows={loadingRows} aria-label="Board Meeting Dates">
@@ -99,17 +59,7 @@ class BoardMinutes extends React.Component {
               <TableBody />
             </Table>
           )}
-          {!loading && error && (
-            <Table
-              cells={['Date','Time']}
-              rows={errorRows}
-              aria-label="Board Meeting Dates"
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
-          )}
-	  <Banner variant="info">Previous Meeting Minutes</Banner>
+          <Banner variant="info">Previous Meeting Minutes</Banner>
           {loading && (
             <Table cells={['Date', 'Minutes']} rows={loadingRows} aria-label="Board Meeting minutes">
               <TableHeader />
