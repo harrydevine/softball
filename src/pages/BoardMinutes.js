@@ -4,7 +4,7 @@ import {
   Text,
   TextContent,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import {Table, TableHeader, TableBody, Thead, TableComposable, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 
 class BoardMinutes extends React.Component {
 
@@ -43,39 +43,63 @@ class BoardMinutes extends React.Component {
             <Text component="hr" />
           </TextContent>
           <Banner variant="info">Upcoming Meetings</Banner>
-          {loading && (
-            <Table cells={['Date', 'Time']} rows={loadingRows} aria-label="Board Meeting Dates">
-              <TableHeader />
-              <TableBody />
-            </Table>
-          )}
-          {!loading && !error && (
-            <Table
-              cells={['Date','Time']}
-              rows={res.map(post => [post.id, post.time])}
-              aria-label="Board Meeting Dates"
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
-          )}
+
+          <TableComposable
+            aria-label="Board Meeting Dates"
+          >
+            <Thead>
+              <Tr>
+                <Th>Date</Th>
+                <Th>Time</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {!loading && res.map(post => (
+                <Tr key={post.id}>
+                  <Td dataLabel="Date">{post.id}</Td>
+                  <Td dataLabel="Time">{post.time}</Td>
+                </Tr>
+              ))}
+              {loading && (
+                <Tr>
+                  <Td colspan={2}>
+                    <Bullseye>
+                      <Spinner size="xl" />
+                    </Bullseye>
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </TableComposable>
+
           <Banner variant="info">Previous Meeting Minutes</Banner>
-          {loading && (
-            <Table cells={['Date', 'Minutes']} rows={loadingRows} aria-label="Board Meeting minutes">
-              <TableHeader />
-              <TableBody />
-            </Table>
-          )}
-          {!loading && !error && (
-            <Table
-              cells={['Date','Minutes']}
-              rows={res.map(post => [post.id, post.date])}
-              aria-label="Board Meeting Minutes"
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
-          )}
+          <TableComposable
+            aria-label="Board Meeting minutes"
+          >
+            <Thead>
+              <Tr>
+                <Th>Date</Th>
+                <Th>Minutes</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {!loading && res.map(post => (
+                <Tr key={post.id}>
+                  <Td dataLabel="Date">{post.id}</Td>
+                  <Td dataLabel="Minutes"><a href={`/fakeurlminutes${post.id}.com`}>{post.date}</a></Td>
+                </Tr>
+              ))}
+              {!loading && (
+                <Tr>
+                  <Td colspan={2}>
+                    <Bullseye>
+                      <Spinner size="xl" />
+                    </Bullseye>
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </TableComposable>
         </div>
       </React.Fragment>
     );
