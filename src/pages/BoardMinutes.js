@@ -101,7 +101,7 @@ class BoardMinutes extends React.Component {
               {!mtgLoading && mtgRes.map(post => (
                 <Tr key={post.id}>
                   <Td dataLabel="Date">{post.date}</Td>
-                  <Td dataLabel="Minutes"><a href={`${post.link}`} _target="blank">{post.link}</a></Td>
+                  <Td dataLabel="Minutes"><a href={`${post.link}`} target="_blank">Minutes for {post.date}</a></Td>
                 </Tr>
               ))}
               {mtgLoading && (
