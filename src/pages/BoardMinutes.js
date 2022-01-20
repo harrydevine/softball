@@ -3,8 +3,10 @@ import {
   Banner,
   Text,
   TextContent,
+  Bullseye,
+  Spinner,
 } from '@patternfly/react-core';
-import {Table, TableHeader, TableBody, Thead, TableComposable, Tr, Th, Tbody, Td} from '@patternfly/react-table';
+import { Thead, TableComposable, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 
 class BoardMinutes extends React.Component {
 
@@ -89,7 +91,7 @@ class BoardMinutes extends React.Component {
                   <Td dataLabel="Minutes"><a href={`/fakeurlminutes${post.id}.com`}>{post.date}</a></Td>
                 </Tr>
               ))}
-              {!loading && (
+              {loading && (
                 <Tr>
                   <Td colspan={2}>
                     <Bullseye>
