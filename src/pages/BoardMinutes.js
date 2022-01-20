@@ -13,9 +13,12 @@ class BoardMinutes extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      res: [],
-      loading: true,
-      error: null
+      upRes: [],
+      upLoading: true,
+      upError: null,
+      mtgRes: [],
+      mtgLoading: true,
+      mtgError: null
     };
   }
 
@@ -24,15 +27,25 @@ class BoardMinutes extends React.Component {
   }
 
   fetch() {
-    this.setState({ loading: true });
-    fetch(`http://localhost:3000/meetings.json`)
+    this.setState({ upLoading: true, mtgLoading: true });
+
+    // Fetch data for Upcoming Meetings
+    fetch(`http://softball-pi4:3000/meetings.json`)
       .then(resp => resp.json())
-      .then(resp => this.setState({ res: resp, loading: false }))
-      .catch(err => this.setState({ error: err, loading: false }));
+      .then(resp => this.setState({ upRes: resp, upLoading: false }))
+      .catch(err => this.setState({ upError: err, upLoading: false }));
+
+    // Fetch data for Previous Meeting Minutes
+    fetch(`http://softball-pi4:3000/minutes.json`)
+      .then(resp => resp.json())
+      .then(resp => this.setState({ mtgRes: resp, mtgLoading: false }))
+      .catch(err => this.setState({ mtgError: err, mtgLoading: false }));
+
   }
 
   render() {
-    const {res, loading, error} = this.state;
+    const {upRes, upLoading, upError} = this.state;
+    const {mtgRes, mtgLoading, mtgError} = this.state;
 
     return (
       <React.Fragment>
@@ -56,15 +69,15 @@ class BoardMinutes extends React.Component {
               </Tr>
             </Thead>
             <Tbody>
-              {!loading && res.map(post => (
+              {!upLoading && upRes.map(post => (
                 <Tr key={post.id}>
-                  <Td dataLabel="Date">{post.id}</Td>
+                  <Td dataLabel="Date">{post.date}</Td>
                   <Td dataLabel="Time">{post.time}</Td>
                 </Tr>
               ))}
-              {loading && (
+              {upLoading && (
                 <Tr>
-                  <Td colspan={2}>
+                  <Td colSpan={2}>
                     <Bullseye>
                       <Spinner size="xl" />
                     </Bullseye>
@@ -85,15 +98,15 @@ class BoardMinutes extends React.Component {
               </Tr>
             </Thead>
             <Tbody>
-              {!loading && res.map(post => (
+              {!mtgLoading && mtgRes.map(post => (
                 <Tr key={post.id}>
-                  <Td dataLabel="Date">{post.id}</Td>
-                  <Td dataLabel="Minutes"><a href={`/fakeurlminutes${post.id}.com`}>{post.date}</a></Td>
+                  <Td dataLabel="Date">{post.date}</Td>
+                  <Td dataLabel="Minutes"><a href={`${post.link}`} _target="blank">{post.link}</a></Td>
                 </Tr>
               ))}
-              {loading && (
+              {mtgLoading && (
                 <Tr>
-                  <Td colspan={2}>
+                  <Td colSpan={2}>
                     <Bullseye>
                       <Spinner size="xl" />
                     </Bullseye>
