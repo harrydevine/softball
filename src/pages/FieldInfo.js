@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    Bullseye,
     Card,
     CardFooter,
     CardHeader,
@@ -13,6 +14,7 @@ import {
     ListItem,
     PageSection,
     PageSectionVariants,
+    Spinner,
     Tabs,
     Tab,
     TabContent,
@@ -31,10 +33,13 @@ const FieldInfo = ({ children }) => {
     const [data, setData] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
+    const [fieldStatus, setFieldStatus] = React.useState("Open");
+    const [count, setCount] = React.useState(0);
+    const [statusColor, setStatusColor] = React.useState("green");
 
     useEffect(() => {
       // Fetch data for Upcoming Meetings
-      fetch(`http://softball-pi4:3000/fields.json`)
+      fetch("http://softball-pi4:3000/fields.json")
         .then(resp => {
            setData(resp.json());
            setLoading(false);
@@ -43,9 +48,25 @@ const FieldInfo = ({ children }) => {
           setError(err); 
           setLoading(false);
 	});
-    }, []);
+     }, []);
 
-    console.log({data, loading, error});
+     useEffect(() => {
+       if (data?.length > 0) {
+         data.map((field) => {
+          if (field.status === "Closed") {
+            setCount(count+1);
+          }
+          if (count > 0 && count < 7) {
+            setFieldStatus("Partial");
+            setStatusColor("orange");
+          }
+          if (count == 7) {
+            setFieldStatus("Closed");
+            setStatusColor("red");
+          }
+	}
+      )};
+    }, [data, count]);
 
     // Toggle currently active tab
     const handleTabClick = (event, tabIndex) => {
@@ -66,7 +87,8 @@ const FieldInfo = ({ children }) => {
               </Title>
             </FlexItem>
             <FlexItem flex={{ default: 'flexNone' }}>
-              <Label color="orange" icon={<CheckCircleIcon />}>Partial</Label>
+/*                <Label color={statusColor}  icon={<CheckCircleIcon />}>{fieldStatus}</Label>*/
+                <Label color="orange"  icon={<CheckCircleIcon />}>Partial</Label>
             </FlexItem>
           </Flex>
         </PageSection>
@@ -81,15 +103,30 @@ const FieldInfo = ({ children }) => {
           <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
             <TabContentBody>
 	      <Level>
-	        <LevelItem>
-	          <Card>
-	            <CardHeader>Field 1</CardHeader>
-	            <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-	            </CardBody>
-                    <CardFooter>Open</CardFooter>
-	          </Card>
-	        </LevelItem>
+	        {loading && (
+                  <Bullseye>
+                    <Spinner size="xl" />
+                  </Bullseye>
+                )}
+                {data && data.map((field) => (
+	          <LevelItem>
+	            <Card>
+                      <CardHeader>Field {field.field}</CardHeader>
+                        {field.status === "Open" && (
+                          <CardBody>
+		            <ArrowUpIcon color="green" style={{ height: '50px' }} />
+                          </CardBody>
+                        )}
+                        {field.status === "Closed" && (
+                          <CardBody>
+                            <ArrowDownIcon color="red" style={{ height: '50px' }} />
+                          </CardBody>
+                        )}
+                      <CardFooter>{field.status}</CardFooter>
+	            </Card>
+	          </LevelItem>
+		))}
+/*	      
                 <LevelItem>
                   <Card>
                     <CardHeader>Field 2</CardHeader>
@@ -144,6 +181,7 @@ const FieldInfo = ({ children }) => {
                     <CardFooter>Closed (Maintenance)</CardFooter>
                   </Card>
                 </LevelItem>
+*/		
 	      </Level>
               <Text>{"\n\n\n"}</Text>
 	      <Text component="hr" />
