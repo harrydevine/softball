@@ -6,12 +6,8 @@ const containerStyle = {
   height: '400px'
 };
 
-const center = {
-  lat: -3.745,
-  lng: -38.543
-};
+function SoftballGoogleMaps(props) {
 
-function SoftballGoogleMaps() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: "AIzaSyAMIrqXi1V8To7H0MXosmuxSkB4iSR0hgY"
@@ -21,7 +17,6 @@ function SoftballGoogleMaps() {
 
   const onLoad = React.useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
-//    map.fitBounds(bounds);
     setMap(map)
   }, [])
 
@@ -32,7 +27,7 @@ function SoftballGoogleMaps() {
   return isLoaded ? (
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={center}
+        center={props.center}
         zoom={16}
         onLoad={onLoad}
         onUnmount={onUnmount}

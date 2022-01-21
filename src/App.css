@@ -46,6 +46,18 @@ toolbar {
   }
 }
 
+.board_member_title {
+  background-color: #87ceeb;
+}
+
+.board_member_description {
+  background-color: #81ecec;
+}
+
+.board_member_name {
+  background-color: #f9e4b7;
+}
+
 .heading {
   text-align: center;
   font-size: 2em;
@@ -67,7 +79,7 @@ toolbar {
 .top {
   border-radius: 25px 25px 0 0;
   height: 100px;
-  width: 100%;
+  width: 10%;
   background-color: #00cec9;
   position: absolute;
   top: 0;

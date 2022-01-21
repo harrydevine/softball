@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     Card,
     CardFooter,
@@ -18,7 +18,6 @@ import {
     TabContent,
     TabContentBody,
     TabTitleText,
-    TextContent,
     Text,
     Title
 } from '@patternfly/react-core';
@@ -29,13 +28,31 @@ import ArrowDownIcon from '@patternfly/react-icons/dist/js/icons/arrow-down-icon
 
 const FieldInfo = ({ children }) => {
     const [activeTabKey, setActiveTabKey] = React.useState(0);
+    const [data, setData] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
+
+    useEffect(() => {
+      // Fetch data for Upcoming Meetings
+      fetch(`http://softball-pi4:3000/fields.json`)
+        .then(resp => {
+           setData(resp.json());
+           setLoading(false);
+        })
+        .catch(err => {
+          setError(err); 
+          setLoading(false);
+	});
+    }, []);
+
+    console.log({data, loading, error});
 
     // Toggle currently active tab
     const handleTabClick = (event, tabIndex) => {
       setActiveTabKey(tabIndex);
     };
 
-    return (
+      return (
       <div>
         <PageSection isWidthLimited variant={PageSectionVariants.light}>
           <Flex
@@ -131,7 +148,7 @@ const FieldInfo = ({ children }) => {
               <Text>{"\n\n\n"}</Text>
 	      <Text component="hr" />
 	      <Text component="center">
-                <img src="/eht_fields.png" height="500" width="500" />  
+                <img src="/eht_fields.png" alt="EHT Field Map" height="500" width="500" />  
 	      </Text>
 	    </TabContentBody>
           </TabContent>
@@ -187,6 +204,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       13th Street
                       Folsom, NJ 08094
+	              <SoftballGoogleMaps center={{ lat: 39.60547, lng: -74.85163 }} />
                     </CardBody>
                     <CardFooter>
                       Directions: Turn onto Mays Landing Road from Route 54.  Make first left onto 13th street.  Field is located on the corner.
@@ -201,6 +219,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       W. Duerer Street and S. Zurich Ave.
                       Absecon, NJ 08205
+	              <SoftballGoogleMaps center={{ lat: 39.48614, lng: -74.56184 }} />
                     </CardBody>
                     <CardFooter>
                       Fields 1 -5 and T-Ball
@@ -215,6 +234,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       1501 Elwood Road
                       Mullica Township, NJ 08037
+	              <SoftballGoogleMaps center={{ lat: 39.59397, lng: -74.69057 }} />
                     </CardBody>
                     <CardFooter>
                       Fields 1 and 3 are used for softball.
@@ -229,6 +249,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       1 Old Egg Harbor Road
                       Mays Landing, NJ 08330
+	              <SoftballGoogleMaps center={{ lat: 39.45249, lng: -74.71952 }} />
                     </CardBody>
                     <CardFooter>
                       Mays Landing Underhill Field is the location for all 6u games ONLY.
@@ -243,6 +264,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       3155 Leipzig Ave.
                       Mays Landing, NJ 08030
+	              <SoftballGoogleMaps center={{ lat: 39.48418, lng: -74.62307 }} />
                     </CardBody>
                   </Card>
                 </FlexItem>
@@ -254,6 +276,7 @@ const FieldInfo = ({ children }) => {
                     <CardBody>
                       401 N. Surrey Ave
                       Ventnor, NJ 08406
+	              <SoftballGoogleMaps center={{ lat: 39.34776, lng: -74.47846 }} />
                     </CardBody>
                   </Card>
                 </FlexItem>
