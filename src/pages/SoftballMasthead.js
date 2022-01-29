@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Brand,
+  Button,
   Masthead,
   MastheadBrand,
   MastheadMain,
@@ -12,39 +13,50 @@ import {
   ToolbarGroup,
   ToolbarItem
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BarsIcon from '@patternfly/react-icons/dist/js/icons/bars-icon';
 import Image from "../tornados.png";
 import { Follow } from 'react-twitter-widgets';
 import YouTubeSubscribe from './YouTubeSubscribe';
-import SoftballFacebook from './Facebook';
+import { FacebookSquareIcon } from '@patternfly/react-icons';
+import useAuth from '../useAuth';
 
 const SoftballMasthead = ({ children }) => {
 //class SoftballMasthead extends React.Component {
+  const navigate = useNavigate();
+  const onLoginClick = () => {
+    navigate("/login");
+  }
+
 //  render () {
     const headerToolbar = (
       <Toolbar id="toolbar" isFullHeight isStatic>
         <ToolbarContent>
-	  <ToolbarGroup
-	    variant="icon-button-group"
-	    alignment={{ default: 'alignRight' }}
-	    spacer={{ default: 'spacerNone', md: 'spacerMd' }}
-	  >
-	    <ToolbarItem>
+          <ToolbarGroup
+            variant="icon-button-group"
+            alignment={{ default: 'alignRight' }}
+            spacer={{ default: 'spacerNone', md: 'spacerMd' }}>
+            <ToolbarItem visibility={{ default: 'hidden', md: 'visible' }}>
+              <Button variant="danger" onClick={onLoginClick}>Admin Login</Button>
+            </ToolbarItem>	    
+            <ToolbarItem variant="separator"></ToolbarItem>
+            <ToolbarItem space="spacerLg">
+              <a href="https://www.facebook.com/groups/1687563661460656" target="_blank"><FacebookSquareIcon />EHT Softball Facebook Page</a>
+            </ToolbarItem>
+	    <ToolbarItem variant="separator"></ToolbarItem>
+	    <ToolbarItem spacer="spacerLg">
               <Follow username="EHTSoftball" />
-	    </ToolbarItem>
-            <ToolbarItem>
+            </ToolbarItem>
+	    <ToolbarItem variant="separator"></ToolbarItem>
+            <ToolbarItem space="md">
               <YouTubeSubscribe
 	        theme={"default"}
-	        layout={"full"}
-	        count={"default"}
+                layout={"full"}
+                count={"default"}
 	      />
             </ToolbarItem>
-            <ToolbarItem>
-              <SoftballFacebook />
-            </ToolbarItem>   
-	  </ToolbarGroup>
-	</ToolbarContent>
+          </ToolbarGroup>
+        </ToolbarContent>
       </Toolbar>
     );
 

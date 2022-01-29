@@ -52,7 +52,7 @@ class BoardMembers extends React.Component {
 	  <Gallery hasGutter>
 	  {data.map((board) => (
 	  <GalleryItem>
-              <Card isSelectable>
+              <Card isSelectable key={board.id}>
   	      <CardTitle>
   	        <Title headingLevel="h2" size="xl" className="board_member_title">{board.title}</Title>
 	      </CardTitle>

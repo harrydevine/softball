@@ -33,15 +33,13 @@ const FieldInfo = ({ children }) => {
     const [data, setData] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
-    const [fieldStatus, setFieldStatus] = React.useState("Open");
-    const [count, setCount] = React.useState(0);
-    const [statusColor, setStatusColor] = React.useState("green");
 
     useEffect(() => {
       // Fetch data for Upcoming Meetings
       fetch("http://softball-pi4:3000/fields.json")
-        .then(resp => {
-           setData(resp.json());
+        .then(async (resp) => {
+           const jsonResponse = await resp.json();
+           setData(jsonResponse);
            setLoading(false);
         })
         .catch(err => {
@@ -50,23 +48,25 @@ const FieldInfo = ({ children }) => {
 	});
      }, []);
 
-     useEffect(() => {
-       if (data?.length > 0) {
-         data.map((field) => {
-          if (field.status === "Closed") {
-            setCount(count+1);
-          }
-          if (count > 0 && count < 7) {
-            setFieldStatus("Partial");
-            setStatusColor("orange");
-          }
-          if (count == 7) {
-            setFieldStatus("Closed");
-            setStatusColor("red");
-          }
-	}
-      )};
-    }, [data, count]);
+     /* Determine the field status and color for presentation */
+     let count = 0;
+     let fieldStatus = "Open";
+     let statusColor = "green";
+     if (data?.length > 0) {
+       data.map((field) => {
+         if (field.status === "Closed") {
+           count++;
+         }
+       });
+     }
+     if (count > 0 && count < 7) {
+       fieldStatus = "Partial"
+       statusColor = "orange"
+     }
+     if (count === 7) {
+       fieldStatus = "Closed"
+       statusColor = "red"	       
+     }
 
     // Toggle currently active tab
     const handleTabClick = (event, tabIndex) => {
@@ -87,8 +87,7 @@ const FieldInfo = ({ children }) => {
               </Title>
             </FlexItem>
             <FlexItem flex={{ default: 'flexNone' }}>
-/*                <Label color={statusColor}  icon={<CheckCircleIcon />}>{fieldStatus}</Label>*/
-                <Label color="orange"  icon={<CheckCircleIcon />}>Partial</Label>
+                <Label color={statusColor}  icon={<CheckCircleIcon />}>{fieldStatus}</Label>
             </FlexItem>
           </Flex>
         </PageSection>
@@ -108,85 +107,34 @@ const FieldInfo = ({ children }) => {
                     <Spinner size="xl" />
                   </Bullseye>
                 )}
-                {data && data.map((field) => (
-	          <LevelItem>
+                {Array.isArray(data) && data.map((field) => (
+	          <LevelItem key={field.id}>
 	            <Card>
                       <CardHeader>Field {field.field}</CardHeader>
                         {field.status === "Open" && (
                           <CardBody>
 		            <ArrowUpIcon color="green" style={{ height: '50px' }} />
+			    {field.status}
+                            <Text component="br" />
+                            {field.reason}				
                           </CardBody>
                         )}
                         {field.status === "Closed" && (
                           <CardBody>
                             <ArrowDownIcon color="red" style={{ height: '50px' }} />
+			    {field.status}
+                            <Text component="br" />
+			    {field.reason}
                           </CardBody>
                         )}
-                      <CardFooter>{field.status}</CardFooter>
 	            </Card>
 	          </LevelItem>
 		))}
-/*	      
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 2</CardHeader>
-                    <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Open</CardFooter>
-                  </Card>
-                </LevelItem>
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 3</CardHeader>
-                    <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Open</CardFooter>
-                  </Card>
-                </LevelItem>
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 4</CardHeader>
-                    <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Open</CardFooter>
-                  </Card>
-                </LevelItem>
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 5</CardHeader>
-                    <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Open</CardFooter>
-                  </Card>
-                </LevelItem>
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 6</CardHeader>
-                    <CardBody>
-                      <ArrowUpIcon color="green" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Open</CardFooter>
-                  </Card>
-                </LevelItem>
-                <LevelItem>
-                  <Card>
-                    <CardHeader>Field 7</CardHeader>
-                    <CardBody>
-                      <ArrowDownIcon color="red" style={{ height: '50px' }} />
-                    </CardBody>
-                    <CardFooter>Closed (Maintenance)</CardFooter>
-                  </Card>
-                </LevelItem>
-*/		
 	      </Level>
               <Text>{"\n\n\n"}</Text>
 	      <Text component="hr" />
 	      <Text component="center">
-                <img src="/eht_fields.png" alt="EHT Field Map" height="500" width="500" />  
+                <img src="/images/eht_fields.png" alt="EHT Field Map" height="500" width="500" />  
 	      </Text>
 	    </TabContentBody>
           </TabContent>

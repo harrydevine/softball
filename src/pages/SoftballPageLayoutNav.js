@@ -51,6 +51,12 @@ const SoftballPageLayoutNav = ({ children }) => {
       case "itemShop":
         navigate("/shop");
         break;
+      case "itemSponsors":
+        navigate("/sponsors");
+        break;
+      case "itemAdmin":
+        navigate("/admin");
+        break;
       default:
         navigate("/not-found");
     }
@@ -112,6 +118,9 @@ const SoftballPageLayoutNav = ({ children }) => {
         </NavItem>
         <NavItem itemId="itemSponsors" isActive={activeItem === "itemSponsors"}>
           Sponsors
+        </NavItem>
+        <NavItem itemId="itemAdmin" isActive={activeItem === "itemAdmin"}>
+          Admin Area
         </NavItem>
       </NavList>
     </Nav>

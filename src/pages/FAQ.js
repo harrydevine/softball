@@ -55,7 +55,7 @@ class FAQ extends React.Component {
           </Flex>
         </PageSection>
         <PageSection variant={PageSectionVariants.light} isWidthLimited>
-          <Accordion asDefinitionList={false}>
+          <Accordion asDefinitionList={false} displaySize={"large"} headingLevel={"h6"}>
             <AccordionItem>
               <AccordionToggle
                 onClick={() => toggle('faq-toggle1')}
