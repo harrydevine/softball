@@ -1,10 +1,17 @@
 import React from 'react';
 import {
   Banner,
+  Brand,
   Card,
   CardBody,
-  CardTitle
+  CardHeader,
+  CardHeaderMain,
+  CardTitle,
+  Text,
+  TextContent,
+  TextVariants,
 } from '@patternfly/react-core';
+import Image from "../Swing_into_Spring.jpg";
 
 class Dashboard extends React.Component {
 
@@ -16,6 +23,26 @@ class Dashboard extends React.Component {
           <CardTitle><u>Spring 2022 Signups!</u></CardTitle>
           <CardBody>Click <a href="https://ehtsoftballbaberuth.sportssignup.com/site/" target="_blank" rel="noreferrer">here</a> to sign up for the 2022 Spring season!</CardBody>
         </Card>
+	<Banner variant="success">Upcoming Tournaments</Banner>
+        <Card isSelectable>
+	  <CardHeader>
+	    <CardHeaderMain>
+	      <Brand src={Image} alt="Tournament Image" style={{ height: '150px' }} />
+	    </CardHeaderMain>
+	  </CardHeader>
+	  <CardBody>
+	    <TextContent>
+	      <Text component={TextVariants.h6}>2022 Swing Into Spring</Text>
+              <Text component={TextVariants.h6}>April 9/10, 2022</Text>
+              <Text component={TextVariants.h6}>Location: 31 Idlewood Ave, Egg Harbor Township NJ 08234</Text>
+              <Text component={TextVariants.h6}>Divisions 10BC, 12BC, 14BC</Text>
+              <Text component={TextVariants.h6}>$425 per team / $55 Pay at Plate</Text>
+              <Text component={TextVariants.h6}>Register at tournamentusasoftball.com</Text>
+              <Text component={TextVariants.h6}>For more information, contact us at ehtsoftball@aol.com, or contact Joe Fermane (Tournament Director) at noodle846@gmail.com</Text>
+	    </TextContent>
+	  </CardBody>
+	</Card>
+	<Banner variant="info">Board Meetings</Banner>
 	<Card isSelectable>
           <CardTitle><u>Next Board Meeting</u></CardTitle>
           <CardBody>Date: February 20, 2022 </CardBody>

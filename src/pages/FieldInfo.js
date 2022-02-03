@@ -36,11 +36,12 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Upcoming Meetings
-      fetch("http://softball-pi4:3000/fields.json")
+      fetch("http://softball-pi4:8081/fields")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setData(jsonResponse);
            setLoading(false);
+           console.log(jsonResponse);
         })
         .catch(err => {
           setError(err); 

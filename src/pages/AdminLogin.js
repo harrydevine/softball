@@ -16,6 +16,8 @@ import {
 import Linkify from 'react-linkify';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../useAuth';
 
 class AdminLogin extends React.Component {
   constructor(props) {
@@ -37,12 +39,19 @@ class AdminLogin extends React.Component {
       this.setState({ passwordValue });
     };
 
-    this.onLoginButtonClick = event => {
-      event.preventDefault();
-      this.setState({ isValidUsername: !!this.state.usernameValue });
-      this.setState({ isValidPassword: !!this.state.passwordValue });
-      this.setState({ showHelperText: !this.state.usernameValue || !this.state.passwordValue });
-    };
+//    const navigate = useNavigate();
+//    const { login } = useAuth();
+//    let navigate = useNavigate();
+//    let { login } = useAuth();
+//    this.onLoginButtonClick = (event) => {
+//      event.preventDefault();
+//      login().then(() => {
+//        navigate("/admin");
+//      });
+//      this.setState({ isValidUsername: !!this.state.usernameValue });
+//      this.setState({ isValidPassword: !!this.state.passwordValue });
+//      this.setState({ showHelperText: !this.state.usernameValue || !this.state.passwordValue });
+//    };
 
     this.handleModalToggle = (event) => {
       event.preventDefault();
@@ -54,6 +63,7 @@ class AdminLogin extends React.Component {
 
   render() {
     const { isModalOpen } = this.state;
+
     const helperText = (
       <React.Fragment>
         <ExclamationCircleIcon />

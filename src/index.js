@@ -9,7 +9,6 @@ import FAQ from './pages/FAQ';
 import Forms from './pages/Forms';
 import FieldInfo from './pages/FieldInfo';
 import RecTeams from './pages/RecTeams';
-import Shop from './pages/Shop';
 import Sponsors from './pages/Sponsors';
 import Tournaments from './pages/Tournaments';
 import AdminLogin from './pages/AdminLogin';
@@ -29,7 +28,6 @@ ReactDOM.render(
         <Route path="recteams" element={<RecTeams />} />
 	<Route path="faq" element={<FAQ />} />
 	<Route path="forms" element={<Forms />} />
-	<Route path="shop" element={<Shop />} />
 	<Route path="sponsors" element={<Sponsors />} />
 	<Route path="tournaments" element={<Tournaments />} />
 	<Route path="admin" element={<Admin />} />
