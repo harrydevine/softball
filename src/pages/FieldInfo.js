@@ -1,61 +1,64 @@
 import React, { useState, useEffect } from "react";
 import {
-    Bullseye,
-    Card,
-    CardFooter,
-    CardHeader,
-    CardBody,
-    Flex,
-    FlexItem,
-    Label,
-    Level,
-    LevelItem,
-    List,
-    ListItem,
-    PageSection,
-    PageSectionVariants,
-    Spinner,
-    Tabs,
-    Tab,
-    TabContent,
-    TabContentBody,
-    TabTitleText,
-    Text,
-    Title
+  Bullseye,
+  Card,
+  CardFooter,
+  CardHeader,
+  CardBody,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  Flex,
+  FlexItem,
+  Label,
+  Level,
+  LevelItem,
+  List,
+  ListItem,
+  PageSection,
+  PageSectionVariants,
+  Spinner,
+  Tabs,
+  Tab,
+  TabContent,
+  TabContentBody,
+  TabTitleText,
+  Text,
+  Title
 } from '@patternfly/react-core';
 import SoftballGoogleMaps from './GoogleMaps';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import ArrowUpIcon from '@patternfly/react-icons/dist/js/icons/arrow-up-icon';
 import ArrowDownIcon from '@patternfly/react-icons/dist/js/icons/arrow-down-icon';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 const FieldInfo = ({ children }) => {
     const [activeTabKey, setActiveTabKey] = React.useState(0);
-    const [data, setData] = React.useState(null);
+    const [fieldData, setFieldData] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
 
     useEffect(() => {
       // Fetch data for Upcoming Meetings
-      fetch("http://softball-pi4:8081/fields")
+      fetch("http://192.168.1.21:8081/fields")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
-           setData(jsonResponse);
+           setFieldData(jsonResponse);
            setLoading(false);
-           console.log(jsonResponse);
         })
         .catch(err => {
-          setError(err); 
+          setError(err);
           setLoading(false);
-	});
+        });
      }, []);
-
+	
      /* Determine the field status and color for presentation */
      let count = 0;
      let fieldStatus = "Open";
      let statusColor = "green";
-     if (data?.length > 0) {
-       data.map((field) => {
-         if (field.status === "Closed") {
+     if (fieldData?.data.length > 0) {
+       fieldData.data.map((field) => {
+         if (field.fieldStatus === "Closed") {
            count++;
          }
        });
@@ -108,24 +111,24 @@ const FieldInfo = ({ children }) => {
                     <Spinner size="xl" />
                   </Bullseye>
                 )}
-                {Array.isArray(data) && data.map((field) => (
+                {Array.isArray(fieldData?.data) && fieldData?.data.map((field) => (
 	          <LevelItem key={field.id}>
 	            <Card>
-                      <CardHeader>Field {field.field}</CardHeader>
-                        {field.status === "Open" && (
+                      <CardHeader>Field {field.fieldNum}</CardHeader>
+                        {field.fieldStatus === "Open" && (
                           <CardBody>
 		            <ArrowUpIcon color="green" style={{ height: '50px' }} />
-			    {field.status}
+			    {field.fieldStatus}
                             <Text component="br" />
-                            {field.reason}				
+                            {field.fieldReason}				
                           </CardBody>
                         )}
-                        {field.status === "Closed" && (
+                        {field.fieldStatus === "Closed" && (
                           <CardBody>
                             <ArrowDownIcon color="red" style={{ height: '50px' }} />
-			    {field.status}
+			    {field.fieldStatus}
                             <Text component="br" />
-			    {field.reason}
+			    {field.fieldReason}
                           </CardBody>
                         )}
 	            </Card>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Bullseye,
   Card,
@@ -9,73 +9,65 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   DescriptionListDescription,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-  Flex,
-  FlexItem,
   Gallery,
   GalleryItem,
   Spinner,
   Title
 } from '@patternfly/react-core';
 
-class BoardMembers extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      loading: true,
-      error: false
-    };
-  }
+const BoardMembers = ({ children }) => {
+  const [boardData, setBoardData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
-  componentDidMount() {
-    this.fetchBoard();
-  }
+  useEffect(() => {
+  // Fetch data for Board Members
+    fetch(`http://192.168.1.21:8081/board`)
+      .then(async resp => {
+        const jsonResponse = await resp.json()
+        console.log(jsonResponse);
+        setBoardData(jsonResponse);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      })
+    }, []);
 
-  fetchBoard() {
-    this.setState({ loading: true });
-
-    // Fetch data for Upcoming Meetings
-    fetch(`http://softball-pi4:3000/board.json`)
-      .then(resp => resp.json())
-      .then(resp => this.setState({ data: resp, loading: false }))
-      .catch(err => this.setState({ error: err, loading: false }));
-  }
-
-  render() {
-    const {data, loading, error} = this.state;
-    console.log({data, loading, error});
-    return (
-	<div>
-	  <Gallery hasGutter>
-	  {data.map((board) => (
-	  <GalleryItem>
-              <Card isSelectable key={board.id}>
-  	      <CardTitle>
-  	        <Title headingLevel="h2" size="xl" className="board_member_title">{board.title}</Title>
-	      </CardTitle>
-	      <CardHeader className="board_member_name">{board.name}</CardHeader>
-	      <CardBody className="board_member_description">
-	        <DescriptionList>
-	          <DescriptionListGroup>
-	            <DescriptionListTerm>Phone</DescriptionListTerm>
-	            <DescriptionListDescription>{board.phone}</DescriptionListDescription>
-	          </DescriptionListGroup>
+  return (
+    <div>
+      {loading && (
+        <Bullseye>
+          <Spinner size="xl" />
+        </Bullseye>
+      )}
+      <Gallery hasGutter>
+        {boardData?.data.map((board) => (
+          <GalleryItem key={board.id}>
+            <Card isSelectable>
+              <CardTitle>
+                <Title headingLevel="h2" size="xl" className="board_member_title">{board.title}</Title>
+              </CardTitle>
+              <CardHeader className="board_member_name">{board.name}</CardHeader>
+              <CardBody className="board_member_description">
+                <DescriptionList>
                   <DescriptionListGroup>
-                    <DescriptionListTerm>Email Address</DescriptionListTerm>
-                    <DescriptionListDescription>{board.email}</DescriptionListDescription>
+                    <DescriptionListTerm>Phone</DescriptionListTerm>
+                    <DescriptionListDescription>{board.phone}</DescriptionListDescription>
                   </DescriptionListGroup>
-	        </DescriptionList>
-	      </CardBody>
-	    </Card>
+                  <DescriptionListGroup>
+                  <DescriptionListTerm>Email Address</DescriptionListTerm>
+                    <DescriptionListDescription>{board.email}</DescriptionListDescription>
+                   </DescriptionListGroup>
+                 </DescriptionList>
+              </CardBody>
+            </Card>
           </GalleryItem>
-	      ))}
+        ))}
       </Gallery>
-      </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default BoardMembers;
