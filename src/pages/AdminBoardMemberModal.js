@@ -73,12 +73,13 @@ class AdminBoardMemberModal extends React.Component{
       }));
     };
     this.handlePositionDropdownToggle = isPositionDropdownOpen => {
-      console.log("Hit handlePositionDropdownToggle");
+      console.log("isPositionDropdownOpen: ", isPositionDropdownOpen);
       this.setState({ isPositionDropdownOpen });
     };
     
     this.handlePositionDropdownSelect = (event, selection, isPlaceholder) => {
-      if (isPlaceholder) {
+        console.log("Hit handlePositionDropdownSelect ", selection);
+        if (isPlaceholder) {
         this.setState({ position: ""});
         this.setState({ isPositionDropdownOpen: false })
       }

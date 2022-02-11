@@ -55,7 +55,7 @@ class AdminBoardMemberTable extends React.Component {
 	    </Tr>
 	  </Thead>
           <Tbody>
-            {!loading && boardData?.data.length == 0 && (
+            {!loading && boardData?.data.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
