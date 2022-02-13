@@ -16,49 +16,48 @@ class AdminBoardMemberTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      boardData: [],
+      fieldData: [],
       loading: true,
       err: []
     };
   };
 
   componentDidMount() {
-    this.fetchBoardMembers();
+    this.fetchFieldInfo();
   }
 
-  // Fetch data for Upcoming Meetings
-  fetchBoardMembers() {
+  // Fetch field data
+  fetchFieldInfo() {
     this.setState({ loading: true });
 
-    fetch("http://192.168.1.21:8081/board")
+    fetch("http://192.168.1.21:8081/fields")
       .then(resp => resp.json())
-      .then(resp => this.setState({boardData: resp, loading: false}))
+      .then(resp => this.setState({fieldData: resp, loading: false}))
       .catch(err => this.setState({err: err, loading: false}));
   }
 
   render() {
-    const {boardData, loading, error} = this.state;
+    const {fieldData, loading, error} = this.state;
 
     return (
       <React.Fragment>
-        <TableComposable variant={TableVariant.default}  aria-label="Board Members Table">
+        <TableComposable variant={TableVariant.default}  aria-label="Fields Table">
           <Thead>
 	        <Tr>
-	          <Th width={25}>Name</Th>
-	          <Th width={25}>Title</Th>
-            <Th width={25}>Phone</Th>
-	          <Th width={25}>Email</Th>
+	          <Th width={20}>Field Number</Th>
+	          <Th width={30}>Field Status</Th>
+              <Th width={50}>Field Reason</Th>
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && boardData?.data.length === 0 && (
+            {!loading && fieldData?.data.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <EmptyStateIcon icon={SearchIcon} />
                       <Title headingLevel="h2" size="lg">
-                        No Board Member information retrieved!
+                        No Field information retrieved!
                       </Title>
                       <EmptyStateBody>
                         Check your network connection or contact the system administrator.
@@ -68,12 +67,11 @@ class AdminBoardMemberTable extends React.Component {
                 </Td>
               </Tr>
             )}
- 	          {!loading && boardData?.data.map(row => (
+ 	          {!loading && fieldData?.data.map(row => (
               <Tr key={row.id} isEditable>
-                <Td dataLabel="Name">{row.name}</Td>
-                <Td dataLabel="Title">{row.title}</Td>
-                <Td dataLabel="Phone">{row.phone}</Td>
-                <Td dataLabel="Email">{row.email}</Td>
+                <Td dataLabel="fieldNum">{row.fieldNum}</Td>
+                <Td dataLabel="fieldStatus">{row.fieldStatus}</Td>
+                <Td dataLabel="fieldReason">{row.fieldReason}</Td>
               </Tr>
             ))}
 	          {loading && (

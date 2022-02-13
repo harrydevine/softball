@@ -19,12 +19,27 @@ class AdminBoardMemberModal extends React.Component{
       super(props);
       this.state = {
         isModalOpen: false,
-        isPositionDropdownOpen: false,
+        isOpen: false,
+        selected: [],
         name: "",
         position: "",
         phone: "",
         email: ""
       };
+      this.positionDropdownItems = [
+        <SelectOption key={0} value="Select a Position" label="Select a Position" isPlaceholder />,
+        <SelectOption key={1} value="President" label="President" />,
+        <SelectOption key={2} value="Vice-President" label="Vice-President" />,
+        <SelectOption key={3} value="Treasurer" label="Treasurer" />,
+        <SelectOption key={4} value="Secretary" label="Secretary" />,
+        <SelectOption key={5} value="Equipment Maintenance" label="Equipment Maintenance"/>,
+        <SelectOption key={6} value="Field Maintenance" label="Field Maintenance" />,
+        <SelectOption key={7} value="Field Coordinator" label="Field Coordinator" />,
+        <SelectOption key={8} value="Stand Coordinator" label="Stand Coordinator" />,
+        <SelectOption key={9} value="Stand Scheduler" label="Stand Scheduler" />,
+        <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />
+      ];
+      
       this.handleModalToggle = () => {
         this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
@@ -34,12 +49,13 @@ class AdminBoardMemberModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-      
+        console.log(this.state.name, " ", this.state.position, " ", this.state.phone, " ", this.state.email);      
         /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
-//        .then(data => {
-//          console.log(data);
-//        });
+        addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
+          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
+        .then(data => {
+          console.log(data);
+        });
     
         /* Reset dialog fields for next time */
         this.setState({ name: "" });
@@ -47,24 +63,46 @@ class AdminBoardMemberModal extends React.Component{
         this.setState({ phone: "" });
         this.setState({ email: "" });
       };
-      this.handleBMCancel = () => {
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
+    this.handleBMCancel = () => {
+      console.log("Hit handleBMCancel....");
+      this.setState(({ isModalOpen}) => ({
+          isModalOpen: !isModalOpen
+        }));
       
-        /* Reset dialog fields for next time */
-        this.setState({ name: "" });
-        this.setState({ position: "" });
-        this.setState({ phone: "" });
-        this.setState({ email: "" });
-      };
-      this.onNameChange = newValue => {
+      /* Reset dialog fields for next time */
+      this.setState({ name: "" });
+      this.setState({ position: "" });
+      this.setState({ phone: "" });
+      this.setState({ email: "" });
+    };
+
+    async function addBoardMemberToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    };
+
+    this.onNameChange = newValue => {
+        console.log("New value for name: ", newValue)
         this.setState(({ name: newValue }));
     };
     this.onPhoneChange = newValue => {
+        console.log("New value for phone: ", newValue)
         this.setState(({ phone: newValue }));
     };
     this.onEmailChange = newValue => {
+        console.log("New value for email: ", newValue)
         this.setState(({ email: newValue }));
     };
     this.onEscapePress = () => {
@@ -72,40 +110,28 @@ class AdminBoardMemberModal extends React.Component{
         isPositionDropdownOpen: !isPositionDropdownOpen
       }));
     };
-    this.handlePositionDropdownToggle = isPositionDropdownOpen => {
-      console.log("isPositionDropdownOpen: ", isPositionDropdownOpen);
-      this.setState({ isPositionDropdownOpen });
+    this.onToggle = isOpen => {
+      console.log("isOpen: ", isOpen);
+      this.setState({ isOpen });
     };
     
-    this.handlePositionDropdownSelect = (event, selection, isPlaceholder) => {
+    this.onSelect = (event, selection, isPlaceholder) => {
         console.log("Hit handlePositionDropdownSelect ", selection);
         if (isPlaceholder) {
         this.setState({ position: ""});
-        this.setState({ isPositionDropdownOpen: false })
+        this.setState({ isOpen: false })
       }
       else {
+        console.log("New value for position: ", selection)
         this.setState({ position: selection});
-        this.setState({ isPositionDropdownOpen: false })
+        this.setState({ isOpen: false })
       }
     };
             
   }
 
   render() {
-    const { isModalOpen } = this.state;
-    const positionDropdownItems = [
-        <SelectOption key={0} value="Select a Position" isPlaceholder />,
-        <SelectOption key={1} value="President" />,
-        <SelectOption key={2} value="Vice-President" />,
-        <SelectOption key={3} value="Treasurer" />,
-        <SelectOption key={4} value="Secretary" />,
-        <SelectOption key={5} value="Equipment Maintenance" />,
-        <SelectOption key={6} value="Field Maintenance" />,
-        <SelectOption key={7} value="Field Coordinator" />,
-        <SelectOption key={8} value="Stand Coordinator" />,
-        <SelectOption key={9} value="Stand Scheduler" />,
-        <SelectOption key={10} value="Website Coordinator" />
-      ];
+    const { isModalOpen, isOpen, selected } = this.state;
     
     return (
       <React.Fragment>
@@ -157,7 +183,7 @@ class AdminBoardMemberModal extends React.Component{
                 id="add-boardmember-name"
                 name="add-boardmember-name"
                 value={this.name}
-                onChange={this.handleNameChange}
+                onChange={this.onNameChange}
               />
           </FormGroup>
           <FormGroup
@@ -186,15 +212,15 @@ class AdminBoardMemberModal extends React.Component{
             <Select
               variant={SelectVariant.single}
               aria-label="Select Position"
-              onToggle={this.handlePositionDropdownToggle}
-              onSelect={this.handlePostionDropdownSelect}
-              selections={this.position}
-              isOpen={this.isPositionDropdownOpen}
+              onToggle={this.onToggle}
+              onSelect={this.onSelect}
+              selections={selected}
+              isOpen={isOpen}
               aria-labelledby="select-boardmember-position-id"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
             >
-              {positionDropdownItems}
+                { this.positionDropdownItems }
             </Select>
           </FormGroup>
           <FormGroup
@@ -226,7 +252,7 @@ class AdminBoardMemberModal extends React.Component{
               id="modal-with-form-form-phone"
               name="modal-with-form-form-phone"
               value={this.phone}
-              onChange={this.handlePhoneChange}
+              onChange={this.onPhoneChange}
             />
           </FormGroup>
           <FormGroup
@@ -258,7 +284,7 @@ class AdminBoardMemberModal extends React.Component{
               id="modal-with-form-form-email"
               name="modal-with-form-form-email"
               value={this.email}
-              onChange={this.handleEmailChange}
+              onChange={this.onEmailChange}
             />
           </FormGroup>
         </Form>

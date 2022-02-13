@@ -7,58 +7,57 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   Spinner,
+  Text,
   Title
 } from '@patternfly/react-core';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
-class AdminBoardMemberTable extends React.Component {
+class AdminAdminsTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      boardData: [],
+      adminData: [],
       loading: true,
       err: []
     };
   };
 
   componentDidMount() {
-    this.fetchBoardMembers();
+    this.fetchAdmins();
   }
 
-  // Fetch data for Upcoming Meetings
-  fetchBoardMembers() {
+  // Fetch data for site admins
+  fetchAdmins() {
     this.setState({ loading: true });
 
-    fetch("http://192.168.1.21:8081/board")
+    fetch("http://192.168.1.21:8081/admins")
       .then(resp => resp.json())
-      .then(resp => this.setState({boardData: resp, loading: false}))
+      .then(resp => this.setState({adminData: resp, loading: false}))
       .catch(err => this.setState({err: err, loading: false}));
   }
 
   render() {
-    const {boardData, loading, error} = this.state;
+    const {adminData, loading, error} = this.state;
 
     return (
       <React.Fragment>
-        <TableComposable variant={TableVariant.default}  aria-label="Board Members Table">
+        <TableComposable variant={TableVariant.default}  aria-label="Admins Table">
           <Thead>
 	        <Tr>
-	          <Th width={25}>Name</Th>
-	          <Th width={25}>Title</Th>
-            <Th width={25}>Phone</Th>
-	          <Th width={25}>Email</Th>
+	          <Th width={50}>Name</Th>
+	          <Th width={50}>Password</Th>
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && boardData?.data.length === 0 && (
+            {!loading && adminData?.data.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <EmptyStateIcon icon={SearchIcon} />
                       <Title headingLevel="h2" size="lg">
-                        No Board Member information retrieved!
+                        No Admin information retrieved!
                       </Title>
                       <EmptyStateBody>
                         Check your network connection or contact the system administrator.
@@ -68,12 +67,10 @@ class AdminBoardMemberTable extends React.Component {
                 </Td>
               </Tr>
             )}
- 	          {!loading && boardData?.data.map(row => (
+ 	          {!loading && adminData?.data.map(row => (
               <Tr key={row.id} isEditable>
-                <Td dataLabel="Name">{row.name}</Td>
-                <Td dataLabel="Title">{row.title}</Td>
-                <Td dataLabel="Phone">{row.phone}</Td>
-                <Td dataLabel="Email">{row.email}</Td>
+                <Td dataLabel="name">{row.name}</Td>
+                <Td dataLabel="password"><Text component="b">******* (password obscured for security purposes) *******</Text></Td>
               </Tr>
             ))}
 	          {loading && (
@@ -92,5 +89,5 @@ class AdminBoardMemberTable extends React.Component {
   }
 }
 
-export default AdminBoardMemberTable;
+export default AdminAdminsTable;
 
