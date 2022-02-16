@@ -20,7 +20,6 @@ class AdminFieldsModal extends React.Component{
       this.state = {
         isModalOpen: false,
         isOpen: false,
-        selected: [],
         fieldNum: "",
         fieldReason: "",
         fieldStatus: ""
@@ -40,7 +39,7 @@ class AdminFieldsModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-        console.log(this.fieldNum, " ", this.fieldStatus, " ", this.fieldReason)      
+        console.log(this.state.fieldNum, " ", this.state.fieldStatus, " ", this.state.fieldReason)      
         /* Add Board Member to database...*/
 //        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
 //        .then(data => {
@@ -82,8 +81,8 @@ class AdminFieldsModal extends React.Component{
     };
     
     this.onSelect = (event, selection, isPlaceholder) => {
-        console.log("Hit onSelect ", selection);
-        if (isPlaceholder) {
+      console.log("Hit onSelect ", selection);
+      if (isPlaceholder) {
         this.setState({ fieldStatus: ""});
         this.setState({ isOpen: false })
       }
@@ -97,7 +96,7 @@ class AdminFieldsModal extends React.Component{
   }
 
   render() {
-    const { isModalOpen, isOpen, selected } = this.state;
+    const { isModalOpen, isOpen, fieldNum, fieldStatus, fieldReason } = this.state;
     
     return (
       <React.Fragment>
@@ -180,7 +179,7 @@ class AdminFieldsModal extends React.Component{
               aria-label="Select Field Status"
               onToggle={this.onToggle}
               onSelect={this.onSelect}
-              selections={selected}
+              selections={fieldStatus}
               isOpen={isOpen}
               aria-labelledby="select-field-status"
               direction={SelectDirection.down}

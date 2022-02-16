@@ -20,7 +20,6 @@ class AdminPlayerModal extends React.Component{
       this.state = {
         isModalOpen: false,
         isOpen: false,
-        selected: [],
         name: "",
         jersey: "",
         division: ""
@@ -44,7 +43,7 @@ class AdminPlayerModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-        console.log(this.name, " ", this.jersey, " ", this.division)      
+        console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)      
         /* Add Board Member to database...*/
 //        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
 //        .then(data => {
@@ -88,8 +87,8 @@ class AdminPlayerModal extends React.Component{
     this.onSelect = (event, selection, isPlaceholder) => {
         console.log("Hit onSelect ", selection);
         if (isPlaceholder) {
-        this.setState({ division: ""});
-        this.setState({ isOpen: false })
+          this.setState({ division: ""});
+          this.setState({ isOpen: false })
       }
       else {
         console.log("New value for division: ", selection)
@@ -101,7 +100,7 @@ class AdminPlayerModal extends React.Component{
   }
 
   render() {
-    const { isModalOpen, isOpen, selected } = this.state;
+    const { isModalOpen, isOpen, name, jersey, division } = this.state;
     
     return (
       <React.Fragment>
@@ -216,7 +215,7 @@ class AdminPlayerModal extends React.Component{
               aria-label="Select Division"
               onToggle={this.onToggle}
               onSelect={this.onSelect}
-              selections={selected}
+              selections={division}
               isOpen={isOpen}
               aria-labelledby="select-player-division-id"
               direction={SelectDirection.down}

@@ -27,11 +27,11 @@ function SoftballGoogleMaps(props) {
   return isLoaded ? (
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={props.center}
+        center={new window.google.maps.LatLng(props.lat, props.lng)}
         zoom={16}
         onLoad={onLoad}
         onUnmount={onUnmount}
-	mapTypeId={'satellite'}
+	      mapTypeId={'satellite'}
       >
         { /* Child components, such as markers, info windows, etc. */ }
         <></>

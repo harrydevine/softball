@@ -1,49 +1,66 @@
 import React from 'react';
 import {
-  Button,
+  Alert,
+  AlertActionCloseButton,
+  AlertVariant,
+  AlertGroup,
+  Card,
+  CardBody,
+  CardTitle,
   Flex,
   FlexItem,
-  Form,
-  FormGroup,
   Gallery,
   GalleryItem,
-  Modal,
-  ModalVariant,
   PageSection,
   PageSectionVariants,
-  Popover,
-  Radio,
-  Select,
-  SelectOption,
-  SelectVariant,
-  SelectDirection,
   Tabs,
   Tab,
   TabContent,
   TabContentBody,
   TabTitleText,
   Text,
-  TextInput,
   Title
 } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import AdminPlayersTable from './AdminPlayersTable';
 import AdminPlayerModal from './AdminPlayerModal';
+import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
 import AdminFieldsModal from './AdminFieldsModal';
 import AdminBoardMemberModal from './AdminBoardMemberModal';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
+import AdminLocalitiesTable from './AdminLocalitiesTable';
+import AdminLocalitiesModal from './AdminLocalitiesModal';
 import AdminAdminsTable from './AdminAdminsTable';
 import AdminAdminsModal from './AdminAdminsModal';
 
 const Admin = ({ children }) => {
 
   const [activeTabKey, setActiveTabKey] = React.useState(0);
+  const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(10);
+  const [alerts, setAlerts] = React.useState(null);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
   };
 
+  const handleTabClickSecondary = (event, tabIndex) => {
+    console.log("Secondary Tab Index =", tabIndex)
+    setActiveTabKeySecondary(tabIndex);
+  };
+
+  /*
+  const addAlert = (title, variant, key) => {
+    setAlerts({ ...alerts, {title: title, variant: variant, key}});
+  }
+
+  const removeAlert = (key) => {
+    setAlert({ ...alerts.filter(el => el.key !== key)});
+  }
+
+  const addSuccessAlert = (message) => { this.addAlert(message, 'success', getUniqueId())};
+  const addFailureAlert = (message) => { this.addAlert(message, 'danger', getUniqueId())};
+*/
   return (
     <div>
       <PageSection variant={PageSectionVariants.light} isWidthLimited>
@@ -116,13 +133,7 @@ const Admin = ({ children }) => {
               </TabContentBody>
             </TabContent>
             <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
-              <TabContentBody>
-                <Gallery hasGutter>
-                  <GalleryItem>
-                    Teams Info here!
-                  </GalleryItem>
-                </Gallery>
-              </TabContentBody>
+              <AdminTeams />
             </TabContent>
             <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
               <TabContentBody>
@@ -144,11 +155,11 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
               <TabContentBody>
-                <Gallery hasGutter>
-                  <GalleryItem>
-                    Localities Info here!
-                  </GalleryItem>
-                </Gallery>
+                <AdminLocalitiesModal />
+    	          <Text component="br" />
+      	        <Text component="br" />
+	              <Text component="hr" />
+                <AdminLocalitiesTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>

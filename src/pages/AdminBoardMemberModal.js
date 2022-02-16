@@ -10,7 +10,8 @@ import {
   SelectVariant,
   TextInput,
   Modal,
-  ModalVariant
+  ModalVariant,
+  getUniqueId
 } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
@@ -20,7 +21,6 @@ class AdminBoardMemberModal extends React.Component{
       this.state = {
         isModalOpen: false,
         isOpen: false,
-        selected: [],
         name: "",
         position: "",
         phone: "",
@@ -54,6 +54,14 @@ class AdminBoardMemberModal extends React.Component{
         addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
           { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
         .then(data => {
+/*
+          if (data.message === "Board Member added successfully") {
+            this.props.onSuccessAlert(data, 'success', getUniqueId());
+          }
+          else {
+            this.props.onFailureAlert(data, 'danger', getUniqueId());
+          }
+*/
           console.log(data);
         });
     
@@ -118,8 +126,8 @@ class AdminBoardMemberModal extends React.Component{
     this.onSelect = (event, selection, isPlaceholder) => {
         console.log("Hit handlePositionDropdownSelect ", selection);
         if (isPlaceholder) {
-        this.setState({ position: ""});
-        this.setState({ isOpen: false })
+          this.setState({ position: ""});
+          this.setState({ isOpen: false })
       }
       else {
         console.log("New value for position: ", selection)
@@ -127,12 +135,21 @@ class AdminBoardMemberModal extends React.Component{
         this.setState({ isOpen: false })
       }
     };
-            
+//    this.onSuccessAlert=this.addSuccessAlert.bind(this);
+//    this.onFailureAlert=this.addFailureAlert.bind(this);            
+  }
+/*
+  onSuccessAlert = (message) => {
+    this.props.onSuccessAlert(message);
   }
 
+  onFailureAlert = (message) => {
+    this.props.onFailureAlert(message);
+  }
+*/  
   render() {
-    const { isModalOpen, isOpen, selected } = this.state;
-    
+    const { isModalOpen, isOpen, name, position, phone, email } = this.state;
+
     return (
       <React.Fragment>
         <Button variant="primary" onClick={this.handleModalToggle}>Add Board Member</Button>{'  '}
@@ -214,7 +231,7 @@ class AdminBoardMemberModal extends React.Component{
               aria-label="Select Position"
               onToggle={this.onToggle}
               onSelect={this.onSelect}
-              selections={selected}
+              selections={position}
               isOpen={isOpen}
               aria-labelledby="select-boardmember-position-id"
               direction={SelectDirection.down}
