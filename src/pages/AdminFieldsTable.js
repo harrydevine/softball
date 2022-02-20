@@ -46,7 +46,7 @@ class AdminBoardMemberTable extends React.Component {
 	        <Tr>
 	          <Th width={20}>Field Number</Th>
 	          <Th width={30}>Field Status</Th>
-              <Th width={50}>Field Reason</Th>
+            <Th width={50}>Field Reason</Th>
 	        </Tr>
 	        </Thead>
           <Tbody>

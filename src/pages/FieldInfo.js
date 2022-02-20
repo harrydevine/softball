@@ -10,6 +10,8 @@ import {
   EmptyStateIcon,
   Flex,
   FlexItem,
+  Gallery,
+  GalleryItem,
   Label,
   Level,
   LevelItem,
@@ -24,7 +26,8 @@ import {
   TabContentBody,
   TabTitleText,
   Text,
-  Title
+  Title,
+  getUniqueId
 } from '@patternfly/react-core';
 import SoftballGoogleMaps from './GoogleMaps';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
@@ -159,29 +162,40 @@ const FieldInfo = ({ children }) => {
           </TabContent>
           <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
             <TabContentBody>
-	            <Flex direction={{ default: 'column' }}>
-	              <FlexItem>
+              <Gallery 
+                hasGutter
+                minWidths={{
+                  default: '100%',
+                  md: '100px',
+                  xl: '500px'
+                }}
+                maxWidths={{
+                  md: '750px',
+                  xl: '1fr'
+                }}              
+              >
                 {Array.isArray(localityData?.data) && localityData?.data.map((locality) => (
-	                <Card key={locality.id}>
-	                <CardHeader>
-	                  <Title headingLevel="h1" size="lg">{locality.name}</Title>
-	                </CardHeader>
-	                <CardBody>
-                    {locality.street}
-                    <Text component="br" />
-                    {locality.city}, {locality.state} {locality.zip}
-                    <Text component="br" />
-	                  <SoftballGoogleMaps lat={locality.lat} lng={locality.lng} />
-                    <Text component="br" />
-                    <Text component="br" />
-                    {locality.description}
-	                </CardBody>
-	                <CardFooter>
-	                </CardFooter>
-	                </Card>
-		            ))}
-	              </FlexItem>
-              </Flex>
+                <GalleryItem>
+                  <Card key={locality.id}>
+	                  <CardHeader>
+	                    <Title headingLevel="h1" size="lg">{locality.name}</Title>
+	                  </CardHeader>
+	                  <CardBody>
+                      {locality.street}
+                      <Text component="br" />
+                      {locality.city}, {locality.state} {locality.zip}
+                      <Text component="br" />
+	                    <SoftballGoogleMaps lat={locality.lat} lng={locality.lng} />
+                      <Text component="br" />
+                      <Text component="br" />
+                      {locality.description}
+	                  </CardBody>
+	                  <CardFooter>
+	                  </CardFooter>
+	                  </Card>
+                </GalleryItem>
+  	            ))}
+              </Gallery>
 	          </TabContentBody>
           </TabContent>
           <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>

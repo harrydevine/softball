@@ -43,7 +43,8 @@ class AdminPlayerModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-        console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)      
+        console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)  
+//        this.props.addSuccessAlert();    
         /* Add Board Member to database...*/
 //        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
 //        .then(data => {

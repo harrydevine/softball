@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   Button,
+  Bullseye,
   Card,
-  CardBody,
   Divider,
   Drawer,
   DrawerActions,
@@ -12,6 +12,10 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateVariant,
   Flex,
   FlexItem,
   Label,
@@ -22,20 +26,21 @@ import {
   SimpleList,
   SimpleListGroup,
   SimpleListItem,
-  Text,
-  TextContent,
-  TextInput,
+  Spinner,
   Title
 } from '@patternfly/react-core';
 import AdminTeamModal from './AdminTeamModal';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 class AdminTeams extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         isModalOpen: false,
+        teamData: [],
+        loading: true,
         drawerPanelBodyContent: "6U Team 1",
         activeItem: 0,
         isKebabDropdownOpen: false,
@@ -70,9 +75,22 @@ class AdminTeams extends React.Component {
 
     }
   
-    render() {
-      const { isModalOpen, drawerPanelBodyContent, selectedListItemId, activeItem, isExpanded } = this.state;
+    componentDidMount() {
+      this.fetchTeams();
+    }
   
+    // Fetch Player data
+    fetchTeams() {
+      this.setState({ loading: true });
+  
+      fetch("http://192.168.1.21:8081/teams")
+        .then(resp => resp.json())
+        .then(resp => this.setState({teamData: resp, loading: false}))
+        .catch(err => this.setState({err: err, loading: false}));
+    }
+  
+    render() {
+      const { teamData, loading, isModalOpen, drawerPanelBodyContent, selectedListItemId, activeItem, isExpanded } = this.state;
       const panelContent = (
         <DrawerPanelContent widths={'width_75'}>
           <DrawerHead>
@@ -124,34 +142,100 @@ class AdminTeams extends React.Component {
   
       const drawerContent = (
         <React.Fragment>
-          <SimpleList onSelect={this.onSelectListItem}>
-            <SimpleListGroup title="6U Division" id="list-division-6u">
-              <SimpleListItem key="team1-6u" id="team1-6u" isActive>
-                6U Team 1
-              </SimpleListItem>
-              <SimpleListItem key="team2-6u" id="team2-6u">
-                6U Team 2
-              </SimpleListItem>
-              <SimpleListItem key="team3-6u" id="team3-6u">
-                6U Team 3
-              </SimpleListItem>
-              <SimpleListItem key="team4-6u" id="team4-6u">
-                6U Team 4
-              </SimpleListItem>
+          {loading && (
+            <Bullseye>
+              <Spinner size="xl" />
+            </Bullseye>
+          )}
+          {!loading && teamData?.data.length === 0 && (
+            <Bullseye>
+              <EmptyState variant={EmptyStateVariant.small}>
+                <EmptyStateIcon icon={SearchIcon} />
+                <Title headingLevel="h2" size="lg">
+                  No Team information retrieved!
+                </Title>
+                <EmptyStateBody>
+                  Check your network connection or contact the system administrator.
+                </EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          )}
+          <SimpleList key="6u" className="teams-list" onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="6U" id="division6U">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "6U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
             </SimpleListGroup>
-            <SimpleListGroup title="8U Division" id="list-division-8u">
-              <SimpleListItem key="team1-8u" id="team1-8u">
-                8U Team 1
-              </SimpleListItem>
-              <SimpleListItem key="team2-8u" id="team2-8u">
-                8U Team 2
-              </SimpleListItem>
-              <SimpleListItem key="team3-8u" id="team3-8u">
-                8U Team 3
-              </SimpleListItem>
-              <SimpleListItem key="team4-8u" id="team4-8u">
-                8U Team 4
-              </SimpleListItem>
+          </SimpleList>
+          <SimpleList key="8u" className="teams-list"  onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="8U" id="division8U">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "8U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
+            </SimpleListGroup>
+          </SimpleList>
+          <SimpleList key="10u" className="teams-list"  onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="10U" id="division10U">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "10U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
+            </SimpleListGroup>
+          </SimpleList>
+          <SimpleList key="12u" className="teams-list"  onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="12U" id="division12U">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "12U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
+            </SimpleListGroup>
+          </SimpleList>
+          <SimpleList key="14u" className="teams-list"  onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="14U" id="division14U">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "14U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
+            </SimpleListGroup>
+          </SimpleList>
+          <SimpleList key="16u" onSelect={this.onSelectListItem}>
+            <SimpleListGroup title="16U" id="division16U" className="teams-list">
+          {!loading && teamData?.data
+            .filter(function (data) {
+              return data.division === "16U";
+            })
+            .map((row => (
+                <SimpleListItem key={row.teamName} id={row.id}>
+                  {row.teamName}
+                </SimpleListItem>
+          )))}
             </SimpleListGroup>
           </SimpleList>
         </React.Fragment>

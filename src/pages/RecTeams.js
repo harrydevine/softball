@@ -1,193 +1,439 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
+  Bullseye,
   Card,
   CardBody,
+  CardHeader,
   CardTitle,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateVariant,
   Flex,
   FlexItem,
+  Gallery,
+  Label,
   PageSection,
   PageSectionVariants,
   SimpleList,
   SimpleListItem,
+  Spinner,
   Tabs,
   Tab,
   TabContent,
-  TabContentBody,
   TabTitleText,
   Title
 } from '@patternfly/react-core';
+import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
+import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
 
 const RecTeams = ({ children }) => {
-
   const [activeTabKey, setActiveTabKey] = React.useState(0);
   const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(11);
+  const [teamData, setTeamData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  useEffect(() => {
+  // Fetch data for Rec Teams
+    fetch(`http://192.168.1.21:8081/teams`)
+      .then(async resp => {
+        const jsonResponse = await resp.json()
+        setTeamData(jsonResponse);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      })
+    }, []);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
   };
 
   const handleTabClickSecondary = (event, tabIndex) => {
+    console.log(tabIndex)
     setActiveTabKeySecondary(tabIndex);
   };
 
-//  render() {
-    return (
-      <div>
-        <PageSection variant={PageSectionVariants.light} isWidthLimited>
-	  <Flex
-	    spaceItems={{ default: 'spaceItemsMd' }}
-	    alignItems={{ default: 'alignItemsFlexStart' }}
-	    flexWrap={{ default: 'noWrap' }}
-	  >
-	    <FlexItem>
-	      <Title headingLevel="h1" size="2x1">
-	        EHT Recreation Teams
-	      </Title>
-	    </FlexItem>
-          </Flex>
-	</PageSection>
-	<PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited>
-	    <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams">
-              <Tab 
-	        eventKey={0} 
-	        title={<TabTitleText>6U</TabTitleText>}
-	        tabContentId={`tabContent${0}`}
-	      />
-              <Tab
-	        eventKey={1}
-	        title={<TabTitleText>8U</TabTitleText>}
-	        tabContentId={`tabContent${1}`}
-	      />
-              <Tab
-	        eventKey={2}
-	        title={<TabTitleText>10U</TabTitleText>}
-	        tabContentId={`tabContent${2}`}
-	      />
-              <Tab
-	        eventKey={3}
-	        title={<TabTitleText>12U</TabTitleText>}
-	        tabContentId={`tabContent${3}`}
-	      />
-              <Tab
-	        eventKey={4}
-	        title={<TabTitleText>14U</TabTitleText>}
-	        tabContentId={`tabContent${4}`}
-	      />
-              <Tab
-	        eventKey={5}
-	        title={<TabTitleText>16U</TabTitleText>}
-	        tabContentId={`tabContent${5}`}
-	      />
-	    </Tabs>
-	</PageSection>
-	<PageSection variant={PageSectionVariants.light} isWidthLimited>
-	    <Flex direction={{ default: 'column' }}>
+  return (
+    <div>
+      <PageSection variant={PageSectionVariants.light} isWidthLimited>
+  	  <Flex
+        spaceItems={{ default: 'spaceItemsMd' }}
+	      alignItems={{ default: 'alignItemsFlexStart' }}
+	      flexWrap={{ default: 'noWrap' }}
+	    >
 	      <FlexItem>
-	        <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
-                  <TabContentBody>6U Teams</TabContentBody>
-	        </TabContent>
+	        <Title headingLevel="h1" size="2x1">
+	          EHT Recreation Teams
+	        </Title>
 	      </FlexItem>
-              <FlexItem>
-                <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
-                    <Tabs
-                       isSecondary
-                       activeKey={activeTabKeySecondary}
-                       onSelect={handleTabClickSecondary}
-                       inset={{ default: 'insetNone' }}
-                       id="tabRecTeamsSecondary"
-                     >
-  	               <Tab
-                          eventKey={11}
-                          title={<TabTitleText>Naughton 8U</TabTitleText>}
-                          tabContentId={`tabContent${11}`}
-                        />
-                        <Tab
-                          eventKey={12}
-                          title={<TabTitleText>Rago 8U</TabTitleText>}
-                          tabContentId={`tabContent${12}`}
-                        />
-                     </Tabs>
-                     <TabContent
-                       key={11}
-                       eventKey={11}
-                       id={`tabContent${11}`}
-                       activeKey={activeTabKeySecondary}
-                       hidden={11 !== activeTabKeySecondary}
-                      >
-                        <TabContentBody>
-                          <Card>
-                            <CardTitle>Coach: Christina Naughton</CardTitle>
-                            <CardBody>
-                              <SimpleList aria-label="listNaughton8u">
-                                <SimpleListItem>Phone Number: (609) xxx-yyyy</SimpleListItem>
-                                <SimpleListItem>Email: team1@example.com</SimpleListItem>
-                              </SimpleList>
-                            </CardBody>
-                          </Card>
-                          <Card>
-                            <CardTitle>Roster</CardTitle>
-                            <CardBody>
-                              <SimpleList aria-label="listNaughton8uRoster">
-                                <SimpleListItem>1 - Player 1</SimpleListItem>
-                                <SimpleListItem>2 - Player 2</SimpleListItem>
-                                <SimpleListItem>10 - Player 3</SimpleListItem>
-                                <SimpleListItem>12 - Player 4</SimpleListItem>
-                                <SimpleListItem>25 - Player 5</SimpleListItem>
-                              </SimpleList>
-                            </CardBody>
-                          </Card>
-                    </TabContentBody>
-                  </TabContent>
-                  <TabContent
-                     key={12}
-                     eventKey={12}
-                     id={`tabContent${12}`}
-                     activeKey={activeTabKeySecondary}
-                     hidden={12 !== activeTabKeySecondary}
-                   >
-                     <TabContentBody>
-                       <Card>
-                         <CardTitle>Coach: Kristi Rago</CardTitle>
-                         <CardBody>
-                           <SimpleList aria-label="listRago8u">
-                             <SimpleListItem>Phone Number: (609) xxx-yyyy</SimpleListItem>
-                             <SimpleListItem>Email: team2@example.com</SimpleListItem>
-                           </SimpleList>
-                         </CardBody>
-                       </Card>
-                       <Card>
-                         <CardTitle>Roster</CardTitle>
-                         <CardBody>
-                           <SimpleList aria-label="listRag8uRoster">
-                             <SimpleListItem>3 - Player 1</SimpleListItem>
-                             <SimpleListItem>5 - Player 2</SimpleListItem>
-                             <SimpleListItem>15 - Player 3</SimpleListItem>
-                             <SimpleListItem>22 - Player 4</SimpleListItem>
-                             <SimpleListItem>99 - Player 5</SimpleListItem>
-                            </SimpleList>
-                          </CardBody>
-                         </Card>
-                        </TabContentBody>
-                      </TabContent>
-                  </TabContent>
+      </Flex>
+	    </PageSection>
+	    <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited>
+	      <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams" isBox>
+          <Tab 
+	          eventKey={0} 
+	          title={<TabTitleText>6U</TabTitleText>}
+	          tabContentId={`tabContent${0}`}
+	        />
+            <Tab
+	            eventKey={1}
+	            title={<TabTitleText>8U</TabTitleText>}
+	            tabContentId={`tabContent${1}`}
+	          />
+            <Tab
+	            eventKey={2}
+	            title={<TabTitleText>10U</TabTitleText>}
+	            tabContentId={`tabContent${2}`}
+	          />
+            <Tab
+	            eventKey={3}
+	            title={<TabTitleText>12U</TabTitleText>}
+	            tabContentId={`tabContent${3}`}
+	          />
+            <Tab
+	            eventKey={4}
+	            title={<TabTitleText>14U</TabTitleText>}
+	            tabContentId={`tabContent${4}`}
+	          />
+            <Tab
+	            eventKey={5}
+	            title={<TabTitleText>16U</TabTitleText>}
+	            tabContentId={`tabContent${5}`}
+	          />
+	        </Tabs>
+	    </PageSection>
+	    <PageSection variant={PageSectionVariants.light} isWidthLimited>
+	      <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
+          {loading && (
+            <Bullseye>
+              <Spinner size="xl" />
+            </Bullseye>
+          )}
+          {!loading && teamData?.data.length === 0 && (
+            <Bullseye>
+              <EmptyState variant={EmptyStateVariant.small}>
+                <EmptyStateIcon icon={SearchIcon} />
+                  <Title headingLevel="h2" size="lg">
+                    No Team information retrieved!
+                  </Title>
+                <EmptyStateBody>
+                  Check your network connection or contact the system administrator.
+                </EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          )}
+          <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+            {!loading && teamData?.data
+              .filter(function (data) {
+                return data.division === "6U";
+              })
+              .map((row => (
+                <Card key={row.id}>
+                  <CardHeader>
+                    <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                  </CardHeader>
+                  <CardTitle>Coach: {row.coach}</CardTitle>
+                    <CardBody>
+                      <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                        <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                        <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                      </SimpleList>
+                      <Title headingLevel="h2" size="lg">Roster</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                          <Thead>
+                            <Tr>
+                              <Th width={50}>Name</Th>
+                              <Th width={50}>Jersey Number</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                          </Tbody>
+                        </TableComposable>
+                    </CardBody>
+                  </Card>
+                )))}
+              </Gallery></>
+	        </TabContent>
+          <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
+            {loading && (
+              <Bullseye>
+                <Spinner size="xl" />
+              </Bullseye>
+            )}
+            {!loading && teamData?.data.length === 0 && (
+              <Bullseye>
+                <EmptyState variant={EmptyStateVariant.small}>
+                  <EmptyStateIcon icon={SearchIcon} />
+                    <Title headingLevel="h2" size="lg">
+                      No Team information retrieved!
+                    </Title>
+                  <EmptyStateBody>
+                    Check your network connection or contact the system administrator.
+                  </EmptyStateBody>
+                </EmptyState>
+              </Bullseye>
+            )}
+                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    {!loading && teamData?.data
+                    .filter(function (data) {
+                      return data.division === "8U";
+                    })
+                    .map((row => (
+                      <Card key={row.id}>
+                        <CardHeader>
+                        <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                        </CardHeader>
+                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardBody>
+                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                          </SimpleList>
+                          <Title headingLevel="h2" size="lg">Roster</Title>
+                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th width={50}>Name</Th>
+                                  <Th width={50}>Jersey Number</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                              </Tbody>
+                            </TableComposable>
+                        </CardBody>
+                      </Card>
+                    )))}
+                  </Gallery></>
+            </TabContent>
                 <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
-                  <TabContentBody>10U Teams</TabContentBody>
+                  {loading && (
+                      <Bullseye>
+                        <Spinner size="xl" />
+                      </Bullseye>
+                    )}
+                    {!loading && teamData?.data.length === 0 && (
+                      <Bullseye>
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={SearchIcon} />
+                            <Title headingLevel="h2" size="lg">
+                              No Team information retrieved!
+                           </Title>
+                         <EmptyStateBody>
+                           Check your network connection or contact the system administrator.
+                         </EmptyStateBody>
+                        </EmptyState>
+                     </Bullseye>
+                    )}
+                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    {!loading && teamData?.data
+                    .filter(function (data) {
+                      return data.division === "10U";
+                    })
+                    .map((row => (
+                      <Card key={row.id}>
+                        <CardHeader>
+                        <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                        </CardHeader>
+                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardBody>
+                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                          </SimpleList>
+                          <Title headingLevel="h2" size="lg">Roster</Title>
+                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th width={50}>Name</Th>
+                                  <Th width={50}>Jersey Number</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                <Tr key="player1">
+                                  <Td dataLabel="player1Name">Amanda D</Td>
+                                  <Td dataLabel="player1Jersey">2</Td>
+                                </Tr>
+                                <Tr key="player2">
+                                  <Td dataLabel="player1Name">Kasey C</Td>
+                                  <Td dataLabel="player1Jersey">9</Td>
+                                </Tr>
+                              </Tbody>
+                            </TableComposable>
+                        </CardBody>
+                      </Card>
+                    )))}
+                  </Gallery></>
                 </TabContent>
                 <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
-                  <TabContentBody>12U Teams</TabContentBody>
+                {loading && (
+                      <Bullseye>
+                        <Spinner size="xl" />
+                      </Bullseye>
+                    )}
+                    {!loading && teamData?.data.length === 0 && (
+                      <Bullseye>
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={SearchIcon} />
+                            <Title headingLevel="h2" size="lg">
+                              No Team information retrieved!
+                           </Title>
+                         <EmptyStateBody>
+                           Check your network connection or contact the system administrator.
+                         </EmptyStateBody>
+                        </EmptyState>
+                     </Bullseye>
+                    )}
+                    {!loading && teamData?.data
+                    .filter(function (data) {
+                      return data.division === "12U";
+                    })
+                    .map((row => (
+                      <>
+                      <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                      <Card key={row.id}>
+                        <CardHeader>
+                          <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                        </CardHeader>
+                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardBody>
+                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                          </SimpleList>
+                          <Title headingLevel="h2" size="lg">Roster</Title>
+                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th width={50}>Name</Th>
+                                  <Th width={50}>Jersey Number</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                <Tr key="player1">
+                                  <Td dataLabel="player1Name">Amanda D</Td>
+                                  <Td dataLabel="player1Jersey">2</Td>
+                                </Tr>
+                                <Tr key="player2">
+                                  <Td dataLabel="player1Name">Kasey C</Td>
+                                  <Td dataLabel="player1Jersey">9</Td>
+                                </Tr>
+                              </Tbody>
+                            </TableComposable>
+                        </CardBody>
+                      </Card>
+                      </Gallery></>
+                    )))}
                 </TabContent>
                 <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
-                  <TabContentBody>14U Teams</TabContentBody>
+                {loading && (
+                      <Bullseye>
+                        <Spinner size="xl" />
+                      </Bullseye>
+                    )}
+                    {!loading && teamData?.data.length === 0 && (
+                      <Bullseye>
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={SearchIcon} />
+                            <Title headingLevel="h2" size="lg">
+                              No Team information retrieved!
+                           </Title>
+                         <EmptyStateBody>
+                           Check your network connection or contact the system administrator.
+                         </EmptyStateBody>
+                        </EmptyState>
+                     </Bullseye>
+                    )}
+                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    {!loading && teamData?.data
+                    .filter(function (data) {
+                      return data.division === "14U";
+                    })
+                    .map((row => (
+                      <Card key={row.id}>
+                        <CardHeader>
+                          <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                        </CardHeader>
+                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardBody>
+                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                          </SimpleList>
+                          <Title headingLevel="h2" size="lg">Roster</Title>
+                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th width={50}>Name</Th>
+                                  <Th width={50}>Jersey Number</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                              </Tbody>
+                            </TableComposable>
+                        </CardBody>
+                      </Card>
+                    )))}
+                  </Gallery></>
                 </TabContent>
-                <TabContent key={5} eventKey={4} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
-                  <TabContentBody>16U Teams</TabContentBody>
+                <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
+                {loading && (
+                      <Bullseye>
+                        <Spinner size="xl" />
+                      </Bullseye>
+                    )}
+                    {!loading && teamData?.data.length === 0 && (
+                      <Bullseye>
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={SearchIcon} />
+                            <Title headingLevel="h2" size="lg">
+                              No Team information retrieved!
+                           </Title>
+                         <EmptyStateBody>
+                           Check your network connection or contact the system administrator.
+                         </EmptyStateBody>
+                        </EmptyState>
+                     </Bullseye>
+                    )}
+                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    {!loading && teamData?.data
+                    .filter(function (data) {
+                      return data.division === "16U";
+                    })
+                    .map((row => (
+                      <Card key={row.id}>
+                        <CardHeader>
+                          <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
+                        </CardHeader>
+                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardBody>
+                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                          </SimpleList>
+                          <Title headingLevel="h2" size="lg">Roster</Title>
+                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th width={50}>Name</Th>
+                                  <Th width={50}>Jersey Number</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                              </Tbody>
+                            </TableComposable>
+                        </CardBody>
+                      </Card>
+                    )))}
+                  </Gallery></>
                 </TabContent>
-	      </FlexItem>
-	    </Flex>
-	</PageSection>
-      </div>
-    );
-//  }
+    	</PageSection>
+    </div>
+  );
 }
 
 export default RecTeams;

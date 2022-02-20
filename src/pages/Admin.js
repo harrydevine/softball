@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Alert,
   AlertActionCloseButton,
@@ -23,44 +23,42 @@ import {
 } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import AdminPlayersTable from './AdminPlayersTable';
-import AdminPlayerModal from './AdminPlayerModal';
 import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
 import AdminFieldsModal from './AdminFieldsModal';
-import AdminBoardMemberModal from './AdminBoardMemberModal';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
 import AdminLocalitiesTable from './AdminLocalitiesTable';
 import AdminLocalitiesModal from './AdminLocalitiesModal';
 import AdminAdminsTable from './AdminAdminsTable';
 import AdminAdminsModal from './AdminAdminsModal';
 
+const config = require('./config.js');
+
 const Admin = ({ children }) => {
 
   const [activeTabKey, setActiveTabKey] = React.useState(0);
   const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(10);
-  const [alerts, setAlerts] = React.useState(null);
+//  const [body, setBody] = React.useState("");
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
   };
 
   const handleTabClickSecondary = (event, tabIndex) => {
-    console.log("Secondary Tab Index =", tabIndex)
     setActiveTabKeySecondary(tabIndex);
   };
 
-  /*
-  const addAlert = (title, variant, key) => {
-    setAlerts({ ...alerts, {title: title, variant: variant, key}});
-  }
-
-  const removeAlert = (key) => {
-    setAlert({ ...alerts.filter(el => el.key !== key)});
-  }
-
-  const addSuccessAlert = (message) => { this.addAlert(message, 'success', getUniqueId())};
-  const addFailureAlert = (message) => { this.addAlert(message, 'danger', getUniqueId())};
-*/
+/*  useEffect(() => {
+    // Fetch data for Players
+    fetch(`http://192.168.1.21:${config.serverPort}/user`, {
+    })
+    .then(response => response.json())
+    .then(response => this.setState(
+    {
+      body: response
+    }))
+  }, []);
+*/  
   return (
     <div>
       <PageSection variant={PageSectionVariants.light} isWidthLimited>
@@ -124,13 +122,7 @@ const Admin = ({ children }) => {
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
             <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
-              <TabContentBody>
-                <AdminPlayerModal />
-    	          <Text component="br" />
-      	        <Text component="br" />
-	              <Text component="hr" />
 	              <AdminPlayersTable />
-              </TabContentBody>
             </TabContent>
             <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
               <AdminTeams />
@@ -164,10 +156,6 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
               <TabContentBody>
-                <AdminBoardMemberModal />
-    	          <Text component="br" />
-      	        <Text component="br" />
-	              <Text component="hr" />
                 <AdminBoardMemberTable />
               </TabContentBody>
             </TabContent>

@@ -39,6 +39,12 @@ class AdminLogin extends React.Component {
       this.setState({ passwordValue });
     };
 
+//    this.onLoginButtonClick = (event) => {
+//      event.preventDefault();
+//      login().then(() => {
+//        navigate("/admin");
+//      });
+
 //    const navigate = useNavigate();
 //    const { login } = useAuth();
 //    let navigate = useNavigate();

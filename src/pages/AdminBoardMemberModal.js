@@ -49,21 +49,22 @@ class AdminBoardMemberModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-        console.log(this.state.name, " ", this.state.position, " ", this.state.phone, " ", this.state.email);      
+        console.log(this.state.name, " ", this.state.position, " ", this.state.phone, " ", this.state.email);  
+        this.props.setBoardMemberAdded(true);
+//        this.props.addSuccessAlert();    
         /* Add Board Member to database...*/
-        addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
-          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
-        .then(data => {
-/*
-          if (data.message === "Board Member added successfully") {
-            this.props.onSuccessAlert(data, 'success', getUniqueId());
-          }
-          else {
-            this.props.onFailureAlert(data, 'danger', getUniqueId());
-          }
-*/
-          console.log(data);
-        });
+//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
+//          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
+//        .then(data => {
+//          if (data.message === "Board Member added successfully") {
+//            this.props.setBoardMemberAdded(true);
+//            this.props.onSuccessAlert(data, 'success', getUniqueId());
+//          }
+//          else {
+//            this.props.onFailureAlert(data, 'danger', getUniqueId());
+//          }
+//          console.log(data);
+//        });
     
         /* Reset dialog fields for next time */
         this.setState({ name: "" });
