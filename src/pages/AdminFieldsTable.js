@@ -7,8 +7,10 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   Spinner,
+  Text,
   Title
 } from '@patternfly/react-core';
+import AdminFieldsModal from './AdminFieldsModal';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
@@ -41,6 +43,10 @@ class AdminBoardMemberTable extends React.Component {
 
     return (
       <React.Fragment>
+        <AdminFieldsModal />
+        <Text component="br" />
+        <Text component="br" />
+        <Text component="hr" />
         <TableComposable variant={TableVariant.default}  aria-label="Fields Table">
           <Thead>
 	        <Tr>

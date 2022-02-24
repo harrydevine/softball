@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Banner,
   Bullseye,
@@ -12,9 +12,43 @@ import {
 } from '@patternfly/react-core';
 import { Thead, TableComposable, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 
-class BoardMinutes extends React.Component {
+const BoardMinutes = ({ children }) => {
+//  class BoardMinutes extends React.Component {
+  const [mtgData, setMtgData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [err, setErr] = React.useState(null);
+  const [minutesData, setMinutesData] = React.useState(null);
+  const [minutesLoading, setMinutesLoading] = React.useState(true);
+  const [minutesErr, setMinutesErr] = React.useState(null);
 
-  constructor(props) {
+  useEffect(() => {
+    // Fetch data for Board Meetings
+    fetch(`http://192.168.1.21:8081/boardmtg`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setMtgData(jsonResponse);
+      setLoading(false);
+    })
+    .catch(err => {
+      setErr(err);
+      setLoading(false);
+    })
+  }, []);
+
+  useEffect(() => {
+    fetch(`http://softball-pi4:3000/minutes.json`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setMinutesData(jsonResponse);
+      setMinutesLoading(false);
+    })
+    .catch(err => {
+      setMinutesErr(err);
+      setMinutesLoading(false);
+    })
+  }, []);
+
+/*  constructor(props) {
     super(props);
     this.state = {
       upRes: [],
@@ -52,7 +86,7 @@ class BoardMinutes extends React.Component {
   render() {
     const {upRes, upLoading, upErr, upError} = this.state;
     const {mtgRes, mtgLoading, mtgErr, mtgError} = this.state;
-
+*/
     return (
       <React.Fragment>
         <div>
@@ -75,13 +109,13 @@ class BoardMinutes extends React.Component {
               </Tr>
             </Thead>
             <Tbody>
-              {!upLoading && upRes.map(post => (
-                <Tr key={post.id}>
-                  <Td dataLabel="Date">{post.date}</Td>
-                  <Td dataLabel="Time">{post.time}</Td>
+              {!loading && mtgData?.data.map(row => (
+                <Tr key={row.id}>
+                  <Td dataLabel="Date">{row.date}</Td>
+                  <Td dataLabel="Time">{row.time}</Td>
                 </Tr>
               ))}
-              {upLoading && (
+              {loading && (
                 <Tr>
                   <Td colSpan={2}>
                     <Bullseye>
@@ -90,7 +124,7 @@ class BoardMinutes extends React.Component {
                   </Td>
                 </Tr>
               )}
-              {upErr && (
+              {!loading && mtgData?.data.length === 0 && (
                 <Tr>
                   <Td colSpan={2}>
                     <EmptyState variant={EmptyStateVariant.small}>
@@ -118,16 +152,16 @@ class BoardMinutes extends React.Component {
               </Tr>
             </Thead>
             <Tbody>
-              {!mtgLoading && mtgRes.map(post => (
+              {!minutesLoading && minutesData.map(post => (
                 <Tr key={post.id}>
                   <Td dataLabel="Date">{post.date}</Td>
-                    <Td dataLabel="Minutes">
-		      {post.link && (<a href={`${post.link}`} target="_blank">Minutes for {post.date}</a>)}
-		      {!post.link && `No minutes exist for ${post.date}`}
-		    </Td>
+                  <Td dataLabel="Minutes">
+		                {post.link && (<a href={`${post.link}`} target="_blank" rel="noreferrer">Minutes for {post.date}</a>)}
+		                {!post.link && `No minutes exist for ${post.date}`}
+		              </Td>
                 </Tr>
               ))}
-              {mtgLoading && (
+              {minutesLoading && (
                 <Tr>
                   <Td colSpan={2}>
                     <Bullseye>
@@ -136,26 +170,26 @@ class BoardMinutes extends React.Component {
                   </Td>
                 </Tr>
               )}
-              {mtgErr && (
+              {minutesErr && (
                 <Tr>
                   <Td colSpan={2}>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <Title headingLevel="h2" size="lg">
-		        Unable to connect
-		      </Title>
-		      <EmptyStateBody>
-		        There was an error retrieving data.  Check your connection and reload the page.
-		      </EmptyStateBody>
+		                    Unable to connect
+		                  </Title>
+		                  <EmptyStateBody>
+		                    There was an error retrieving data.  Check your connection and reload the page.
+		                  </EmptyStateBody>
                     </EmptyState>
                   </Td>
                 </Tr>
               )}
-	    </Tbody>
+	          </Tbody>
           </TableComposable>
         </div>
       </React.Fragment>
     );
-  }
+//  }
 }
 
 export default BoardMinutes;

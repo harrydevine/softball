@@ -25,10 +25,11 @@ import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import AdminPlayersTable from './AdminPlayersTable';
 import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
-import AdminFieldsModal from './AdminFieldsModal';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
+import AdminBoardMeetingTable from './AdminBoardMeetingTable';
 import AdminLocalitiesTable from './AdminLocalitiesTable';
 import AdminLocalitiesModal from './AdminLocalitiesModal';
+import AdminTournamentsTable from './AdminTournamentsTable';
 import AdminAdminsTable from './AdminAdminsTable';
 import AdminAdminsModal from './AdminAdminsModal';
 
@@ -61,20 +62,20 @@ const Admin = ({ children }) => {
 */  
   return (
     <div>
-      <PageSection variant={PageSectionVariants.light} isWidthLimited>
+      <PageSection variant={PageSectionVariants.light} isWidthLimited key="section1">
         <Flex
           spaceItems={{ default: 'spaceItemsMd' }}
           alignItems={{ default: 'alignItemsFlexStart' }}
           flexWrap={{ default: 'noWrap' }}
         >
-          <FlexItem>
+          <FlexItem key="admin_heading">
             <Title headingLevel="h1" size="2x1">
               EHT Softball - Admin Functions
             </Title>
           </FlexItem>
         </Flex>
       </PageSection>
-      <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited>
+      <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited key="section2">
           <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabAdminFunctions">
             <Tab
               eventKey={0}
@@ -116,11 +117,16 @@ const Admin = ({ children }) => {
               title={<TabTitleText>Admin Users</TabTitleText>}
               tabContentId={`tabContent${7}`}
             />
+            <Tab
+              eventKey={8}
+              title={<TabTitleText>Latest News</TabTitleText>}
+              tabContentId={`tabContent${8}`}
+            />
 	  </Tabs>
       </PageSection>
-      <PageSection variant={PageSectionVariants.light} isWidthLimited>
-        <Flex direction={{ default: 'column' }}>
-          <FlexItem>
+      <PageSection variant={PageSectionVariants.light} isWidthLimited key="section3">
+        <Flex direction={{ default: 'column' }} key="adminTabsMainFlex">
+          <FlexItem key="adminTabs">
             <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
 	              <AdminPlayersTable />
             </TabContent>
@@ -129,20 +135,12 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
               <TabContentBody>
-                <AdminFieldsModal />
-	              <Text component="br" />
-	              <Text component="br" />
-      	        <Text component="hr" />
                 <AdminFieldsTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
               <TabContentBody>
-                <Gallery hasGutter>
-                  <GalleryItem>
-                    Tournament Info here!
-                  </GalleryItem>
-                </Gallery>
+                <AdminTournamentsTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
@@ -161,11 +159,7 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={6} eventKey={6} id={`tabContent${6}`} activeKey={activeTabKey} hidden={6 !== activeTabKey}>
               <TabContentBody>
-                <Gallery hasGutter>
-                  <GalleryItem>
-                    Board Meeting/Minutes Info here!
-                  </GalleryItem>
-                </Gallery>
+                <AdminBoardMeetingTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={7} eventKey={7} id={`tabContent${7}`} activeKey={activeTabKey} hidden={7 !== activeTabKey}>
@@ -175,6 +169,11 @@ const Admin = ({ children }) => {
       	        <Text component="br" />
 	              <Text component="hr" />
                 <AdminAdminsTable />
+              </TabContentBody>
+            </TabContent>
+            <TabContent key={8} eventKey={8} id={`tabContent${8}`} activeKey={activeTabKey} hidden={8 !== activeTabKey}>
+              <TabContentBody>
+                Announcements and Latest News!
               </TabContentBody>
             </TabContent>
 	  </FlexItem>

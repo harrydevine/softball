@@ -30,7 +30,6 @@ import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-i
 
 const RecTeams = ({ children }) => {
   const [activeTabKey, setActiveTabKey] = React.useState(0);
-  const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(11);
   const [teamData, setTeamData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
@@ -53,14 +52,9 @@ const RecTeams = ({ children }) => {
     setActiveTabKey(tabIndex);
   };
 
-  const handleTabClickSecondary = (event, tabIndex) => {
-    console.log(tabIndex)
-    setActiveTabKeySecondary(tabIndex);
-  };
-
   return (
     <div>
-      <PageSection variant={PageSectionVariants.light} isWidthLimited>
+      <PageSection variant={PageSectionVariants.light} isWidthLimited key="pageSectionHeading">
   	  <Flex
         spaceItems={{ default: 'spaceItemsMd' }}
 	      alignItems={{ default: 'alignItemsFlexStart' }}
@@ -73,7 +67,7 @@ const RecTeams = ({ children }) => {
 	      </FlexItem>
       </Flex>
 	    </PageSection>
-	    <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited>
+	    <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited key="pageSectionTabs">
 	      <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams" isBox>
           <Tab 
 	          eventKey={0} 
@@ -107,7 +101,7 @@ const RecTeams = ({ children }) => {
 	          />
 	        </Tabs>
 	    </PageSection>
-	    <PageSection variant={PageSectionVariants.light} isWidthLimited>
+	    <PageSection variant={PageSectionVariants.light} isWidthLimited key="pageSectionTeamTabs">
 	      <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
           {loading && (
             <Bullseye>
@@ -127,7 +121,8 @@ const RecTeams = ({ children }) => {
               </EmptyState>
             </Bullseye>
           )}
-          <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+          <React.Fragment key="6u_teams">
+            <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
             {!loading && teamData?.data
               .filter(function (data) {
                 return data.division === "6U";
@@ -139,7 +134,7 @@ const RecTeams = ({ children }) => {
                   </CardHeader>
                   <CardTitle>Coach: {row.coach}</CardTitle>
                     <CardBody>
-                      <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                      <SimpleList aria-label="{row.teamName}">
                         <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                         <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                       </SimpleList>
@@ -157,7 +152,8 @@ const RecTeams = ({ children }) => {
                     </CardBody>
                   </Card>
                 )))}
-              </Gallery></>
+              </Gallery>
+              </React.Fragment>
 	        </TabContent>
           <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
             {loading && (
@@ -178,7 +174,8 @@ const RecTeams = ({ children }) => {
                 </EmptyState>
               </Bullseye>
             )}
-                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    <React.Fragment key="8u_teams">
+                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "8U";
@@ -190,7 +187,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                          <SimpleList aria-label={row.teamName}>
                             <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                             <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                           </SimpleList>
@@ -208,7 +205,8 @@ const RecTeams = ({ children }) => {
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery></>
+                  </Gallery>
+                  </React.Fragment>
             </TabContent>
                 <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
                   {loading && (
@@ -229,7 +227,8 @@ const RecTeams = ({ children }) => {
                         </EmptyState>
                      </Bullseye>
                     )}
-                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    <React.Fragment key="10u_teams">
+                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "10U";
@@ -241,7 +240,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                          <SimpleList aria-label={row.teamName}>
                             <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                             <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                           </SimpleList>
@@ -254,11 +253,11 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                                <Tr key="player1">
+                                <Tr>
                                   <Td dataLabel="player1Name">Amanda D</Td>
                                   <Td dataLabel="player1Jersey">2</Td>
                                 </Tr>
-                                <Tr key="player2">
+                                <Tr>
                                   <Td dataLabel="player1Name">Kasey C</Td>
                                   <Td dataLabel="player1Jersey">9</Td>
                                 </Tr>
@@ -267,7 +266,8 @@ const RecTeams = ({ children }) => {
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery></>
+                  </Gallery>
+                  </React.Fragment>
                 </TabContent>
                 <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
                 {loading && (
@@ -288,20 +288,20 @@ const RecTeams = ({ children }) => {
                         </EmptyState>
                      </Bullseye>
                     )}
+                    <React.Fragment key="12u_teams">
+                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }} >
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "12U";
                     })
                     .map((row => (
-                      <>
-                      <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                       <Card key={row.id}>
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                          <SimpleList aria-label={row.teamName}>
                             <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                             <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                           </SimpleList>
@@ -314,11 +314,11 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                                <Tr key="player1">
+                                <Tr>
                                   <Td dataLabel="player1Name">Amanda D</Td>
                                   <Td dataLabel="player1Jersey">2</Td>
                                 </Tr>
-                                <Tr key="player2">
+                                <Tr>
                                   <Td dataLabel="player1Name">Kasey C</Td>
                                   <Td dataLabel="player1Jersey">9</Td>
                                 </Tr>
@@ -326,8 +326,9 @@ const RecTeams = ({ children }) => {
                             </TableComposable>
                         </CardBody>
                       </Card>
-                      </Gallery></>
                     )))}
+                    </Gallery>
+                    </React.Fragment>
                 </TabContent>
                 <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
                 {loading && (
@@ -348,7 +349,8 @@ const RecTeams = ({ children }) => {
                         </EmptyState>
                      </Bullseye>
                     )}
-                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    <React.Fragment key="14u_teams"
+                    ><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }} >
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "14U";
@@ -360,7 +362,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                          <SimpleList aria-label={row.teamName}>
                             <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                             <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                           </SimpleList>
@@ -378,7 +380,8 @@ const RecTeams = ({ children }) => {
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery></>
+                  </Gallery>
+                  </React.Fragment>
                 </TabContent>
                 <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
                 {loading && (
@@ -399,7 +402,8 @@ const RecTeams = ({ children }) => {
                         </EmptyState>
                      </Bullseye>
                     )}
-                    <><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                    <React.Fragment>
+                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "16U";
@@ -411,7 +415,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName} key={row.teamName + row.division}>
+                          <SimpleList aria-label={row.teamName}>
                             <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
                             <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
                           </SimpleList>
@@ -429,7 +433,8 @@ const RecTeams = ({ children }) => {
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery></>
+                  </Gallery>
+                  </React.Fragment>
                 </TabContent>
     	</PageSection>
     </div>

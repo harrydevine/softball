@@ -52,7 +52,6 @@ const AdminBoardMemberTable = ({ children }) => {
     fetch(`http://192.168.1.21:8081/board`)
       .then(async resp => {
         const jsonResponse = await resp.json()
-        console.log(jsonResponse);
         setBoardData(jsonResponse);
         setBoardMemberAdded(false);
         setLoading(false);

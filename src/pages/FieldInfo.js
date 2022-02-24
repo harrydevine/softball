@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Bullseye,
   Card,
   CardFooter,
   CardHeader,
   CardBody,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
   Flex,
   FlexItem,
   Gallery,
@@ -15,8 +12,6 @@ import {
   Label,
   Level,
   LevelItem,
-  List,
-  ListItem,
   PageSection,
   PageSectionVariants,
   Spinner,
@@ -26,14 +21,12 @@ import {
   TabContentBody,
   TabTitleText,
   Text,
-  Title,
-  getUniqueId
+  Title
 } from '@patternfly/react-core';
 import SoftballGoogleMaps from './GoogleMaps';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import ArrowUpIcon from '@patternfly/react-icons/dist/js/icons/arrow-up-icon';
 import ArrowDownIcon from '@patternfly/react-icons/dist/js/icons/arrow-down-icon';
-import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 const FieldInfo = ({ children }) => {
     const [activeTabKey, setActiveTabKey] = React.useState(0);
@@ -131,7 +124,7 @@ const FieldInfo = ({ children }) => {
                 )}
                 {Array.isArray(fieldData?.data) && fieldData?.data.map((field) => (
 	                <LevelItem key={field.id}>
-	                  <Card>
+	                  <Card key={"field"+field.fieldNum}>
                     <CardHeader>Field {field.fieldNum}</CardHeader>
                       {field.fieldStatus === "Open" && (
                       <CardBody>
@@ -175,7 +168,7 @@ const FieldInfo = ({ children }) => {
                 }}              
               >
                 {Array.isArray(localityData?.data) && localityData?.data.map((locality) => (
-                <GalleryItem>
+                <GalleryItem key={"locality"+locality.id}>
                   <Card key={locality.id}>
 	                  <CardHeader>
 	                    <Title headingLevel="h1" size="lg">{locality.name}</Title>
