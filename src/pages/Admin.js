@@ -39,7 +39,6 @@ const Admin = ({ children }) => {
 
   const [activeTabKey, setActiveTabKey] = React.useState(0);
   const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(10);
-//  const [body, setBody] = React.useState("");
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
@@ -49,17 +48,6 @@ const Admin = ({ children }) => {
     setActiveTabKeySecondary(tabIndex);
   };
 
-/*  useEffect(() => {
-    // Fetch data for Players
-    fetch(`http://192.168.1.21:${config.serverPort}/user`, {
-    })
-    .then(response => response.json())
-    .then(response => this.setState(
-    {
-      body: response
-    }))
-  }, []);
-*/  
   return (
     <div>
       <PageSection variant={PageSectionVariants.light} isWidthLimited key="section1">

@@ -69,7 +69,7 @@ const FieldInfo = ({ children }) => {
      let statusColor = "green";
      if (fieldData?.data.length > 0) {
        fieldData.data.map((field) => {
-         if (field.fieldStatus === "Closed") {
+         if (field.fieldStatus === 0) {
            count++;
          }
        });
@@ -126,18 +126,18 @@ const FieldInfo = ({ children }) => {
 	                <LevelItem key={field.id}>
 	                  <Card key={"field"+field.fieldNum}>
                     <CardHeader>Field {field.fieldNum}</CardHeader>
-                      {field.fieldStatus === "Open" && (
+                      {field.fieldStatus === 1 && (
                       <CardBody>
 		                    <ArrowUpIcon color="green" style={{ height: '50px' }} />
-			                    {field.fieldStatus}
+			                    Open
                           <Text component="br" />
                             {field.fieldReason}				
                       </CardBody>
                       )}
-                      {field.fieldStatus === "Closed" && (
+                      {field.fieldStatus === 0 && (
                       <CardBody>
                         <ArrowDownIcon color="red" style={{ height: '50px' }} />
-			                  {field.fieldStatus}
+			                  Closed
                         <Text component="br" />
 			                  {field.fieldReason}
                       </CardBody>

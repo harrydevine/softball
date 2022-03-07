@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  Alert,
-  AlertGroup,
-  AlertVariant,
-  AlertActionCloseButton,
   Bullseye,
-  Button,
   EmptyState,
   EmptyStateVariant,
   EmptyStateBody,
@@ -17,6 +12,14 @@ import {
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import AdminBoardMemberModal from './AdminBoardMemberModal';
+import BoardMemberEditTableRow from './BoardMemberEditTableRow';
+
+export const columnNames = {
+  bmName: "Name",
+  bmTitle: "Title",
+  bmPhone: "Phone",
+  bmEmail: "Email"
+}
 
 //class AdminBoardMemberTable extends React.Component {
 const AdminBoardMemberTable = ({ children }) => {
@@ -25,75 +28,30 @@ const AdminBoardMemberTable = ({ children }) => {
   const [err, setErr] = React.useState(null);
   const [boardMemberAdded, setBoardMemberAdded] = React.useState(false);
 
-  //  constructor(props) {
-//    super(props);
-//    this.state = {
-//      boardData: [],
-//      loading: true,
-//      alerts: [],
-//    };
-//  };
-
-//  componentDidMount() {
-//    this.fetchBoardMembers();
-//  }
-
-  // Fetch data for Upcoming Meetings
-//  fetchBoardMembers() {
-//    this.setState({ loading: true });
-
-//    fetch("http://192.168.1.21:8081/board")
-//      .then(resp => resp.json())
-//      .then(resp => this.setState({boardData: resp, loading: false}))
-//      .catch(err => this.setState({err: err, loading: false}));
-//  }
   useEffect(() => {
   // Fetch data for Board Members
-    fetch(`http://192.168.1.21:8081/board`)
-      .then(async resp => {
-        const jsonResponse = await resp.json()
-        setBoardData(jsonResponse);
-        setBoardMemberAdded(false);
-        setLoading(false);
-      })
-      .catch(err => {
-        setErr(err);
-        setLoading(false);
-      })
-    }, []);
+    fetchBoard();
+    setBoardMemberAdded(false);
+  }, []);
 
     useEffect(() => {
       // Fetch data for Board Members when new member added
-        fetch(`http://192.168.1.21:8081/board`)
-          .then(async resp => {
-            const jsonResponse = await resp.json()
-            console.log("Modal set added to ", boardMemberAdded);
-            setBoardData(jsonResponse);
-            setBoardMemberAdded(false);
-            setLoading(false);
-          })
-          .catch(err => {
-            setErr(err);
-            setLoading(false);
-          })
-        }, [boardMemberAdded]);
-/*        
-    const addAlerts = (incomingAlerts) => {
-      this.setState({ alerts: [...this.state.alerts, ...incomingAlerts] });
-    };
-    const getUniqueId = () =>(
-      (String.fromCharCode(65 + Math.floor(Math.random() * 26)) + Date.now())
-    );
-    const addSuccessAlert = () => {
-      addAlerts([{ title: "Board Member added successfully", variant: 'success', key: getUniqueId() }])
-    };
-    const addFailureAlert = () => {
-      addAlerts([{ title: "Error adding Board Member", variant: 'danger', key: getUniqueId() }])
-    };
-    this.removeAlert = key => {
-      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)] });
-    };
-*/    
+      fetchBoard();
+    }, [boardMemberAdded]);
+
+  const fetchBoard = () => {
+    fetch(`http://192.168.1.21:8081/board`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setBoardData(jsonResponse);
+      setLoading(false);
+    })
+    .catch(err => {
+      setErr(err);
+      setLoading(false);
+    })
+
+  }
     return (
       <div>
         <React.Fragment>
@@ -104,10 +62,10 @@ const AdminBoardMemberTable = ({ children }) => {
           <TableComposable variant={TableVariant.default}  aria-label="Board Members Table">
             <Thead>
 	          <Tr>
-	            <Th width={25}>Name</Th>
-	            <Th width={25}>Title</Th>
-              <Th width={25}>Phone</Th>
-  	          <Th width={25}>Email</Th>
+              <Th width={25}>{columnNames.bmName}</Th>
+              <Th width={25}>{columnNames.bmTitle}</Th>
+              <Th width={25}>{columnNames.bmPhone}</Th>
+              <Th width={25}>{columnNames.bmEmail}</Th>
 	          </Tr>
 	          </Thead>
             <Tbody>
@@ -129,12 +87,11 @@ const AdminBoardMemberTable = ({ children }) => {
                 </Tr>
               )}
  	            {!loading && boardData?.data.map(row => (
-                <Tr key={row.id} isEditable>
-                  <Td dataLabel="Name">{row.name}</Td>
-                  <Td dataLabel="Title">{row.title}</Td>
-                  <Td dataLabel="Phone">{row.phone}</Td>
-                  <Td dataLabel="Email">{row.email}</Td>
-                </Tr>
+                <BoardMemberEditTableRow
+                  key={row.id}
+                  currentRow={row}
+                  fetchBoard={fetchBoard}
+                />
               ))}
 	            {loading && (
                 <Tr>

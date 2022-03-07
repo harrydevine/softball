@@ -64,9 +64,9 @@ const AdminTeams = () => {
     .then(async resp => {
       const jsonResponse = await resp.json()
       setPlayerData(jsonResponse);
-      console.log(jsonResponse?.data.filter(function (data) {
-        return data.playerName;
-        }));
+//      console.log(jsonResponse?.data.filter(function (data) {
+//        return data.playerName;
+//        }));
       setPlayerLoading(false);
     })
     .catch(err => {

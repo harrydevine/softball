@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   Form,
   FormGroup,
@@ -22,8 +26,29 @@ class AdminFieldsModal extends React.Component{
         isOpen: false,
         fieldNum: "",
         fieldReason: "",
-        fieldStatus: ""
+        fieldStatus: 0,
+        alerts: []
       };
+
+      this.addAlert = (title, variant, key) => {
+        this.setState({
+          alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+        });
+      };
+      this.removeAlert = key => {
+        this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+      };
+
+      this.getUniqueId = () => (new Date().getTime());
+
+      this.addSuccessAlert = () => { 
+        this.addAlert('Field Added successfully', 'success', this.getUniqueId());
+      };
+      
+      this.addFailureAlert = () => { 
+        this.addAlert('Field NOT Added successfully', 'danger', this.getUniqueId()) 
+      };
+
       this.statusDropdownItems = [
         <SelectOption key={0} value="Select a Status" isPlaceholder />,
         <SelectOption key={1} value="Open" />,
@@ -35,46 +60,58 @@ class AdminFieldsModal extends React.Component{
           isModalOpen: !isModalOpen
         }));
       };
-      this.handleFieldAdd = () => {
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
-        console.log(this.state.fieldNum, " ", this.state.fieldStatus, " ", this.state.fieldReason)      
-        /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
-//        .then(data => {
-//          console.log(data);
-//        });
+
+    this.handleFieldAdd = () => {
+      this.setState(({ isModalOpen}) => ({
+          isModalOpen: !isModalOpen
+      }));
+      console.log(this.state.fieldNum, " ", this.state.fieldStatus, " ", this.state.fieldReason)      
+      /* Add Board Member to database...*/
+      addNewFieldToDatabase('http://192.168.1.21:8081/fields', { fieldNum: this.state.fieldNum, fieldStatus: this.state.fieldStatus, fieldReason: this.state.fieldReason })
+      .then(data => {
+        if (data.message === "Error while creating Fields Info") {
+          this.addFailureAlert();
+        }
+        else {
+          this.props.setFieldAdded(true);
+          this.addSuccessAlert();
+        }
+      });
     
-        /* Reset dialog fields for next time */
-        this.setState({ fieldNum: "" });
-        this.setState({ fieldStatus: "" });
-        this.setState({ fieldReason: "" });
-      };
-      this.handleFieldCancel = () => {
-        console.log("Hit handleFieldCancel....")
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
+      /* Reset dialog fields for next time */
+      this.setState({ fieldNum: "" });
+      this.setState({ fieldStatus: 0 });
+      this.setState({ fieldReason: "" });
+    };
+
+    this.handleFieldCancel = () => {
+      console.log("Hit handleFieldCancel....")
+      this.setState(({ isModalOpen}) => ({
+          isModalOpen: !isModalOpen
+        }));
       
-        /* Reset dialog fields for next time */
-        this.setState({ fieldNum: "" });
-        this.setState({ fieldStatus: "" });
-        this.setState({ fieldReason: "" });
-      };
+      /* Reset dialog fields for next time */
+      this.setState({ fieldNum: "" });
+      this.setState({ fieldStatus: 0 });
+      this.setState({ fieldReason: "" });
+    };
+
     this.onFieldNumChange = newValue => {
         console.log("New value for fieldNum: ", newValue)
         this.setState(({ fieldNum: newValue }));
     };
+
     this.onFieldReasonChange = newValue => {
-        console.log("New value for fieldReason: ", newValue)
-        this.setState(({ fieldReason: newValue }));
+      console.log("New value for fieldReason: ", newValue)
+      this.setState(({ fieldReason: newValue }));
     };
+
     this.onEscapePress = () => {
       this.setState(({ isOpen }) => ({
         isOpen: !isOpen
       }));
     };
+
     this.onToggle = isOpen => {
       console.log("isOpen: ", isOpen);
       this.setState({ isOpen });
@@ -83,23 +120,59 @@ class AdminFieldsModal extends React.Component{
     this.onSelect = (event, selection, isPlaceholder) => {
       console.log("Hit onSelect ", selection);
       if (isPlaceholder) {
-        this.setState({ fieldStatus: ""});
+        this.setState({ fieldStatus: 0});
         this.setState({ isOpen: false })
       }
       else {
         console.log("New value for fieldStatus: ", selection)
-        this.setState({ fieldStatus: selection});
+        let status = 0;
+        if (selection === "Open")
+          status = 1;
+        this.setState({ fieldStatus: status});
         this.setState({ isOpen: false })
       }
+    };
+
+    async function addNewFieldToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
     };
             
   }
 
   render() {
-    const { isModalOpen, isOpen, fieldNum, fieldStatus, fieldReason } = this.state;
+    const { isModalOpen, isOpen, fieldNum, fieldStatus, fieldReason, alerts } = this.state;
     
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Field</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}

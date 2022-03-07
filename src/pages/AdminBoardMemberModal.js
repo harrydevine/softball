@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   Form,
   FormGroup,
@@ -10,8 +14,7 @@ import {
   SelectVariant,
   TextInput,
   Modal,
-  ModalVariant,
-  getUniqueId
+  ModalVariant
 } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
@@ -24,8 +27,29 @@ class AdminBoardMemberModal extends React.Component{
         name: "",
         position: "",
         phone: "",
-        email: ""
+        email: "",
+        alerts: []
       };
+
+      this.addAlert = (title, variant, key) => {
+        this.setState({
+          alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+        });
+      };
+      this.removeAlert = key => {
+        this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+      };
+
+      this.getUniqueId = () => (new Date().getTime());
+
+      this.addSuccessAlert = () => { 
+        this.addAlert('Board Member Added successfully', 'success', this.getUniqueId());
+      };
+      
+      this.addFailureAlert = () => { 
+        this.addAlert('Board Member Added unsuccessfully', 'danger', this.getUniqueId()) 
+      };
+
       this.positionDropdownItems = [
         <SelectOption key={0} value="Select a Position" label="Select a Position" isPlaceholder />,
         <SelectOption key={1} value="President" label="President" />,
@@ -39,7 +63,7 @@ class AdminBoardMemberModal extends React.Component{
         <SelectOption key={9} value="Stand Scheduler" label="Stand Scheduler" />,
         <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />
       ];
-      
+
       this.handleModalToggle = () => {
         this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
@@ -49,34 +73,32 @@ class AdminBoardMemberModal extends React.Component{
         this.setState(({ isModalOpen}) => ({
             isModalOpen: !isModalOpen
           }));
-        console.log(this.state.name, " ", this.state.position, " ", this.state.phone, " ", this.state.email);  
-        this.props.setBoardMemberAdded(true);
-//        this.props.addSuccessAlert();    
         /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
-//          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
-//        .then(data => {
-//          if (data.message === "Board Member added successfully") {
-//            this.props.setBoardMemberAdded(true);
-//            this.props.onSuccessAlert(data, 'success', getUniqueId());
-//          }
-//          else {
-//            this.props.onFailureAlert(data, 'danger', getUniqueId());
-//          }
-//          console.log(data);
-//        });
+        addBoardMemberToDatabase('http://192.168.1.21:8081/board', 
+          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
+        .then(data => {
+          if (data.message === "Board Member created successfully") {
+            this.props.setBoardMemberAdded(true);
+            this.addSuccessAlert();
+          }
+          else {
+            this.props.setBoardMemberAdded(false);
+            this.addFailureAlert();
+          }
+        });
     
         /* Reset dialog fields for next time */
         this.setState({ name: "" });
         this.setState({ position: "" });
         this.setState({ phone: "" });
         this.setState({ email: "" });
+
       };
+
     this.handleBMCancel = () => {
-      console.log("Hit handleBMCancel....");
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
-        }));
+      }));
       
       /* Reset dialog fields for next time */
       this.setState({ name: "" });
@@ -103,15 +125,12 @@ class AdminBoardMemberModal extends React.Component{
     };
 
     this.onNameChange = newValue => {
-        console.log("New value for name: ", newValue)
         this.setState(({ name: newValue }));
     };
     this.onPhoneChange = newValue => {
-        console.log("New value for phone: ", newValue)
         this.setState(({ phone: newValue }));
     };
     this.onEmailChange = newValue => {
-        console.log("New value for email: ", newValue)
         this.setState(({ email: newValue }));
     };
     this.onEscapePress = () => {
@@ -120,39 +139,42 @@ class AdminBoardMemberModal extends React.Component{
       }));
     };
     this.onToggle = isOpen => {
-      console.log("isOpen: ", isOpen);
       this.setState({ isOpen });
     };
     
     this.onSelect = (event, selection, isPlaceholder) => {
-        console.log("Hit handlePositionDropdownSelect ", selection);
         if (isPlaceholder) {
           this.setState({ position: ""});
           this.setState({ isOpen: false })
       }
       else {
-        console.log("New value for position: ", selection)
         this.setState({ position: selection});
         this.setState({ isOpen: false })
       }
     };
-//    this.onSuccessAlert=this.addSuccessAlert.bind(this);
-//    this.onFailureAlert=this.addFailureAlert.bind(this);            
-  }
-/*
-  onSuccessAlert = (message) => {
-    this.props.onSuccessAlert(message);
   }
 
-  onFailureAlert = (message) => {
-    this.props.onFailureAlert(message);
-  }
-*/  
   render() {
     const { isModalOpen, isOpen, name, position, phone, email } = this.state;
 
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add Board Member</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}
