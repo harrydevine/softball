@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import {
+  Alert, 
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Bullseye,
-  Button,
   EmptyState,
   EmptyStateVariant,
   EmptyStateBody,
@@ -26,6 +29,25 @@ const AdminFieldsTable = ({ children }) => {
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
   const [fieldAdded, setFieldAdded] = React.useState(false);
+  const [alerts, setAlerts] = React.useState([]);
+
+  const addAlert = (title, variant, key) => {
+    setAlerts([ ...alerts, {title: title, variant: variant, key }]);
+  };
+
+  const removeAlert = key => {
+    setAlerts([...alerts.filter(el => el.key !== key)]);
+  };
+
+  const getUniqueId = () => (new Date().getTime());
+
+  const addSuccessAlert = ( string ) => { 
+    addAlert(string, 'success', getUniqueId());
+  };
+      
+  const addFailureAlert = ( string ) => { 
+    addAlert(string, 'danger', getUniqueId()) 
+  };
 
   useEffect(() => {
   // Fetch data for Board Members
@@ -54,7 +76,20 @@ const AdminFieldsTable = ({ children }) => {
 
   return (
     <React.Fragment>
-      <AdminFieldsModal setFieldAdded={setFieldAdded} />
+      <AlertGroup isToast isLiveRegion>
+        {alerts.map(({ key, variant, title }) => (
+          <Alert
+            variant={AlertVariant[variant]}
+            title={title}
+            timeout={5000}
+            actionClose={<AlertActionCloseButton
+              title={title}
+              variantLabel={`variant} alert`}
+              onClose={() => removeAlert(key)} />}
+            key={key} />
+        ))}
+      </AlertGroup>
+      <AdminFieldsModal setFieldAdded={setFieldAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
@@ -89,6 +124,8 @@ const AdminFieldsTable = ({ children }) => {
                key={row.id}
                currentField={row}
                fetchFieldInfo={fetchFieldInfo}
+               addSuccessAlert={addSuccessAlert} 
+               addFailureAlert={addFailureAlert}
              />
           ))}
          {loading && (

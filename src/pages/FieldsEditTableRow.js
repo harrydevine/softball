@@ -1,9 +1,5 @@
 import * as React from 'react';
 import { 
-  Alert, 
-  AlertGroup,
-  AlertActionCloseButton,
-  AlertVariant,
   Button, 
   TextInput, 
   Switch
@@ -18,32 +14,13 @@ import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
 const FieldsEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentField, fetchFieldInfo, loading } = props;
+  const {key, currentField, fetchFieldInfo, addSuccessAlert, addFailureAlert } = props;
   const [editedFieldNum, setEditedFieldNum] = React.useState(currentField.fieldNum);
   const [editedFieldStatus, setEditedFieldStatus] = React.useState(currentField.fieldStatus);
   const [editedFieldReason, setEditedFieldReason] = React.useState(currentField.fieldReason);
-  const [alerts, setAlerts] = React.useState([]);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  const addAlert = (title, variant, key) => {
-    setAlerts([ ...alerts, {title: title, variant: variant, key }]);
-  };
-
-  const removeAlert = key => {
-    setAlerts([...alerts.filter(el => el.key !== key)]);
-  };
-
-  const getUniqueId = () => (new Date().getTime());
-
-  const addSuccessAlert = ( string ) => { 
-    addAlert(string, 'success', getUniqueId());
-  };
-      
-  const addFailureAlert = ( string ) => { 
-    addAlert(string, 'danger', getUniqueId()) 
-  };
-
-  async function updateFieldInfoInDatabase (url = '', data = {}) {
+    async function updateFieldInfoInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -92,7 +69,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   }
 
   const removeFieldInfo = async (id) => {
-//      setIsEditMode(false);
+      setIsEditMode(false);
       removeFieldInfoInDatabase('http://192.168.1.21:8081/fields/'+ id, {})
       .then(data => {
         if (data.message === "Field Info deleted successfully") {
@@ -106,22 +83,18 @@ const FieldsEditTableRow = ({ children, ...props }) => {
       });
   }
 
+  const handleYes = () => {
+    removeFieldInfo(currentField.id);
+    setConfirmDlgOpen(false);
+  }
+
+  const handleNo = () => {
+    setConfirmDlgOpen(false);
+  }
+
   return (
     <React.Fragment>
-      <ConfirmDialog title={"Are you sure you want to delete this field?"} isModalOpen={isConfirmDlgOpen}/>
-      <AlertGroup isToast isLiveRegion>
-        {alerts.map(({ key, variant, title }) => (
-          <Alert
-            variant={AlertVariant[variant]}
-            title={title}
-            timeout={5000}
-            actionClose={<AlertActionCloseButton
-              title={title}
-              variantLabel={`variant} alert`}
-              onClose={() => removeAlert(key)} />}
-            key={key} />
-        ))}
-      </AlertGroup>
+      <ConfirmDialog title={"Are you sure you want to delete this field?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
         <Td dataLabel={columnNames.fieldNum}>
           {isEditMode ? (
@@ -182,8 +155,6 @@ const FieldsEditTableRow = ({ children, ...props }) => {
                 iconPosition="right"
                 onClick={() => {
                   setConfirmDlgOpen(true);
-        //                  removeFieldInfo(currentField.id);
-//                  console.log("In remove field logic....")
                 }}
               >
                 Remove
