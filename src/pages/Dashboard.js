@@ -96,7 +96,7 @@ const Dashboard = ({ children }) => {
           </Bullseye>
         )}
         {!newsLoading && newsData?.data.map(row => (
-        <Card isSelectable key="latest_news_card">
+        <Card isSelectable key={row.id}>
           <CardTitle><u>{row.title}</u></CardTitle>
           <CardBody>
             <Linkify tagName="p" options={{ target: "_blank" }}>

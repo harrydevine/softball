@@ -17,9 +17,11 @@ import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
 import AdminBoardMeetingTable from './AdminBoardMeetingTable';
+import AdminBoardMinutesTable from './AdminBoardMinutesTable';
 import AdminLocalitiesTable from './AdminLocalitiesTable';
 import AdminTournamentsTable from './AdminTournamentsTable';
 import AdminAdminsTable from './AdminAdminsTable';
+import AdminLatestNewsTable from './AdminLatestNewsTable';
 import AdminAdminsModal from './AdminAdminsModal';
 //import { MultipleFileUploadBasic } from './MultipleFileUploadBasic';
 
@@ -143,12 +145,12 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={6} eventKey={6} id={`tabContent${6}`} activeKey={activeTabKey} hidden={6 !== activeTabKey}>
               <TabContentBody>
-                <AdminBoardMeetingTable />
+              <AdminBoardMeetingTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={7} eventKey={7} id={`tabContent${7}`} activeKey={activeTabKey} hidden={7 !== activeTabKey}>
               <TabContentBody>
-                Board Meeting Minutes (Dates and Upload)!
+              <AdminBoardMinutesTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={8} eventKey={8} id={`tabContent${8}`} activeKey={activeTabKey} hidden={8 !== activeTabKey}>
@@ -162,7 +164,7 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={9} eventKey={9} id={`tabContent${9}`} activeKey={activeTabKey} hidden={9 !== activeTabKey}>
               <TabContentBody>
-                Announcements and Latest News!
+              <AdminLatestNewsTable />
               </TabContentBody>
             </TabContent>
             <TabContent key={10} eventKey={10} id={`tabContent${10}`} activeKey={activeTabKey} hidden={10 !== activeTabKey}>

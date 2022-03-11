@@ -2,24 +2,24 @@ import * as React from 'react';
 import { 
   Button, 
   DatePicker,
-  TimePicker
+  TextInput
 } from '@patternfly/react-core';
 import { Tr, Td } from '@patternfly/react-table';
-import { columnNames } from './AdminBoardMeetingTable';
+import { columnNames } from './AdminBoardMinutesTable';
 import ConfirmDialog from './ConfirmDialog';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const BoardMeetingEditTableRow = ({ children, ...props }) => {
+const BoardMinutesEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentRow, fetchMeetings, addSuccessAlert, addFailureAlert } = props;
+  const {key, currentRow, fetchMinutes, addSuccessAlert, addFailureAlert } = props;
   const [editedDate, setEditedDate] = React.useState(currentRow.date);
-  const [editedTime, setEditedTime] = React.useState(currentRow.time);
+  const [editedMinutes, setEditedMinutes] = React.useState(currentRow.minutes);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateMeetingInfoInDatabase (url = '', data = {}) {
+  async function updateMinutesInfoInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -36,7 +36,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removeMeetingInfoInDatabase (url = '', data = {}) {
+  async function removeMinutesInfoInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'DELETE',
       mode: 'cors',
@@ -53,39 +53,39 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updateMeetingInfo = (id) => {
-    updateMeetingInfoInDatabase('http://192.168.1.21:8081/boardmtg/'+ id, { date: editedDate, time: editedTime })      
+  const updateMinutesInfo = (id) => {
+    updateMinutesInfoInDatabase('http://192.168.1.21:8081/minutes/'+ id, { date: editedDate, minutes: editedMinutes })      
     .then(data => {
-      if (data.message === "Board Meeting info updated successfully") {
-        addSuccessAlert("Board Meeting info updated successfully");
-        fetchMeetings();
+      if (data.message === "Board Minutes info updated successfully") {
+        addSuccessAlert("Board Minutes info updated successfully");
+        fetchMinutes();
       }
       else {
-        addFailureAlert("Board Meeting update unsuccessful");
-        fetchMeetings();
-        console.log("Error updating Board Meeting info!")
+        addFailureAlert("Board Minutes update unsuccessful");
+        fetchMinutes();
+        console.log("Error updating Board Minutes info!")
       }
   });
   }
 
-  const removeMeetingInfo = async (id) => {
+  const removeMinutesInfo = async (id) => {
       setIsEditMode(false);
-      removeMeetingInfoInDatabase('http://192.168.1.21:8081/boardmtg/'+ id, {})
+      removeMinutesInfoInDatabase('http://192.168.1.21:8081/minutes/'+ id, {})
       .then(data => {
-        if (data.message === "Board Meeting deleted successfully") {
-          addSuccessAlert("Board Meeting deleted successfully");
-          fetchMeetings();
+        if (data.message === "Board Minutes deleted successfully") {
+          addSuccessAlert("Board Minutes for " + editedDate + " deleted successfully");
+          fetchMinutes();
         }
         else {
-          addFailureAlert("Board Meeting removal unsuccessful");
-          fetchMeetings();
-          console.log("Error removing Board Meeting!")
+          addFailureAlert("Board Minutes removal for " + editedDate + " unsuccessful");
+          fetchMinutes();
+          console.log("Error removing Board Minutes!")
         }
       });
   }
 
   const handleYes = () => {
-    removeMeetingInfo(currentRow.id);
+    removeMinutesInfo(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -103,13 +103,13 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
     setEditedDate( str );
   }
 
-  const onTimeChange = (time, hour, minute, seconds, isValid) => {
-    setEditedTime( time );
+  const onMinutesChange = (value) => {
+    setEditedMinutes( value );
   }
 
   return (
     <React.Fragment>
-      <ConfirmDialog title={"Are you sure you want to delete the meeting for " + editedDate + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
+      <ConfirmDialog title={"Are you sure you want to meeting minutes for " + editedDate + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
         <Td dataLabel={columnNames.bmDate}>
           {isEditMode ? (
@@ -126,14 +126,15 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
         </Td>
         <Td dataLabel={columnNames.bmTime}>
           {isEditMode ? (
-            <TimePicker
-              time={editedTime}
-              placeholder="hh:mm"
-              onChange={onTimeChange}
-              menuAppendTo={() => document.body}
-            />
-          ) : (
-            editedTime
+            <TextInput
+            value={editedMinutes}
+            type="text"
+            aria-label="mtg-minutes"
+            onChange={(value) => {
+              setEditedMinutes(value);
+            }} />
+        ) : (
+            editedMinutes
           )}
         </Td>
         <Td modifier="nowrap">
@@ -167,7 +168,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  updateMeetingInfo(currentRow.id);
+                  updateMinutesInfo(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -186,4 +187,4 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default BoardMeetingEditTableRow;
+export default BoardMinutesEditTableRow;

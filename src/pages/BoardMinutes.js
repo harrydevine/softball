@@ -13,13 +13,54 @@ import {
 import { Thead, TableComposable, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 
 const BoardMinutes = ({ children }) => {
-//  class BoardMinutes extends React.Component {
   const [mtgData, setMtgData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
   const [minutesData, setMinutesData] = React.useState(null);
   const [minutesLoading, setMinutesLoading] = React.useState(true);
   const [minutesErr, setMinutesErr] = React.useState(null);
+  const [activeSortIndex, setActiveSortIndex] = React.useState(0);
+  const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
+  const getSortableRowValues = mtgMinutes => {
+    const {date, minutes} = mtgMinutes;
+    return [date, minutes];
+  };
+
+  if (minutesData?.data.length > 0) {
+    let sortedMinutes = minutesData?.data;
+    if (sortedMinutes !== null) {
+      sortedMinutes = minutesData?.data.sort((a, b) => {
+        const aValue = getSortableRowValues(a)[activeSortIndex];
+        const bValue = getSortableRowValues(b)[activeSortIndex];
+        if ((aValue === null) || (bValue === null)) {
+          return 0;
+        }
+        if (typeof aValue === 'number') {
+          if (activeSortDirection === 'asc') {
+            return aValue - bValue;
+          }
+          return bValue - aValue;
+        } else {
+          if (activeSortDirection === 'asc') {
+            return aValue.localeCompare(bValue);
+          }
+          return bValue.localeCompare(aValue);
+        }
+      });
+    }
+  }
+
+  const getSortParams = columnIndex => ({
+    sortBy: {
+      index: activeSortIndex,
+      direction: activeSortDirection
+    },
+    onSort: (_event, index, direction) => {
+      setActiveSortIndex(index);
+      setActiveSortDirection(direction);
+    },
+    columnIndex
+  });
 
   useEffect(() => {
     // Fetch data for Board Meetings
@@ -36,7 +77,7 @@ const BoardMinutes = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetch(`http://softball-pi4:3000/minutes.json`)
+    fetch(`http://192.168.1.21:8081/minutes`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);
@@ -48,45 +89,6 @@ const BoardMinutes = ({ children }) => {
     })
   }, []);
 
-/*  constructor(props) {
-    super(props);
-    this.state = {
-      upRes: [],
-      upLoading: true,
-      upErr: false,
-      upError: null,
-      mtgRes: [],
-      mtgLoading: true,
-      mtgErr: false,
-      mtgError: null
-    };
-  }
-
-  componentDidMount() {
-    this.fetch();
-  }
-
-  fetch() {
-    this.setState({ upLoading: true, mtgLoading: true });
-
-    // Fetch data for Upcoming Meetings
-    fetch(`http://softball-pi4:3000/meetings.json`)
-      .then(resp => resp.json())
-      .then(resp => this.setState({ upRes: resp, upLoading: false }))
-      .catch(err => this.setState({ upError: err, upLoading: false, upErr: true }));
-
-    // Fetch data for Previous Meeting Minutes
-    fetch(`http://softball-pi4:3000/minutes.json`)
-      .then(resp => resp.json())
-      .then(resp => this.setState({ mtgRes: resp, mtgLoading: false }))
-      .catch(err => this.setState({ mtgError: err, mtgLoading: false, mtgErr: true }));
-
-  }
-
-  render() {
-    const {upRes, upLoading, upErr, upError} = this.state;
-    const {mtgRes, mtgLoading, mtgErr, mtgError} = this.state;
-*/
     return (
       <React.Fragment>
         <div>
@@ -147,17 +149,17 @@ const BoardMinutes = ({ children }) => {
           >
             <Thead>
               <Tr>
-                <Th>Date</Th>
-                <Th>Minutes</Th>
+                <Th sort={getSortParams(0)}>Date</Th>
+                <Th sort={getSortParams(1)}>Minutes</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {!minutesLoading && minutesData.map(post => (
+              {!minutesLoading && minutesData?.data.map(post => (
                 <Tr key={post.id}>
                   <Td dataLabel="Date">{post.date}</Td>
                   <Td dataLabel="Minutes">
-		                {post.link && (<a href={`${post.link}`} target="_blank" rel="noreferrer">Minutes for {post.date}</a>)}
-		                {!post.link && `No minutes exist for ${post.date}`}
+		                {post.minutes && (<a href={`${post.minutes}`} target="_blank" rel="noreferrer">Minutes for {post.date}</a>)}
+		                {!post.minutes && `No minutes exist for ${post.date}`}
 		              </Td>
                 </Tr>
               ))}
@@ -170,15 +172,15 @@ const BoardMinutes = ({ children }) => {
                   </Td>
                 </Tr>
               )}
-              {minutesErr && (
+              {!minutesLoading && minutesData?.data.length === 0 && (
                 <Tr>
                   <Td colSpan={2}>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <Title headingLevel="h2" size="lg">
-		                    Unable to connect
+		                    No Board Minutes Found
 		                  </Title>
 		                  <EmptyStateBody>
-		                    There was an error retrieving data.  Check your connection and reload the page.
+		                    There is no Board Meeting Minutes available at this time.
 		                  </EmptyStateBody>
                     </EmptyState>
                   </Td>
@@ -189,7 +191,6 @@ const BoardMinutes = ({ children }) => {
         </div>
       </React.Fragment>
     );
-//  }
 }
 
 export default BoardMinutes;
