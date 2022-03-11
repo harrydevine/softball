@@ -1,17 +1,16 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   Form,
   FormGroup,
-  Popover,
-  Select,
-  SelectDirection,
-  SelectOption,
-  SelectVariant,
-  TextInput,
   Modal,
   ModalVariant,
-  getUniqueId
+  Popover,
+  TextInput
 } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
@@ -27,9 +26,30 @@ class AdminLocalitiesModal extends React.Component{
       zip: "",
       lat: 0,
       lng: 0,
-      description: ""
+      description: "",
+      alerts: []
     };
-     
+
+    this.addAlert = (title, variant, key) => {
+      this.setState({
+        alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+      });
+    };
+
+    this.removeAlert = key => {
+      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+    };
+
+    this.getUniqueId = () => (new Date().getTime());
+
+    this.addSuccessAlert = () => { 
+      this.addAlert('Locality Added successfully', 'success', this.getUniqueId());
+    };
+      
+    this.addFailureAlert = () => { 
+      this.addAlert('Locality Added unsuccessfully', 'danger', this.getUniqueId()) 
+    };
+    
     this.handleModalToggle = () => {
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
@@ -39,7 +59,21 @@ class AdminLocalitiesModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
-      console.log(this.state.name, " ", this.state.street, " ", this.state.city, " ", this.state.usstate, " ", this.state.zip, " ", this.state.lat, " ", this.state.lng, " ", this.state.description);
+
+      /* Add Locality to database...*/
+      addLocalityToDatabase('http://192.168.1.21:8081/localities', { name: this.state.name, 
+        street: this.state.street, city: this.state.city, state: this.state.usstate, zip: this.state.zip,
+        lat: this.state.lat, lng: this.state.lng, description: this.state.description })
+      .then(data => {
+        if (data.message === "Locality created successfully") {
+          this.props.setLocalityAdded(true);
+          this.addSuccessAlert();
+        }
+        else {
+          this.props.setLocalityAdded(false);
+          this.addFailureAlert();
+        }
+      });
 
       /* Reset dialog fields for next time */
       this.setState({ name: "" });
@@ -52,7 +86,6 @@ class AdminLocalitiesModal extends React.Component{
       this.setState({ description: ""});
     };
     this.handleLocalityCancel = () => {
-      console.log("Hit handleLocalityCancel....");
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
@@ -68,8 +101,7 @@ class AdminLocalitiesModal extends React.Component{
       this.setState({ description: ""});
   };
 
-  /*
-    async function addBoardMemberToDatabase (url = '', data = {}) {
+    async function addLocalityToDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
         mode: 'cors',
@@ -85,37 +117,29 @@ class AdminLocalitiesModal extends React.Component{
       });
       return response.json();
     };
-*/
+
     this.onNameChange = newValue => {
-        console.log("New value for name: ", newValue)
         this.setState(({ name: newValue }));
     };
     this.onStreetChange = newValue => {
-        console.log("New value for street: ", newValue)
         this.setState(({ street: newValue }));
     };
     this.onCityChange = newValue => {
-        console.log("New value for city: ", newValue)
         this.setState(({ city: newValue }));
     };
     this.onUSStateChange = newValue => {
-        console.log("New value for state: ", newValue)
         this.setState(({ usstate: newValue }));
     };
     this.onZipChange = newValue => {
-        console.log("New value for zip: ", newValue)
         this.setState(({ zip: newValue }));
     };
     this.onLatChange = newValue => {
-        console.log("New value for latitude: ", newValue)
         this.setState(({ lat: newValue }));
     };
     this.onLngChange = newValue => {
-        console.log("New value for longitude: ", newValue)
         this.setState(({ lng: newValue }));
     };
     this.onDescriptionChange = newValue => {
-        console.log("New value for description: ", newValue)
         this.setState(({ description: newValue }));
     };
   }
@@ -125,6 +149,22 @@ class AdminLocalitiesModal extends React.Component{
 
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add Locality</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}

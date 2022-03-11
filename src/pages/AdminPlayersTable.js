@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react';
 import {
+  Alert, 
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Bullseye,
   EmptyState,
   EmptyStateIcon,
@@ -12,22 +16,26 @@ import {
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td, Caption} from '@patternfly/react-table';
 import AdminPlayerModal from './AdminPlayerModal';
+import PlayerEditTableRow from './PlayerEditTableRow';
+
+export const columnNames = {
+  playerName: 'Name',
+  playerNumber: 'Jersey Number',
+  division: 'Division'
+};
 
 const AdminPlayersTable = ({ children }) => {
   const [playerData, setPlayerData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
-  const columnNames = {
-    playerName: 'Name',
-    playerNumber: 'Jersey Number',
-    division: 'Division'
-  };
   const [activeSortIndex, setActiveSortIndex] = React.useState(0);
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const getSortableRowValues = players => {
     const {playerName, playerNumber, division} = players;
     return [playerName, playerNumber, division];
   };
+  const [playerAdded, setPlayerAdded] = React.useState(false);
+  const [alerts, setAlerts] = React.useState([]);
 
   if (playerData?.data.length > 0) {
     let sortedPlayers = playerData?.data;
@@ -65,23 +73,65 @@ const AdminPlayersTable = ({ children }) => {
     columnIndex
   });
 
-useEffect(() => {
+  useEffect(() => {
+    // Fetch data for Players
+      fetchPlayers();
+      setPlayerAdded(false);
+    }, []);
+  
+  useEffect(() => {
+  // Fetch data for Players when new player added
+    fetchPlayers();
+  }, [playerAdded]);
+  
+  const fetchPlayers = () => {
   // Fetch data for Players
-  fetch(`http://192.168.1.21:8081/players`)
-    .then(async resp => {
-      const jsonResponse = await resp.json()
-      setPlayerData(jsonResponse);
-      setLoading(false);
-    })
-    .catch(err => {
-      setErr(err);
-      setLoading(false);
-    })
-  }, []);
+    fetch(`http://192.168.1.21:8081/players`)
+      .then(async resp => {
+        const jsonResponse = await resp.json()
+        setPlayerData(jsonResponse);
+        setLoading(false);
+      })
+      .catch(err => {
+        setErr(err);
+        setLoading(false);
+      })
+  }
+
+  const addAlert = (title, variant, key) => {
+    setAlerts([ ...alerts, {title: title, variant: variant, key }]);
+  };
+
+  const removeAlert = key => {
+    setAlerts([...alerts.filter(el => el.key !== key)]);
+  };
+
+  const getUniqueId = () => (new Date().getTime());
+
+  const addSuccessAlert = ( string ) => { 
+    addAlert(string, 'success', getUniqueId());
+  };
+      
+  const addFailureAlert = ( string ) => { 
+    addAlert(string, 'danger', getUniqueId()) 
+  };
 
   return (
     <React.Fragment>
-      <AdminPlayerModal />
+      <AlertGroup isToast isLiveRegion>
+        {alerts.map(({ key, variant, title }) => (
+          <Alert
+            variant={AlertVariant[variant]}
+            title={title}
+            timeout={5000}
+            actionClose={<AlertActionCloseButton
+              title={title}
+              variantLabel={`variant} alert`}
+              onClose={() => removeAlert(key)} />}
+            key={key} />
+        ))}
+      </AlertGroup>
+      <AdminPlayerModal setPlayerAdded={setPlayerAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
@@ -113,13 +163,15 @@ useEffect(() => {
             </Tr>
           )}
           {!loading && playerData?.data.map((row, rowIndex) => (
-          <Tr key={rowIndex}>
-            <Td dataLabel={columnNames.name}>{row.playerName}</Td>
-            <Td dataLabel={columnNames.jersey}>{row.playerNumber}</Td>
-            <Td dataLabel={columnNames.division}>{row.division}</Td>
-          </Tr>
+            <PlayerEditTableRow
+              key={row.id}
+              currentRow={row}
+              fetchPlayers={fetchPlayers}
+              addSuccessAlert={addSuccessAlert} 
+              addFailureAlert={addFailureAlert}
+            />
          ))}
-          {loading && (
+         {loading && (
             <Tr>
               <Td colSpan={4}>
               <Bullseye>

@@ -34,6 +34,9 @@ const FieldInfo = ({ children }) => {
     const [localityData, setLocalityData] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
+    const [statusColor, setStatusColor] = React.useState("green");
+    const [fieldStatus, setFieldStatus] = React.useState("Open");
+    const [count, setCount] = React.useState(0);
 
     useEffect(() => {
       // Fetch data for Field Status
@@ -50,6 +53,25 @@ const FieldInfo = ({ children }) => {
      }, []);
 	
      useEffect(() => {
+     /* Determine the field status and color for presentation */
+       if (fieldData?.data.length > 0) {
+         fieldData.data.map((field) => {
+           if (field.fieldStatus === 0) {
+             setCount(count++);
+           }
+         });
+       }
+       if (count > 0 && count < 7) {
+        setFieldStatus("Partial");
+        setStatusColor("orange");
+      }
+       if (count === 7) {
+        setFieldStatus("Closed");
+        setStatusColor("red");
+       }
+     }, [fieldData]);
+
+     useEffect(() => {
       // Fetch data for Locality locations
       fetch("http://192.168.1.21:8081/localities")
         .then(async (resp) => {
@@ -62,26 +84,6 @@ const FieldInfo = ({ children }) => {
           setLoading(false);
         });
      }, []);
-
-     /* Determine the field status and color for presentation */
-     let count = 0;
-     let fieldStatus = "Open";
-     let statusColor = "green";
-     if (fieldData?.data.length > 0) {
-       fieldData.data.map((field) => {
-         if (field.fieldStatus === 0) {
-           count++;
-         }
-       });
-     }
-     if (count > 0 && count < 7) {
-       fieldStatus = "Partial"
-       statusColor = "orange"
-     }
-     if (count === 7) {
-       fieldStatus = "Closed"
-       statusColor = "red"	       
-     }
 
     // Toggle currently active tab
     const handleTabClick = (event, tabIndex) => {

@@ -50,8 +50,8 @@ class AdminAdminsTable extends React.Component {
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && adminData?.data.length === 0 && (
-              <Tr key="0">
+            {!loading && (adminData?.data.length === 0) && (
+              <Tr key="admin_empty">
                 <Td colSpan={4}>
                   <Bullseye>
                     <EmptyState variant={EmptyStateVariant.small}>
@@ -70,7 +70,9 @@ class AdminAdminsTable extends React.Component {
  	          {!loading && adminData?.data.map(row => (
               <Tr key={row.id} isEditable>
                 <Td dataLabel="name">{row.name}</Td>
-                <Td dataLabel="password"><Text component="b">******* (password obscured for security purposes) *******</Text></Td>
+                <Td dataLabel="password">
+                  <Text component="b">******* (password obscured for security purposes) *******</Text>
+                </Td>
               </Tr>
             ))}
 	          {loading && (

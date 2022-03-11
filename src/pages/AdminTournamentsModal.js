@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   DatePicker,
   Form,
@@ -24,21 +28,47 @@ class AdminTournamentsModal extends React.Component{
       title: "",
       divisions: "",
       details: "",
-      registerURL: ""
+      registerURL: "",
+      alerts: []
     }
 
-    const dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g,'-');
-    const dateParse = date => {
-      const split = date.split('-');
+    this.dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/\//g,'-');
+    this.dateParse = date => {
+      return date;
+/*      const split = date.split('-');
       if (split.length !== 3) {
         return new Date();
       }
       let month = split[0];
       let day = split[1];
       let year = split[2];
-      return new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+      let newDate = new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+      console.log(newDate);
+      return newDate;
+//      return new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+*/
     };
   
+    this.addAlert = (title, variant, key) => {
+      this.setState({
+        alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+      });
+    };
+
+    this.removeAlert = key => {
+      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+    };
+
+    this.getUniqueId = () => (new Date().getTime());
+
+    this.addSuccessAlert = () => { 
+      this.addAlert('Tournament Added successfully', 'success', this.getUniqueId());
+    };
+      
+    this.addFailureAlert = () => { 
+      this.addAlert('Tournament Added unsuccessfully', 'danger', this.getUniqueId()) 
+    };
+
     this.handleModalToggle = () => {
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
@@ -49,8 +79,25 @@ class AdminTournamentsModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
-      console.log(this.state.dateStart, " ", this.state.dateEnd, " ", this.state.description, " ", this.state.tourneyImg, " ", this.state.title, " ", this.state.divisions, " ", this.state.details, " ", this.state.registerURL);      
+      console.log(this.state.dateStart, this.state.dateEnd, this.state.description, this.state.tourneyImg, this.state.title, this.state.divisions, this.state.details, this.state.registerURL);      
       
+      /* Add Tournament to database...*/
+      addTournamentToDatabase('http://192.168.1.21:8081/tournaments', 
+        { title: this.state.title, dateStart: this.state.dateStart, dateEnd: this.state.dateEnd, 
+          description: this.state.description, tourneyImg: this.state.tourneyImg, divisions: this.state.divisions,
+          details: this.state.details, registerURL: this.state.registerURL
+        })
+      .then(data => {
+        if (data.message === "Tournament created successfully") {
+          this.props.setTournamentAdded(true);
+          this.addSuccessAlert();
+        }
+        else {
+          this.props.setTournamentAdded(false);
+          this.addFailureAlert();
+        }
+      });
+
       /* Reset dialog fields for next time */
       this.setState({ dateStart: "" });
       this.setState({ dateEnd: "" });
@@ -63,7 +110,6 @@ class AdminTournamentsModal extends React.Component{
     };
   
     this.handleTournamentCancel = () => {
-      console.log("Hit handleTournamentCancel....")
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
@@ -78,44 +124,54 @@ class AdminTournamentsModal extends React.Component{
       this.setState({ details: "" });
       this.setState({ registerURL: "" });
     };
-  
+
+    async function addTournamentToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    };
+
     this.onStartDateChange = (str, date) => {
-        console.log('str', str, 'date', date);
-        this.setState({ dateStart: date });
+      console.log(str, date);
+        this.setState({ dateStart: str });
       }
   
     this.onEndDateChange = (str, date) => {
-      console.log('str', str, 'date', date);
-      this.setState({ endDate: date });
+      this.setState({ dateEnd: str });
     }
   
     this.onDescriptionChange = newValue => {
-        console.log('description', newValue);
         this.setState({ description: newValue });
       }
 
     this.onTitleChange = newValue => {
-      console.log('title', newValue);
       this.setState({ title: newValue });
     }
 
     this.onDetailsChange = newValue => {
-      console.log('details', newValue);
       this.setState({ details: newValue });
     }
   
     this.onDivisionsChange = newValue => {
-      console.log('divisions', newValue);
       this.setState({ divisions: newValue });
     }
 
     this.onImageChange = newValue => {
-        console.log('tourneyImg', newValue);
-        this.setState({ tourneyImage: newValue });
+        this.setState({ tourneyImg: newValue });
     }
 
     this.onURLChange = newValue => {
-      console.log('registerURL', newValue);
       this.setState({ registerURL: newValue });
     }
   
@@ -126,6 +182,22 @@ class AdminTournamentsModal extends React.Component{
     
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Tournament</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}
@@ -168,11 +240,11 @@ class AdminTournamentsModal extends React.Component{
               isRequired
               fieldId="add-tourament-start-date">
               <DatePicker
-                value={"01-01-2022"}
+                value={"January 01, 2022"}
                 placeholder="MM-DD-YYYY"
                 dateFormat={this.dateFormat}
                 dateParse={this.dateParse}
-                onChange={this.onDateChange}
+                onChange={this.onStartDateChange}
               />
           </FormGroup>
           <FormGroup
@@ -200,11 +272,11 @@ class AdminTournamentsModal extends React.Component{
               isRequired
               fieldId="add-tourament-end-date">
               <DatePicker
-                value={"01-01-2022"}
+                value={"January 01,2022"}
                 placeholder="MM-DD-YYYY"
                 dateFormat={this.dateFormat}
                 dateParse={this.dateParse}
-                onChange={this.onDateChange}
+                onChange={this.onEndDateChange}
               />
           </FormGroup>
           <FormGroup

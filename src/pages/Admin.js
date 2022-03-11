@@ -1,16 +1,7 @@
 import React, { useEffect } from 'react';
 import {
-  Alert,
-  AlertActionCloseButton,
-  AlertVariant,
-  AlertGroup,
-  Card,
-  CardBody,
-  CardTitle,
   Flex,
   FlexItem,
-  Gallery,
-  GalleryItem,
   PageSection,
   PageSectionVariants,
   Tabs,
@@ -21,17 +12,16 @@ import {
   Text,
   Title
 } from '@patternfly/react-core';
-import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import AdminPlayersTable from './AdminPlayersTable';
 import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
 import AdminBoardMeetingTable from './AdminBoardMeetingTable';
 import AdminLocalitiesTable from './AdminLocalitiesTable';
-import AdminLocalitiesModal from './AdminLocalitiesModal';
 import AdminTournamentsTable from './AdminTournamentsTable';
 import AdminAdminsTable from './AdminAdminsTable';
 import AdminAdminsModal from './AdminAdminsModal';
+//import { MultipleFileUploadBasic } from './MultipleFileUploadBasic';
 
 const config = require('./config.js');
 
@@ -97,18 +87,28 @@ const Admin = ({ children }) => {
             />
             <Tab
               eventKey={6}
-              title={<TabTitleText>Board Meetings/Minutes</TabTitleText>}
+              title={<TabTitleText>Board Meetings</TabTitleText>}
               tabContentId={`tabContent${6}`}
             />
             <Tab
               eventKey={7}
-              title={<TabTitleText>Admin Users</TabTitleText>}
+              title={<TabTitleText>Board Minutes</TabTitleText>}
               tabContentId={`tabContent${7}`}
             />
             <Tab
               eventKey={8}
-              title={<TabTitleText>Latest News</TabTitleText>}
+              title={<TabTitleText>Admin Users</TabTitleText>}
               tabContentId={`tabContent${8}`}
+            />
+            <Tab
+              eventKey={9}
+              title={<TabTitleText>Latest News</TabTitleText>}
+              tabContentId={`tabContent${9}`}
+            />
+            <Tab
+              eventKey={10}
+              title={<TabTitleText>Uploads</TabTitleText>}
+              tabContentId={`tabContent${10}`}
             />
 	  </Tabs>
       </PageSection>
@@ -133,10 +133,6 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
               <TabContentBody>
-                <AdminLocalitiesModal />
-    	          <Text component="br" />
-      	        <Text component="br" />
-	              <Text component="hr" />
                 <AdminLocalitiesTable />
               </TabContentBody>
             </TabContent>
@@ -152,6 +148,11 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={7} eventKey={7} id={`tabContent${7}`} activeKey={activeTabKey} hidden={7 !== activeTabKey}>
               <TabContentBody>
+                Board Meeting Minutes (Dates and Upload)!
+              </TabContentBody>
+            </TabContent>
+            <TabContent key={8} eventKey={8} id={`tabContent${8}`} activeKey={activeTabKey} hidden={8 !== activeTabKey}>
+              <TabContentBody>
                 <AdminAdminsModal />
     	          <Text component="br" />
       	        <Text component="br" />
@@ -159,9 +160,14 @@ const Admin = ({ children }) => {
                 <AdminAdminsTable />
               </TabContentBody>
             </TabContent>
-            <TabContent key={8} eventKey={8} id={`tabContent${8}`} activeKey={activeTabKey} hidden={8 !== activeTabKey}>
+            <TabContent key={9} eventKey={9} id={`tabContent${9}`} activeKey={activeTabKey} hidden={9 !== activeTabKey}>
               <TabContentBody>
                 Announcements and Latest News!
+              </TabContentBody>
+            </TabContent>
+            <TabContent key={10} eventKey={10} id={`tabContent${10}`} activeKey={activeTabKey} hidden={10 !== activeTabKey}>
+              <TabContentBody>
+                Uploads (Images & PDFs)
               </TabContentBody>
             </TabContent>
 	  </FlexItem>

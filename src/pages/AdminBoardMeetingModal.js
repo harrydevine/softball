@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   DatePicker,
   Form,
@@ -18,21 +22,35 @@ class AdminBoardMeetingModal extends React.Component{
     this.state = {
       isModalOpen: false,
       mtgDate: "",
-      mtgTime: ""
+      mtgTime: "",
+      alerts: []
     }
 
-    const dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g,'-');
-    const dateParse = date => {
-      const split = date.split('-');
-      if (split.length !== 3) {
-        return new Date();
-      }
-      let month = split[0];
-      let day = split[1];
-      let year = split[2];
-      return new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+    this.dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/\//g,'-');
+    this.dateParse = date => {
+      return date;
     };
   
+    this.addAlert = (title, variant, key) => {
+      this.setState({
+        alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+      });
+    };
+
+    this.removeAlert = key => {
+      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+    };
+
+    this.getUniqueId = () => (new Date().getTime());
+
+    this.addSuccessAlert = () => { 
+      this.addAlert('Board Meeting Added successfully', 'success', this.getUniqueId());
+    };
+      
+    this.addFailureAlert = () => { 
+      this.addAlert('Board Meeting Added unsuccessfully', 'danger', this.getUniqueId()) 
+    };
+
     this.handleModalToggle = () => {
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
@@ -44,6 +62,19 @@ class AdminBoardMeetingModal extends React.Component{
         isModalOpen: !isModalOpen
       }));
       console.log(this.state.mtgDate, " ", this.state.mtgTime);      
+
+      /* Add Meeting to database...*/
+      addMeetingToDatabase('http://192.168.1.21:8081/boardmtg', { date: this.state.mtgDate, time: this.state.mtgTime })
+      .then(data => {
+        if (data.message === "Board Meeting created successfully") {
+          this.props.setMeetingAdded(true);
+          this.addSuccessAlert();
+        }
+        else {
+          this.props.setMeetingAdded(false);
+          this.addFailureAlert();
+        }
+      });
       
       /* Reset dialog fields for next time */
       this.setState({ mtgDate: "" });
@@ -51,7 +82,6 @@ class AdminBoardMeetingModal extends React.Component{
     };
   
     this.handleMeetingCancel = () => {
-      console.log("Hit handleMeetingCancel....")
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
@@ -61,9 +91,26 @@ class AdminBoardMeetingModal extends React.Component{
       this.setState({ mtgTime: "" });
     };
   
+    async function addMeetingToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    };
+
     this.onDateChange = (str, date) => {
       console.log('str', str, 'date', date);
-      this.setState({ mtgDate: date });
+      this.setState({ mtgDate: str });
     }
   
     this.onTimeChange = (time, hour, minute, seconds, isValid) => {
@@ -78,6 +125,22 @@ class AdminBoardMeetingModal extends React.Component{
     
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Board Meeting</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}
@@ -120,7 +183,7 @@ class AdminBoardMeetingModal extends React.Component{
               isRequired
               fieldId="add-mtg-date">
               <DatePicker
-                value={"01-01-2022"}
+                value={"January 01, 2022"}
                 placeholder="MM-DD-YYYY"
                 dateFormat={this.dateFormat}
                 dateParse={this.dateParse}

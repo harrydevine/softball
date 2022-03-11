@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   Form,
   FormGroup,
@@ -16,63 +20,109 @@ import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
 class AdminPlayerModal extends React.Component{
   constructor(props) {
-      super(props);
-      this.state = {
-        isModalOpen: false,
-        isOpen: false,
-        name: "",
-        jersey: "",
-        division: ""
-      };
-      this.divisionDropdownItems = [
-        <SelectOption key={0} value="Select a Division" isPlaceholder />,
-        <SelectOption key={1} value="6U" />,
-        <SelectOption key={2} value="8U" />,
-        <SelectOption key={3} value="10U" />,
-        <SelectOption key={4} value="12U" />,
-        <SelectOption key={5} value="14U" />,
-        <SelectOption key={6} value="16U" />
-      ];
+    super(props);
+    this.state = {
+      isModalOpen: false,
+      isOpen: false,
+      name: "",
+      jersey: "",
+      division: "",
+      alerts: []
+    };
+
+    this.addAlert = (title, variant, key) => {
+      this.setState({
+        alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+      });
+    };
+
+    this.removeAlert = key => {
+      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+    };
+
+    this.getUniqueId = () => (new Date().getTime());
+
+    this.addSuccessAlert = () => { 
+      this.addAlert('Player Added successfully', 'success', this.getUniqueId());
+    };
       
-      this.handleModalToggle = () => {
-        this.setState(({ isModalOpen}) => ({
+    this.addFailureAlert = () => { 
+      this.addAlert('Player Added unsuccessfully', 'danger', this.getUniqueId()) 
+    };
+
+    this.divisionDropdownItems = [
+      <SelectOption key={0} value="Select a Division" isPlaceholder />,
+      <SelectOption key={1} value="6U" />,
+      <SelectOption key={2} value="8U" />,
+      <SelectOption key={3} value="10U" />,
+      <SelectOption key={4} value="12U" />,
+      <SelectOption key={5} value="14U" />,
+      <SelectOption key={6} value="16U" />
+    ];
+      
+    this.handleModalToggle = () => {
+      this.setState(({ isModalOpen}) => ({
+        isModalOpen: !isModalOpen
+      }));
+    };
+
+    this.handlePlayerAdd = () => {
+      this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
-      };
-      this.handlePlayerAdd = () => {
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
-        console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)  
-//        this.props.addSuccessAlert();    
-        /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
-//        .then(data => {
-//          console.log(data);
-//        });
+      console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)  
+      /* Add Board Member to database...*/
+      addPlayerToDatabase('http://192.168.1.21:8081/players', 
+        { playerName: this.state.name, playerNumber: this.state.jersey, division: this.state.division, teamId: 0 })
+      .then(data => {
+        if (data.message === "Player created successfully") {
+          this.props.setPlayerAdded(true);
+          this.addSuccessAlert();
+        }
+        else {
+          this.props.setPlayerAdded(false);
+          this.addFailureAlert();
+        }
+      });
     
-        /* Reset dialog fields for next time */
-        this.setState({ name: "" });
-        this.setState({ jersey: "" });
-        this.setState({ division: "" });
-      };
-      this.handlePlayerCancel = () => {
-        console.log("Hit handlePlayerCancel....")
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
+      /* Reset dialog fields for next time */
+      this.setState({ name: "" });
+      this.setState({ jersey: "" });
+      this.setState({ division: "" });
+    };
+
+    this.handlePlayerCancel = () => {
+      this.setState(({ isModalOpen}) => ({
+          isModalOpen: !isModalOpen
+        }));
       
-        /* Reset dialog fields for next time */
-        this.setState({ name: "" });
-        this.setState({ jersey: "" });
-        this.setState({ division: "" });
-      };
+      /* Reset dialog fields for next time */
+      this.setState({ name: "" });
+      this.setState({ jersey: "" });
+      this.setState({ division: "" });
+    };
+
+    async function addPlayerToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    };
+  
     this.onNameChange = newValue => {
-        console.log("New value for name: ", newValue)
         this.setState(({ name: newValue }));
     };
     this.onJerseyChange = newValue => {
-        console.log("New value for jersey: ", newValue)
         this.setState(({ jersey: newValue }));
     };
     this.onEscapePress = () => {
@@ -81,18 +131,15 @@ class AdminPlayerModal extends React.Component{
       }));
     };
     this.onToggle = isOpen => {
-      console.log("isOpen: ", isOpen);
       this.setState({ isOpen });
     };
     
     this.onSelect = (event, selection, isPlaceholder) => {
-        console.log("Hit onSelect ", selection);
         if (isPlaceholder) {
           this.setState({ division: ""});
           this.setState({ isOpen: false })
       }
       else {
-        console.log("New value for division: ", selection)
         this.setState({ division: selection});
         this.setState({ isOpen: false })
       }
@@ -105,6 +152,22 @@ class AdminPlayerModal extends React.Component{
     
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Player</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}

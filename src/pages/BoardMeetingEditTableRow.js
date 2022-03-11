@@ -1,26 +1,25 @@
 import * as React from 'react';
 import { 
   Button, 
-  TextInput, 
-  Switch
+  DatePicker,
+  TimePicker
 } from '@patternfly/react-core';
 import { Tr, Td } from '@patternfly/react-table';
-import { columnNames } from './AdminFieldsTable';
+import { columnNames } from './AdminBoardMeetingTable';
 import ConfirmDialog from './ConfirmDialog';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const FieldsEditTableRow = ({ children, ...props }) => {
+const BoardMeetingEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentField, fetchFieldInfo, addSuccessAlert, addFailureAlert } = props;
-  const [editedFieldNum, setEditedFieldNum] = React.useState(currentField.fieldNum);
-  const [editedFieldStatus, setEditedFieldStatus] = React.useState(currentField.fieldStatus);
-  const [editedFieldReason, setEditedFieldReason] = React.useState(currentField.fieldReason);
+  const {key, currentRow, fetchMeetings, addSuccessAlert, addFailureAlert } = props;
+  const [editedDate, setEditedDate] = React.useState(currentRow.date);
+  const [editedTime, setEditedTime] = React.useState(currentRow.time);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-    async function updateFieldInfoInDatabase (url = '', data = {}) {
+  async function updateMeetingInfoInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -37,7 +36,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removeFieldInfoInDatabase (url = '', data = {}) {
+  async function removeMeetingInfoInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'DELETE',
       mode: 'cors',
@@ -54,39 +53,39 @@ const FieldsEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updateFieldInfo = (id) => {
-    updateFieldInfoInDatabase('http://192.168.1.21:8081/fields/'+ id, { fieldNum: editedFieldNum, fieldStatus: editedFieldStatus ? 1 : 0, fieldReason: editedFieldReason })      
+  const updateMeetingInfo = (id) => {
+    updateMeetingInfoInDatabase('http://192.168.1.21:8081/boardmtg/'+ id, { date: editedDate, time: editedTime })      
     .then(data => {
-      if (data.message === "Field Info updated successfully") {
-        addSuccessAlert("Field " + editedFieldNum + " updated successfully");
-        fetchFieldInfo();
+      if (data.message === "Board Meeting info updated successfully") {
+        addSuccessAlert("Board Meeting info updated successfully");
+        fetchMeetings();
       }
       else {
-        addFailureAlert("Field update unsuccessful");
-        fetchFieldInfo();
-        console.log("Error updating field info!")
+        addFailureAlert("Board Meeting update unsuccessful");
+        fetchMeetings();
+        console.log("Error updating Board Meeting info!")
       }
   });
   }
 
-  const removeFieldInfo = async (id) => {
+  const removeMeetingInfo = async (id) => {
       setIsEditMode(false);
-      removeFieldInfoInDatabase('http://192.168.1.21:8081/fields/'+ id, {})
+      removeMeetingInfoInDatabase('http://192.168.1.21:8081/boardmtg/'+ id, {})
       .then(data => {
-        if (data.message === "Field Info deleted successfully") {
-          addSuccessAlert("Field " + editedFieldNum + " deleted successfully");
-          fetchFieldInfo();
+        if (data.message === "Board Meeting deleted successfully") {
+          addSuccessAlert("Board Meeting deleted successfully");
+          fetchMeetings();
         }
         else {
-          addFailureAlert("Field removal unsuccessful");
-          fetchFieldInfo();
-          console.log("Error removing field!")
+          addFailureAlert("Board Meeting removal unsuccessful");
+          fetchMeetings();
+          console.log("Error removing Board Meeting!")
         }
       });
   }
 
   const handleYes = () => {
-    removeFieldInfo(currentField.id);
+    removeMeetingInfo(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -94,48 +93,47 @@ const FieldsEditTableRow = ({ children, ...props }) => {
     setConfirmDlgOpen(false);
   }
 
+  const dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/\//g,'-');
+  const dateParse = date => {
+    return date;
+  };
+
+  const onDateChange = (str, date) => {
+    console.log('str', str, 'date', date);
+    setEditedDate( str );
+  }
+
+  const onTimeChange = (time, hour, minute, seconds, isValid) => {
+    setEditedTime( time );
+  }
+
   return (
     <React.Fragment>
-      <ConfirmDialog title={"Are you sure you want to delete this field?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
+      <ConfirmDialog title={"Are you sure you want to meeting for " + editedDate + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
-        <Td dataLabel={columnNames.fieldNum}>
+        <Td dataLabel={columnNames.bmDate}>
           {isEditMode ? (
-            <TextInput
-              value={editedFieldNum}
-              type="text"
-              aria-label="field-number"
-              onChange={(value) => {
-                setEditedFieldNum(value);
-              } } />
-          ) : (
-            editedFieldNum
+            <DatePicker
+              value={editedDate}
+              placeholder="MM-DD-YYYY"
+              dateFormat={dateFormat}
+              dateParse={dateParse}
+              onChange={onDateChange}
+          />
+        ) : (
+            editedDate
           )}
         </Td>
-        <Td dataLabel={columnNames.fieldStatus}>
+        <Td dataLabel={columnNames.bmTime}>
           {isEditMode ? (
-            <Switch
-              id={`switch-${currentField.id}`}
-              label="Open"
-              labelOff="Closed"
-              isChecked={editedFieldStatus}
-              onChange={(isChecked) => {
-                setEditedFieldStatus(isChecked);
-              } } />
+            <TimePicker
+              time={editedTime}
+              placeholder="hh:mm"
+              onChange={onTimeChange}
+              menuAppendTo={() => document.body}
+            />
           ) : (
-            editedFieldStatus ? "Open" : "Closed"
-          )}
-        </Td>
-        <Td dataLabel={columnNames.fieldReason}>
-          {isEditMode ? (
-            <TextInput
-              value={editedFieldReason}
-              type="text"
-              aria-label="field-reason"
-              onChange={(value) => {
-                setEditedFieldReason(value);
-              } } />
-          ) : (
-            editedFieldReason
+            editedTime
           )}
         </Td>
         <Td modifier="nowrap">
@@ -169,8 +167,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  console.log(currentField.id, editedFieldNum ? 1 : 0, editedFieldStatus, editedFieldReason);
-                  updateFieldInfo(currentField.id);
+                  updateMeetingInfo(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -189,4 +186,4 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default FieldsEditTableRow;
+export default BoardMeetingEditTableRow;

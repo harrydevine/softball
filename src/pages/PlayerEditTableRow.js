@@ -12,38 +12,33 @@ import {
   TextInput
 } from '@patternfly/react-core';
 import { Tr, Td } from '@patternfly/react-table';
-import { columnNames } from './AdminBoardMemberTable';
+import { columnNames } from './AdminPlayersTable';
 import ConfirmDialog from './ConfirmDialog';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const BoardMemberEditTableRow = ({ children, ...props }) => {
+const PlayerEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentRow, fetchBoard, addSuccessAlert, addFailureAlert } = props;
-  const [editedName, setEditedName] = React.useState(currentRow.name);
-  const [editedTitle, setEditedTitle] = React.useState(currentRow.title);
-  const [editedPhone, setEditedPhone] = React.useState(currentRow.phone);
-  const [editedEmail, setEditedEmail] = React.useState(currentRow.email);
+  const {key, currentRow, fetchPlayers, addSuccessAlert, addFailureAlert } = props;
+  const [editedName, setEditedName] = React.useState(currentRow.playerName);
+  const [editedNumber, setEditedNumber] = React.useState(currentRow.playerNumber);
+  const [editedDivision, setEditedDivision] = React.useState(currentRow.division);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  const positionDropdownItems = [
-    <SelectOption key={0} value="Select a Position" label="Select a Position" isPlaceholder />,
-    <SelectOption key={1} value="President" label="President" />,
-    <SelectOption key={2} value="Vice-President" label="Vice-President" />,
-    <SelectOption key={3} value="Treasurer" label="Treasurer" />,
-    <SelectOption key={4} value="Secretary" label="Secretary" />,
-    <SelectOption key={5} value="Equipment Maintenance" label="Equipment Maintenance"/>,
-    <SelectOption key={6} value="Field Maintenance" label="Field Maintenance" />,
-    <SelectOption key={7} value="Field Coordinator" label="Field Coordinator" />,
-    <SelectOption key={8} value="Stand Coordinator" label="Stand Coordinator" />,
-    <SelectOption key={9} value="Stand Scheduler" label="Stand Scheduler" />,
-    <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />
+  const divisionDropdownItems = [
+    <SelectOption key={0} value="Select a Division" label="Select a Division" isPlaceholder />,
+    <SelectOption key={1} value="6U" label="6U" />,
+    <SelectOption key={2} value="8U" label="8U" />,
+    <SelectOption key={3} value="10U" label="10U" />,
+    <SelectOption key={4} value="12U" label="12U" />,
+    <SelectOption key={5} value="14U" label="14U"/>,
+    <SelectOption key={6} value="16U" label="16U" />
   ];
 
-  async function updateBoardInfoInDatabase (url = '', data = {}) {
+  async function updatePlayerInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -60,7 +55,7 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removeBoardInfoInDatabase (url = '', data = {}) {
+  async function removePlayerInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'DELETE',
       mode: 'cors',
@@ -77,33 +72,33 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updateBoardInfo = (id) => {
-    updateBoardInfoInDatabase('http://192.168.1.21:8081/board/'+ id, { name: editedName, title: editedTitle, phone: editedPhone, email: editedEmail })      
+  const updatePlayer = (id) => {
+    updatePlayerInDatabase('http://192.168.1.21:8081/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: editedDivision, teamId: currentRow.teamId })      
     .then(data => {
-      if (data.message === "Board Member info updated successfully") {
-        addSuccessAlert("Board Member info updated successfully");
-        fetchBoard();
+      if (data.message === "Player info updated successfully") {
+        addSuccessAlert(editedName + " updated successfully");
+        fetchPlayers();
       }
       else {
-        addFailureAlert("Board Member update unsuccessful");
-        fetchBoard();
-        console.log("Error updating Board Member info!")
+        addFailureAlert(editedName + " update unsuccessful");
+        fetchPlayers();
+        console.log("Error updating " + editedName);
       }
-  });
+    });
   }
 
-  const removeBoardInfo = async (id) => {
+  const removePlayer = async (id) => {
       setIsEditMode(false);
-      removeBoardInfoInDatabase('http://192.168.1.21:8081/board/'+ id, {})
+      removePlayerInDatabase('http://192.168.1.21:8081/players/'+ id, {})
       .then(data => {
-        if (data.message === "Board Member deleted successfully") {
-          addSuccessAlert("Board Member deleted successfully");
-          fetchBoard();
+        if (data.message === "Player deleted successfully") {
+          addSuccessAlert(editedName + " removed successfully");
+          fetchPlayers();
         }
         else {
-          addFailureAlert("Board Member removal unsuccessful");
-          fetchBoard();
-          console.log("Error removing Board Member!")
+          addFailureAlert(editedName + " removal unsuccessful");
+          fetchPlayers();
+          console.log("Error removing " + editedName);
         }
       });
   }
@@ -114,17 +109,17 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   
   const onSelect = (event, selection, isPlaceholder) => {
     if (isPlaceholder) {
-        setEditedTitle("");
+        setEditedDivision("");
         setIsOpen(false);
       }
     else {
-      setEditedTitle(selection);
+      setEditedDivision(selection);
       setIsOpen(false);
       }
   };
 
   const handleYes = () => {
-    removeBoardInfo(currentRow.id);
+    removePlayer(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -136,12 +131,12 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
     <React.Fragment>
       <ConfirmDialog title={"Are you sure you want to delete " + editedName + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
-        <Td dataLabel={columnNames.bmName}>
+        <Td dataLabel={columnNames.playerName}>
           {isEditMode ? (
             <TextInput
               value={editedName}
               type="text"
-              aria-label="bm-name"
+              aria-label="edit-player-name"
               onChange={(value) => {
                 setEditedName(value);
               } } />
@@ -149,52 +144,39 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
             editedName
           )}
         </Td>
-        <Td dataLabel={columnNames.bmTitle}>
+        <Td dataLabel={columnNames.playerNumber}>
+          {isEditMode ? (
+            <TextInput
+              value={editedNumber}
+              type="number"
+              aria-label="edit-player-number"
+              onChange={(value) => {
+                setEditedNumber(value);
+              } } />
+          ) : (
+            editedNumber
+          )}
+        </Td>
+        <Td dataLabel={columnNames.division}>
           {isEditMode ? (
             <Select
               variant={SelectVariant.single}
-              aria-label="Select Position"
+              aria-label="Select Division"
               onToggle={onToggle}
               onSelect={onSelect}
               onChange={(value) => {
-                setEditedTitle(value);
+                setEditedDivision(value);
               }}
-              selections={editedTitle}
+              selections={editedDivision}
               isOpen={isOpen}
-              aria-labelledby="edit-bm-position"
+              aria-labelledby="edit-player-division"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
             >
-              { positionDropdownItems }
+              { divisionDropdownItems }
           </Select>
         ) : (
-            editedTitle
-          )}
-        </Td>
-        <Td dataLabel={columnNames.bmPhone}>
-          {isEditMode ? (
-            <TextInput
-              value={editedPhone}
-              type="text"
-              aria-label="edit-bm-phone"
-              onChange={(value) => {
-                setEditedPhone(value);
-              } } />
-          ) : (
-            editedPhone
-          )}
-        </Td>
-        <Td dataLabel={columnNames.bmEmail}>
-          {isEditMode ? (
-            <TextInput
-              value={editedEmail}
-              type="text"
-              aria-label="edit-bm-email"
-              onChange={(value) => {
-                setEditedEmail(value);
-              } } />
-          ) : (
-            editedEmail
+            editedDivision
           )}
         </Td>
         <Td modifier="nowrap">
@@ -228,7 +210,7 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  updateBoardInfo(currentRow.id);
+                  updatePlayer(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -247,4 +229,4 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default BoardMemberEditTableRow;
+export default PlayerEditTableRow;
