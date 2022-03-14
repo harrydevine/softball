@@ -4,6 +4,7 @@ import {
   Form,
   FormGroup,
   Popover,
+  Radio,
   Select,
   SelectDirection,
   SelectOption,
@@ -23,6 +24,8 @@ class AdminTeamModal extends React.Component{
         isColorOpen: false,
         team: "",
         teamColor: "",
+        teamRec: true,
+        teamTravel: false,
         coachname: "",
         coachphone: "",
         coachemail: "",
@@ -35,7 +38,8 @@ class AdminTeamModal extends React.Component{
         <SelectOption key={3} value="10U" />,
         <SelectOption key={4} value="12U" />,
         <SelectOption key={5} value="14U" />,
-        <SelectOption key={6} value="16U" />
+        <SelectOption key={6} value="16U" />,
+        <SelectOption key={7} value="18U" />
       ];
 
       this.teamColorItems = [
@@ -90,9 +94,9 @@ class AdminTeamModal extends React.Component{
         this.setState({ coachemail: "" });
         this.setState({ division: "" });
       };
-      this.onTeamChange = newValue => {
-        console.log("New value for team: ", newValue)
-        this.setState(({ team: newValue }));
+    this.onTeamChange = newValue => {
+      console.log("New value for team: ", newValue)
+      this.setState(({ team: newValue }));
     };
     this.onCoachNameChange = newValue => {
         console.log("New value for coachname: ", newValue)
@@ -147,11 +151,21 @@ class AdminTeamModal extends React.Component{
         this.setState({ isColorOpen: false })
       }
     };
-            
+    this.onTeamRecChange = (_, event) => {
+      const {value} = event.currentTarget;
+      console.log(value);
+      this.setState({[value]: true});
+    };
+    this.onTeamTravelChange = (_, event) => {
+      const {value} = event.currentTarget;
+      console.log(value);
+      this.setState({[value]: true});
+    };
+          
   }
 
   render() {
-    const { isModalOpen, isDivisionOpen, isColorOpen, team, teamColor, coachname, coachphone, coachemail, division } = this.state;
+    const { isModalOpen, isDivisionOpen, isColorOpen, team, teamColor, teamType, coachname, coachphone, coachemail, division } = this.state;
     
     return (
       <React.Fragment>
@@ -242,6 +256,48 @@ class AdminTeamModal extends React.Component{
             >
                 { this.teamColorItems }
             </Select>
+          </FormGroup>
+          <FormGroup
+            label="Team Type"
+            labelIcon={
+            <Popover
+               headerContent={
+                 <div>Is this team a Rec team or a Travel team?</div>
+               }
+               bodyContent={
+                 <div>Select a team type (Rec is the default team type)</div>
+               }
+            >
+            <button
+              type="button"
+              aria-label="More info for the team type field"
+              onClick={e => e.preventDefault()}
+              aria-describedby="add-team-type"
+              className="pf-c-form__group-label-help"
+            >
+              <HelpIcon noVerticalAlign />
+            </button>
+            </Popover>
+            }
+            fieldId="add-team-type">
+              <Radio
+                isChecked={this.state.teamRec}
+                id="teamRec"
+                name="teamType"
+                onChange={this.onTeamRecChange}
+                label="Rec Team"
+                value="rec"
+              >
+              </Radio>
+              <Radio
+                isChecked={this.state.teamTravel}
+                id="teamTravel"
+                name="teamType"
+                onChange={this.onTeamTravelChange}
+                label="Travel Team"
+                value="travel"
+              >
+              </Radio>
           </FormGroup>
           <FormGroup
             label="Coach Name"
@@ -347,7 +403,7 @@ class AdminTeamModal extends React.Component{
                  <div>What division will this team compete in?</div>
                }
                bodyContent={
-                 <div>Choose either 6U, 8U, 10U, 12U, 14U, or 16U.</div>
+                 <div>Choose either 6U, 8U, 10U, 12U, 14U, 16U, or 18U (18U is for Travel Team only).</div>
                }
             >
             <button

@@ -39,10 +39,13 @@ const SoftballPageLayoutNav = ({ children }) => {
       case "itemFAQ":
         navigate("/faq");
         break;
-      case "grpRecTeams":
-        navigate("/recteams");
-        break;
-      case "itemTournaments":
+        case "grpRecTeams":
+          navigate("/recteams");
+          break;
+          case "grpTravelTeams":
+            navigate("/travelteams");
+            break;
+            case "itemTournaments":
         navigate("/tournaments");
         break;
       case "itemForms":

@@ -23,6 +23,7 @@ import AdminTournamentsTable from './AdminTournamentsTable';
 import AdminAdminsTable from './AdminAdminsTable';
 import AdminLatestNewsTable from './AdminLatestNewsTable';
 import AdminAdminsModal from './AdminAdminsModal';
+import AdminFileUpload from './AdminFileUpload';
 //import { MultipleFileUploadBasic } from './MultipleFileUploadBasic';
 
 const config = require('./config.js');
@@ -169,7 +170,7 @@ const Admin = ({ children }) => {
             </TabContent>
             <TabContent key={10} eventKey={10} id={`tabContent${10}`} activeKey={activeTabKey} hidden={10 !== activeTabKey}>
               <TabContentBody>
-                Uploads (Images & PDFs)
+              <AdminFileUpload />
               </TabContentBody>
             </TabContent>
 	  </FlexItem>

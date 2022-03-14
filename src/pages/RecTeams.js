@@ -36,7 +36,7 @@ const RecTeams = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`http://192.168.1.21:8081/teams`)
+    fetch(`http://192.168.1.21:8081/recteams`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTeamData(jsonResponse);

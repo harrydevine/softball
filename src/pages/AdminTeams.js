@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import {
   Bullseye,
+  Button,
   Card,
   CardBody,
   CardHeader,
+  CardFooter,
   CardTitle,
   EmptyState,
   EmptyStateIcon,
@@ -33,6 +35,9 @@ const AdminTeams = () => {
   const [teamData, setTeamData] = React.useState(null);
   const [teamLoading, setTeamLoading] = React.useState(true);
   const [teamErr, setTeamErr] = React.useState(false);
+  const [travelData, setTravelData] = React.useState(null);
+  const [travelLoading, setTravelLoading] = React.useState(true);
+  const [travelErr, setTravelErr] = React.useState(false);
   const [playerData, setPlayerData] = React.useState(null);
   const [playerLoading, setPlayerLoading] = React.useState(true);
   const [playerErr, setPlayerErr] = React.useState(false);
@@ -46,7 +51,7 @@ const AdminTeams = () => {
     
   useEffect(() => {
     // Fetch data for Rec Teams
-    fetch(`http://192.168.1.21:8081/teams`)
+    fetch(`http://192.168.1.21:8081/recteams`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -55,6 +60,20 @@ const AdminTeams = () => {
     .catch(err => {
       setTeamErr(err);
       setTeamLoading(false);
+    })
+  }, []);
+
+  useEffect(() => {
+    // Fetch data for Travel Teams
+    fetch(`http://192.168.1.21:8081/travelteams`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setTravelData(jsonResponse);
+      setTravelLoading(false);
+    })
+    .catch(err => {
+      setTravelErr(err);
+      setTravelLoading(false);
     })
   }, []);
 
@@ -89,6 +108,7 @@ const AdminTeams = () => {
             <Tab eventKey={3} title={<TabTitleText>12U</TabTitleText>} tabContentId={`tabContent${3}`} />
             <Tab eventKey={4} title={<TabTitleText>14U</TabTitleText>} tabContentId={`tabContent${4}`} />
             <Tab eventKey={5} title={<TabTitleText>16U</TabTitleText>} tabContentId={`tabContent${5}`} />
+            <Tab eventKey={6} title={<TabTitleText>Travel</TabTitleText>} tabContentId={`tabContent${6}`} />
           </Tabs>
         </PageSection>
         <PageSection isWidthLimited key="adminTeamsSection3">
@@ -254,6 +274,9 @@ const AdminTeams = () => {
                               </Tbody>
                             </TableComposable>
                         </CardBody>
+                        <CardFooter>
+                          <Button variant="primary">Remove Team</Button>{'  '}
+                        </CardFooter>
                       </Card>
                     )))}
                   </Gallery>
@@ -423,6 +446,55 @@ const AdminTeams = () => {
                         </CardBody>
                       </Card>
                     )))}
+                  </Gallery>
+                  </React.Fragment>
+                </TabContent>
+                <TabContent key={6} eventKey={6} id={`tabContent${6}`} activeKey={activeTabKey} hidden={6 !== activeTabKey}>
+                {travelLoading && (
+                  <Bullseye>
+                    <Spinner size="xl" />
+                  </Bullseye>
+                )}
+                {!travelLoading && travelData?.data.length === 0 && (
+                  <Bullseye>
+                    <EmptyState variant={EmptyStateVariant.small}>
+                      <EmptyStateIcon icon={SearchIcon} />
+                        <Title headingLevel="h2" size="lg">
+                          No Team information retrieved!
+                        </Title>
+                      <EmptyStateBody>
+                        Check your network connection or contact the system administrator.
+                      </EmptyStateBody>
+                    </EmptyState>
+                  </Bullseye>
+                )}
+                <React.Fragment key="travel_teams">
+                  <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
+                  {!travelLoading && travelData?.data.map((row => (
+                    <Card key={row.id}>
+                      <CardHeader>
+                        <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
+                      </CardHeader>
+                      <CardTitle>Coach: {row.coach}</CardTitle>
+                      <CardBody>
+                        <SimpleList aria-label={row.teamName}>
+                          <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
+                          <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
+                        </SimpleList>
+                        <Title headingLevel="h2" size="lg">Roster</Title>
+                          <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                            <Thead>
+                              <Tr>
+                                <Th width={50}>Name</Th>
+                                <Th width={50}>Jersey Number</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                            </Tbody>
+                          </TableComposable>
+                      </CardBody>
+                    </Card>
+                  )))}
                   </Gallery>
                   </React.Fragment>
                 </TabContent>

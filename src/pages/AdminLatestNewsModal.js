@@ -55,7 +55,6 @@ class AdminLatestNewsModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
       }));
-      console.log(this.state.title, this.state.body, this.state.image)      
       /* Add Latest News to database...*/
       addLatestNewsToDatabase('http://192.168.1.21:8081/news', { title: this.state.title, body: this.state.body, image: this.state.image })
       .then(data => {
@@ -75,7 +74,6 @@ class AdminLatestNewsModal extends React.Component{
     };
 
     this.handleNewsCancel = () => {
-      console.log("Hit handleFieldCancel....")
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
@@ -87,17 +85,14 @@ class AdminLatestNewsModal extends React.Component{
     };
 
     this.onTitleChange = newValue => {
-        console.log("New value for title: ", newValue)
         this.setState(({ title: newValue }));
     };
 
     this.onBodyChange = newValue => {
-        console.log("New value for body: ", newValue)
         this.setState(({ body: newValue }));
       };
 
     this.onImageChange = newValue => {
-      console.log("New value for image: ", newValue)
       this.setState(({ image: newValue }));
     };
     

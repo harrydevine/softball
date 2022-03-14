@@ -9,6 +9,7 @@ import FAQ from './pages/FAQ';
 import Forms from './pages/Forms';
 import FieldInfo from './pages/FieldInfo';
 import RecTeams from './pages/RecTeams';
+import TravelTeams from './pages/TravelTeams';
 import Sponsors from './pages/Sponsors';
 import Tournaments from './pages/Tournaments';
 import AdminLogin from './pages/AdminLogin';
@@ -26,6 +27,7 @@ ReactDOM.render(
         <Route path="boardmembers" element={<BoardMembers />} />
         <Route path="fieldinfo" element={<FieldInfo />} />
         <Route path="recteams" element={<RecTeams />} />
+        <Route path="travelteams" element={<TravelTeams />} />
 	<Route path="faq" element={<FAQ />} />
 	<Route path="forms" element={<Forms />} />
 	<Route path="sponsors" element={<Sponsors />} />
