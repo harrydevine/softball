@@ -36,7 +36,7 @@ const FieldInfo = ({ children }) => {
     const [error, setError] = React.useState(null);
     const [statusColor, setStatusColor] = React.useState("green");
     const [fieldStatus, setFieldStatus] = React.useState("Open");
-    const [count, setCount] = React.useState(0);
+//    const [count, setCount] = React.useState(0);
 
     useEffect(() => {
       // Fetch data for Field Status
@@ -53,11 +53,14 @@ const FieldInfo = ({ children }) => {
      }, []);
 	
      useEffect(() => {
+//       console.log(fieldData);
+       let count = 0;
      /* Determine the field status and color for presentation */
        if (fieldData?.data.length > 0) {
          fieldData.data.map((field) => {
            if (field.fieldStatus === 0) {
-             setCount(count++);
+             count = count + 1;
+//             setCount(count++);
            }
          });
        }

@@ -14,6 +14,7 @@ import {
   Title
 } from '@patternfly/react-core';
 import AdminFieldsModal from './AdminFieldsModal';
+import AdminFieldsMasterStatusModal from './AdminFieldsMasterStatusModal';
 import FieldsEditTableRow from './FieldsEditTableRow';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
@@ -29,6 +30,7 @@ const AdminFieldsTable = ({ children }) => {
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
   const [fieldAdded, setFieldAdded] = React.useState(false);
+//  const [fieldMasterUpdated, setFieldMasterUpdated] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
 
   const addAlert = (title, variant, key) => {
@@ -50,16 +52,20 @@ const AdminFieldsTable = ({ children }) => {
   };
 
   useEffect(() => {
-  // Fetch data for Board Members
+  // Fetch data for Fields
     fetchFieldInfo();
     setFieldAdded(false);
+//    setFieldMasterUpdated(false);
   }, []);
 
   useEffect(() => {
-  // Fetch data for Fields
-    fetchFieldInfo();
+//    console.log("triggered by dependency array ", fieldAdded, fieldMasterUpdated);
+    // Fetch data for Fields
+      fetchFieldInfo();
+//      setFieldAdded(false);
+//      setFieldMasterUpdated(false);
   }, [fieldAdded]);
-
+      
   // Fetch field data
   const fetchFieldInfo = () => {
     fetch(`http://192.168.1.21:8081/fields`)
@@ -67,6 +73,7 @@ const AdminFieldsTable = ({ children }) => {
       const jsonResponse = await resp.json()
       setFieldData(jsonResponse);
       setLoading(false);
+//      console.log(jsonResponse);
     })
     .catch(err => {
       setErr(err);
@@ -90,6 +97,7 @@ const AdminFieldsTable = ({ children }) => {
         ))}
       </AlertGroup>
       <AdminFieldsModal setFieldAdded={setFieldAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
+      <AdminFieldsMasterStatusModal fetchFieldInfo={fetchFieldInfo} setLoading={setLoading} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
@@ -98,47 +106,47 @@ const AdminFieldsTable = ({ children }) => {
        <Tr>
          <Th width={20}>{columnNames.fieldNum}</Th>
          <Th width={30}>{columnNames.fieldStatus}</Th>
-          <Th width={50}>{columnNames.fieldReason}</Th>
+         <Th width={50}>{columnNames.fieldReason}</Th>
        </Tr>
        </Thead>
-        <Tbody>
-          {!loading && fieldData?.data.length === 0 && (
-            <Tr key="0">
-              <Td colSpan={4}>
-                <Bullseye>
-                  <EmptyState variant={EmptyStateVariant.small}>
-                    <EmptyStateIcon icon={SearchIcon} />
-                    <Title headingLevel="h2" size="lg">
-                      No Field information retrieved!
-                    </Title>
-                    <EmptyStateBody>
-                      Check your network connection or contact the system administrator.
-                    </EmptyStateBody>
-                  </EmptyState>
-                </Bullseye>
-              </Td>
-            </Tr>
-          )}
-          {!loading && fieldData?.data.map(row => (
-             <FieldsEditTableRow
-               key={row.id}
-               currentField={row}
-               fetchFieldInfo={fetchFieldInfo}
-               addSuccessAlert={addSuccessAlert} 
-               addFailureAlert={addFailureAlert}
-             />
-          ))}
-         {loading && (
-            <Tr>
-              <Td colSpan={4}>
+       <Tbody>
+        {!loading && fieldData?.data.length === 0 && (
+          <Tr key="0">
+            <Td colSpan={4}>
+              <Bullseye>
+                <EmptyState variant={EmptyStateVariant.small}>
+                  <EmptyStateIcon icon={SearchIcon} />
+                  <Title headingLevel="h2" size="lg">
+                    No Field information retrieved!
+                  </Title>
+                  <EmptyStateBody>
+                    Check your network connection or contact the system administrator.
+                  </EmptyStateBody>
+                </EmptyState>
+              </Bullseye>
+            </Td>
+          </Tr>
+        )}
+        {!loading && fieldData?.data.map(row => (
+          <FieldsEditTableRow
+            key={row.id}
+            currentField={row}
+            fetchFieldInfo={fetchFieldInfo}
+            addSuccessAlert={addSuccessAlert} 
+            addFailureAlert={addFailureAlert}
+          />
+        ))}
+        {loading && (
+          <Tr>
+            <Td colSpan={4}>
               <Bullseye>
                 <Spinner size="xl" />
               </Bullseye>
            </Td>
-            </Tr>
-          )}
-      </Tbody>
-      </TableComposable>
+          </Tr>
+        )}
+       </Tbody>
+     </TableComposable>
     </React.Fragment>
   );
 }

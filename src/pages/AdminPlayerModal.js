@@ -57,7 +57,8 @@ class AdminPlayerModal extends React.Component{
       <SelectOption key={3} value="10U" />,
       <SelectOption key={4} value="12U" />,
       <SelectOption key={5} value="14U" />,
-      <SelectOption key={6} value="16U" />
+      <SelectOption key={6} value="16U" />,
+      <SelectOption key={7} value="18U" />
     ];
       
     this.handleModalToggle = () => {
@@ -259,7 +260,7 @@ class AdminPlayerModal extends React.Component{
                  <div>What division will this player compete in?</div>
                }
                bodyContent={
-                 <div>Choose either 6U, 8U, 10U, 12U, 14U, or 16U.</div>
+                 <div>Choose either 6U, 8U, 10U, 12U, 14U, 16U, or 18U(Travel).</div>
                }
             >
             <button

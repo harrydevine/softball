@@ -11,7 +11,6 @@ import {
   EmptyStateVariant,
   Flex,
   FlexItem,
-  Gallery,
   Label,
   PageSection,
   PageSectionVariants,
@@ -34,6 +33,9 @@ const TravelTeams = ({ children }) => {
   const [teamData, setTeamData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [playerData, setPlayerData] = React.useState(null);
+  const [playerLoading, setPlayerLoading] = React.useState(true);
+  const [playerError, setPlayerError] = React.useState(null);
 
   useEffect(() => {
   // Fetch data for Rec Teams
@@ -47,6 +49,19 @@ const TravelTeams = ({ children }) => {
         setError(err);
         setLoading(false);
       })
+
+    // Fetch data for Players
+    fetch(`http://192.168.1.21:8081/players`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setPlayerData(jsonResponse);
+      setPlayerLoading(false);
+    })
+    .catch(err => {
+      setPlayerError(err);
+      setPlayerLoading(false);
+    })
+
     }, []);
 
   const handleTabClick = (event, tabIndex) => {
@@ -68,15 +83,14 @@ const TravelTeams = ({ children }) => {
 	      </FlexItem>
       </Flex>
 	    </PageSection>
-        <>
         {loading && (
           <Bullseye>
             <Spinner size="xl" />
           </Bullseye>
         )}
         {!loading && teamData?.data.length === 0 && (
-          <Bullseye key="travelTeamsBullseye">
-            <EmptyState variant={EmptyStateVariant.small} key="travelteamsNoDataFound">
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
                 <Title headingLevel="h2" size="lg">
                   No Team information retrieved!
@@ -87,7 +101,8 @@ const TravelTeams = ({ children }) => {
             </EmptyState>
           </Bullseye>
         )}
-        <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets isBox id="tabTravelTeams">
+      <PageSection type="tabs" variant={PageSectionVariants.light} key="travelTeamContentTabs">
+        <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets isBox id="tabTravelTeams" aria-label="tabTravelTeams">
         {!loading && teamData?.data.map((row, rowIndex) => (
           <Tab 
             key={`tab${rowIndex}`}
@@ -97,11 +112,10 @@ const TravelTeams = ({ children }) => {
           />
         ))}
         </Tabs>
-        </>
-  	    <PageSection type="tabs" variant={PageSectionVariants.light} key="travelTeamContentTabs">
-        {!loading && teamData?.data.map((row, rowIndex) => (
+      </PageSection>
+      {!loading && teamData?.data.map((row, rowIndex) => (
         <TabContent key={row.id} eventKey={row.id} id={`tabContent${row.id}`} activeKey={activeTabKey} hidden={row.id !== activeTabKey}>
-            <React.Fragment key={`travelTeamContent${rowIndex}`}>
+          <React.Fragment key={`travelTeamContent${rowIndex}`}>
             <Card key={`team${rowIndex}`}>
               <CardHeader>
                 <Label icon={<InfoCircleIcon />} color={row.teamColor} >{row.teamName}</Label>
@@ -121,14 +135,23 @@ const TravelTeams = ({ children }) => {
                     </Tr>
                   </Thead>
                   <Tbody>
+                  {!playerLoading && playerData?.data
+                    .filter(function (data) {
+                      return data.teamId === row.id;
+                    })
+                    .map((player => (
+                      <Tr key={"player"+player.id}>
+                        <Td>{player.playerName}</Td>
+                        <Td>{player.playerNumber}</Td>
+                      </Tr>
+                    )))}
                   </Tbody>
                 </TableComposable>
               </CardBody>
             </Card>
-            </React.Fragment>
-          </TabContent>
+          </React.Fragment>
+        </TabContent>
         ))}
-        </PageSection>
     </div>
   );
 }

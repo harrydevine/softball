@@ -11,17 +11,15 @@ import {
   EmptyStateVariant,
   Flex,
   FlexItem,
-  Gallery,
   Label,
   PageSection,
   PageSectionVariants,
-  SimpleList,
-  SimpleListItem,
   Spinner,
   Tabs,
   Tab,
   TabContent,
   TabTitleText,
+  Text,
   Title
 } from '@patternfly/react-core';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
@@ -33,20 +31,37 @@ const RecTeams = ({ children }) => {
   const [teamData, setTeamData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [playerData, setPlayerData] = React.useState(null);
+  const [playerLoading, setPlayerLoading] = React.useState(true);
+  const [playerError, setPlayerError] = React.useState(null);
 
   useEffect(() => {
   // Fetch data for Rec Teams
     fetch(`http://192.168.1.21:8081/recteams`)
-      .then(async resp => {
-        const jsonResponse = await resp.json()
-        setTeamData(jsonResponse);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err);
-        setLoading(false);
-      })
-    }, []);
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setTeamData(jsonResponse);
+      setLoading(false);
+    })
+    .catch(err => {
+      setError(err);
+      setLoading(false);
+    })
+  }, []);
+
+  useEffect(() => {
+    // Fetch data for Players
+    fetch(`http://192.168.1.21:8081/players`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setPlayerData(jsonResponse);
+      setPlayerLoading(false);
+    })
+    .catch(err => {
+      setPlayerError(err);
+      setPlayerLoading(false);
+    })
+  }, []);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
@@ -68,7 +83,7 @@ const RecTeams = ({ children }) => {
       </Flex>
 	    </PageSection>
 	    <PageSection type="tabs" variant={PageSectionVariants.light} isWidthLimited key="pageSectionTabs">
-	      <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams" isBox>
+	      <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabRecTeams" isBox isFilled>
           <Tab 
 	          eventKey={0} 
 	          title={<TabTitleText>6U</TabTitleText>}
@@ -122,7 +137,6 @@ const RecTeams = ({ children }) => {
             </Bullseye>
           )}
           <React.Fragment key="6u_teams">
-            <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
             {!loading && teamData?.data
               .filter(function (data) {
                 return data.division === "6U";
@@ -134,10 +148,11 @@ const RecTeams = ({ children }) => {
                   </CardHeader>
                   <CardTitle>Coach: {row.coach}</CardTitle>
                     <CardBody>
-                      <SimpleList aria-label="{row.teamName}">
-                        <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                        <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                      </SimpleList>
+                      Phone Number: {row.coach_phone}
+                      <Text component="br" />
+                      Email: {row.coach_email}
+                      <Text component="br" />
+                      <Text component="br" />
                       <Title headingLevel="h2" size="lg">Roster</Title>
                         <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                           <Thead>
@@ -147,12 +162,21 @@ const RecTeams = ({ children }) => {
                             </Tr>
                           </Thead>
                           <Tbody>
+                          {!playerLoading && playerData?.data
+                            .filter(function (data) {
+                              return data.teamId === row.id;
+                            })
+                            .map((player => (
+                              <Tr key={"player"+player.id}>
+                                <Td>{player.playerName}</Td>
+                                <Td>{player.playerNumber}</Td>
+                              </Tr>
+                            )))}
                           </Tbody>
                         </TableComposable>
                     </CardBody>
                   </Card>
                 )))}
-              </Gallery>
               </React.Fragment>
 	        </TabContent>
           <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
@@ -175,7 +199,6 @@ const RecTeams = ({ children }) => {
               </Bullseye>
             )}
                     <React.Fragment key="8u_teams">
-                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "8U";
@@ -187,10 +210,11 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName}>
-                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                          </SimpleList>
+                          Phone Number: {row.coach_phone}
+                          <Text component="br" />
+                          Email: {row.coach_email}
+                          <Text component="br" />
+                          <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -200,12 +224,21 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
+                              {!playerLoading && playerData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((player => (
+                                  <Tr key={"player"+player.id}>
+                                    <Td>{player.playerName}</Td>
+                                    <Td>{player.playerNumber}</Td>
+                                  </Tr>
+                                )))}
                               </Tbody>
                             </TableComposable>
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery>
                   </React.Fragment>
             </TabContent>
                 <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
@@ -228,7 +261,6 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="10u_teams">
-                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "10U";
@@ -240,10 +272,11 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName}>
-                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                          </SimpleList>
+                          Phone Number: {row.coach_phone}
+                          <Text component="br" />
+                          Email: {row.coach_email}
+                          <Text component="br" />
+                          <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -253,20 +286,21 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                                <Tr>
-                                  <Td dataLabel="player1Name">Amanda D</Td>
-                                  <Td dataLabel="player1Jersey">2</Td>
-                                </Tr>
-                                <Tr>
-                                  <Td dataLabel="player1Name">Kasey C</Td>
-                                  <Td dataLabel="player1Jersey">9</Td>
-                                </Tr>
+                              {!playerLoading && playerData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((player => (
+                                  <Tr key={"player"+player.id}>
+                                    <Td>{player.playerName}</Td>
+                                    <Td>{player.playerNumber}</Td>
+                                  </Tr>
+                                )))}
                               </Tbody>
                             </TableComposable>
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery>
                   </React.Fragment>
                 </TabContent>
                 <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
@@ -289,7 +323,6 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="12u_teams">
-                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }} >
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "12U";
@@ -301,10 +334,11 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName}>
-                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                          </SimpleList>
+                          Phone Number: {row.coach_phone}
+                          <Text component="br" />
+                          Email: {row.coach_email}
+                          <Text component="br" />
+                          <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -314,20 +348,21 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                                <Tr>
-                                  <Td dataLabel="player1Name">Amanda D</Td>
-                                  <Td dataLabel="player1Jersey">2</Td>
-                                </Tr>
-                                <Tr>
-                                  <Td dataLabel="player1Name">Kasey C</Td>
-                                  <Td dataLabel="player1Jersey">9</Td>
-                                </Tr>
+                              {!playerLoading && playerData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((player => (
+                                  <Tr key={"player"+player.id}>
+                                    <Td>{player.playerName}</Td>
+                                    <Td>{player.playerNumber}</Td>
+                                  </Tr>
+                                )))}
                               </Tbody>
                             </TableComposable>
                         </CardBody>
                       </Card>
                     )))}
-                    </Gallery>
                     </React.Fragment>
                 </TabContent>
                 <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
@@ -349,8 +384,7 @@ const RecTeams = ({ children }) => {
                         </EmptyState>
                      </Bullseye>
                     )}
-                    <React.Fragment key="14u_teams"
-                    ><Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }} >
+                    <React.Fragment key="14u_teams">
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "14U";
@@ -362,10 +396,11 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName}>
-                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                          </SimpleList>
+                          Phone Number: {row.coach_phone}
+                          <Text component="br" />
+                          Email: {row.coach_email}
+                          <Text component="br" />
+                          <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -375,12 +410,21 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
+                              {!playerLoading && playerData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((player => (
+                                  <Tr key={"player"+player.id}>
+                                    <Td>{player.playerName}</Td>
+                                    <Td>{player.playerNumber}</Td>
+                                  </Tr>
+                                )))}
                               </Tbody>
                             </TableComposable>
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery>
                   </React.Fragment>
                 </TabContent>
                 <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
@@ -403,7 +447,6 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment>
-                    <Gallery hasGutter style={{ '--pf-l-gallery--GridTemplateColumns--min': '260px' }}>
                     {!loading && teamData?.data
                     .filter(function (data) {
                       return data.division === "16U";
@@ -415,10 +458,11 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          <SimpleList aria-label={row.teamName}>
-                            <SimpleListItem>Phone Number: {row.coach_phone}</SimpleListItem>
-                            <SimpleListItem>Email: {row.coach_email}</SimpleListItem>
-                          </SimpleList>
+                          Phone Number: {row.coach_phone}
+                          <Text component="br" />
+                          Email: {row.coach_email}
+                          <Text component="br" />
+                          <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -428,12 +472,21 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
+                              {!playerLoading && playerData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((player => (
+                                  <Tr key={"player"+player.id}>
+                                    <Td>{player.playerName}</Td>
+                                    <Td>{player.playerNumber}</Td>
+                                  </Tr>
+                                )))}
                               </Tbody>
                             </TableComposable>
                         </CardBody>
                       </Card>
                     )))}
-                  </Gallery>
                   </React.Fragment>
                 </TabContent>
     	</PageSection>

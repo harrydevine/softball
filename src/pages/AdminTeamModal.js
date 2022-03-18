@@ -1,5 +1,9 @@
 import React from 'react';
 import {
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button,
   Form,
   FormGroup,
@@ -26,89 +30,140 @@ class AdminTeamModal extends React.Component{
         teamColor: "",
         teamRec: true,
         teamTravel: false,
+        teamType: "rec",
         coachname: "",
         coachphone: "",
         coachemail: "",
-        division: ""
+        division: "",
+        url: "http://192.168.1.21:8081/recteams",
+        alerts: []
       };
-      this.divisionDropdownItems = [
-        <SelectOption key={0} value="Select a Division" isPlaceholder />,
-        <SelectOption key={1} value="6U" />,
-        <SelectOption key={2} value="8U" />,
-        <SelectOption key={3} value="10U" />,
-        <SelectOption key={4} value="12U" />,
-        <SelectOption key={5} value="14U" />,
-        <SelectOption key={6} value="16U" />,
-        <SelectOption key={7} value="18U" />
-      ];
 
-      this.teamColorItems = [
-        <SelectOption key={0} value="Select a Team Color" isPlaceholder />,
-        <SelectOption key={1} value="Pink" />,
-        <SelectOption key={2} value="Yellow" />,
-        <SelectOption key={3} value="Teal" />,
-        <SelectOption key={4} value="Purple" />,
-        <SelectOption key={5} value="Green" />,
-        <SelectOption key={6} value="Blue" />,
-        <SelectOption key={7} value="Light Blue" />,
-        <SelectOption key={8} value="Red" />,
-        <SelectOption key={9} value="Orange" />,
-        <SelectOption key={10} value="White" />
-      ];
+    this.addAlert = (title, variant, key) => {
+      this.setState({
+        alerts: [ ...this.state.alerts, {title: title, variant: variant, key }]
+      });
+    };
+  
+    this.removeAlert = key => {
+      this.setState({ alerts: [...this.state.alerts.filter(el => el.key !== key)]});
+    };
+  
+    this.getUniqueId = () => (new Date().getTime());
+  
+    this.addSuccessAlert = (string) => { 
+      this.addAlert(string, 'success', this.getUniqueId());
+    };
+        
+    this.addFailureAlert = (string) => { 
+      this.addAlert(string, 'danger', this.getUniqueId()) 
+    };
+  
+    this.divisionDropdownItems = [
+      <SelectOption key={0} value="Select a Division" isPlaceholder />,
+      <SelectOption key={1} value="6U" />,
+      <SelectOption key={2} value="8U" />,
+      <SelectOption key={3} value="10U" />,
+      <SelectOption key={4} value="12U" />,
+      <SelectOption key={5} value="14U" />,
+      <SelectOption key={6} value="16U" />,
+      <SelectOption key={7} value="18U" />
+    ];
+
+    this.teamColorItems = [
+      <SelectOption key={0} value="Select a Team Color" isPlaceholder />,
+      <SelectOption key={1} value="Pink" />,
+      <SelectOption key={2} value="Yellow" />,
+      <SelectOption key={3} value="Teal" />,
+      <SelectOption key={4} value="Purple" />,
+      <SelectOption key={5} value="Green" />,
+      <SelectOption key={6} value="Blue" />,
+      <SelectOption key={7} value="Light Blue" />,
+      <SelectOption key={8} value="Red" />,
+      <SelectOption key={9} value="Orange" />,
+      <SelectOption key={10} value="White" />
+    ];
       
-      this.handleModalToggle = () => {
-        this.setState(({ isModalOpen}) => ({
-          isModalOpen: !isModalOpen
-        }));
-      };
-      this.handleTeamAdd = () => {
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
-        console.log(this.state.team, " ", this.state.teamColor, " ", this.state.coachname, " ", this.state.coachphone, " ", this.state.coachemail, " ", this.state.division);
-        /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
-//        .then(data => {
-//          console.log(data);
-//        });
+    this.handleModalToggle = () => {
+      this.setState(({ isModalOpen}) => ({
+        isModalOpen: !isModalOpen
+      }));
+    };
+
+    this.handleTeamAdd = () => {
+      this.setState(({ isModalOpen}) => ({
+        isModalOpen: !isModalOpen
+      }));
+      console.log(this.state.team, this.state.teamColor, this.state.teamType, this.state.coachname, this.state.coachphone, this.state.coachemail, this.state.division, this.state.url);
+      /* Add Team to database...*/
+      addTeamToDatabase(this.state.url, { teamName: this.state.team, color: this.state.teamColor, coach: this.state.coachname,
+        phone: this.state.coachphone, email: this.state.coachemail, division: this.state.division })
+      .then(data => {
+        if ((data.message === "Rec Team created successfully") || (data.message === "Travel Team created successfully")) {
+          this.props.setTeamAdded(true);
+          this.addSuccessAlert(data.message);
+        }
+        else {
+          this.props.setTeamAdded(false);
+          this.addFailureAlert(data.message);
+        }
+      });
     
-        /* Reset dialog fields for next time */
-        this.setState({ team: "" });
-        this.setState({ teamColor: "" });
-        this.setState({ coachname: "" });
-        this.setState({ coachphone: "" });
-        this.setState({ coachemail: "" });
-        this.setState({ division: "" });
-      };
-      this.handleTeamCancel = () => {
-        console.log("Hit handleTeamCancel....")
-        this.setState(({ isModalOpen}) => ({
-            isModalOpen: !isModalOpen
-          }));
+      /* Reset dialog fields for next time */
+      this.setState({ team: "" });
+      this.setState({ teamColor: "" });
+      this.setState({ teamType: "rec" });
+      this.setState({ coachname: "" });
+      this.setState({ coachphone: "" });
+      this.setState({ coachemail: "" });
+      this.setState({ division: "" });
+      this.setState({ url: "http://192.168.1.21:8081/recteams" });
+    };
+
+    this.handleTeamCancel = () => {
+      this.setState(({ isModalOpen}) => ({
+        isModalOpen: !isModalOpen
+      }));
       
-        /* Reset dialog fields for next time */
-        this.setState({ team: "" });
-        this.setState({ teamColor: "" });
-        this.setState({ coachname: "" });
-        this.setState({ coachphone: "" });
-        this.setState({ coachemail: "" });
-        this.setState({ division: "" });
-      };
+      /* Reset dialog fields for next time */
+      this.setState({ team: "" });
+      this.setState({ teamColor: "" });
+      this.setState({ teamType: "rec" });
+      this.setState({ coachname: "" });
+      this.setState({ coachphone: "" });
+      this.setState({ coachemail: "" });
+      this.setState({ division: "" });
+      this.setState({ url: "http://192.168.1.21:8081/recteams" });
+    };
+
+    async function addTeamToDatabase (url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    };
+
     this.onTeamChange = newValue => {
-      console.log("New value for team: ", newValue)
       this.setState(({ team: newValue }));
     };
     this.onCoachNameChange = newValue => {
-        console.log("New value for coachname: ", newValue)
-        this.setState(({ coachname: newValue }));
+      this.setState(({ coachname: newValue }));
     };
     this.onCoachPhoneChange = newValue => {
-        console.log("New value for coachphone: ", newValue)
-        this.setState(({ coachphone: newValue }));
+      this.setState(({ coachphone: newValue }));
     };
     this.onCoachEmailChange = newValue => {
-        console.log("New value for coachemail: ", newValue)
-        this.setState(({ coachemail: newValue }));
+      this.setState(({ coachemail: newValue }));
     };
     this.onEscapePress = () => {
       this.setState(({ isDivisionOpen }) => ({
@@ -119,56 +174,68 @@ class AdminTeamModal extends React.Component{
       }));
     };
     this.onDivisionToggle = isDivisionOpen => {
-      console.log("isDivisionOpen: ", isDivisionOpen);
       this.setState({ isDivisionOpen });
     };
     this.onColorToggle = isColorOpen => {
-      console.log("isColorOpen: ", isColorOpen);
       this.setState({ isColorOpen });
     };
         
     this.onDivisionSelect = (event, selection, isPlaceholder) => {
-        console.log("Hit onDivisionSelect ", selection);
         if (isPlaceholder) {
           this.setState({ division: ""});
           this.setState({ isDivisionOpen: false })
       }
       else {
-        console.log("New value for division: ", selection)
         this.setState({ division: selection});
         this.setState({ isOpen: false })
       }
     };
     this.onColorSelect = (event, selection, isPlaceholder) => {
-        console.log("Hit onColorSelect ", selection);
-        if (isPlaceholder) {
-          this.setState({ teamColor: ""});
-          this.setState({ isColorOpen: false })
+      if (isPlaceholder) {
+        this.setState({ teamColor: ""});
+        this.setState({ isColorOpen: false })
       }
       else {
-        console.log("New value for teamColor: ", selection)
         this.setState({ teamColor: selection});
         this.setState({ isColorOpen: false })
       }
     };
     this.onTeamRecChange = (_, event) => {
-      const {value} = event.currentTarget;
-      console.log(value);
-      this.setState({[value]: true});
+      this.setState({ teamTravel: false });
+      this.setState({ teamRec: true });
+      this.setState({ teamType: "rec" })
+      this.setState({ url: "http://192.168.1.21:8081/recteams" });
     };
     this.onTeamTravelChange = (_, event) => {
-      const {value} = event.currentTarget;
-      console.log(value);
-      this.setState({[value]: true});
+      this.setState({ teamTravel: true });
+      this.setState({ teamRec: false });
+      this.setState({ teamType: "travel" }); 
+      this.setState({ url: "http://192.168.1.21:8081/travelteams" });
     };
           
   }
 
   render() {
-    const { isModalOpen, isDivisionOpen, isColorOpen, team, teamColor, teamType, coachname, coachphone, coachemail, division } = this.state;
+    const { isModalOpen, isDivisionOpen, isColorOpen, team, teamColor, teamRec, teamTravel, teamType, coachname, coachphone, coachemail, division, url } = this.state;
     
     return (
       <React.Fragment>
+        <AlertGroup isToast isLiveRegion>
+          {this.state.alerts.map(({key, variant, title}) => (
+            <Alert
+              variant={AlertVariant[variant]}
+              title={title}
+              timeout={5000}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`variant} alert`}
+                  onClose={() => this.removeAlert(key)}
+                />
+              }
+              key={key} />
+          ))}
+        </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Team</Button>{'  '}
         <Modal
           variant={ModalVariant.medium}
@@ -282,7 +349,7 @@ class AdminTeamModal extends React.Component{
             fieldId="add-team-type">
               <Radio
                 isChecked={this.state.teamRec}
-                id="teamRec"
+                id="teamType"
                 name="teamType"
                 onChange={this.onTeamRecChange}
                 label="Rec Team"
@@ -291,7 +358,7 @@ class AdminTeamModal extends React.Component{
               </Radio>
               <Radio
                 isChecked={this.state.teamTravel}
-                id="teamTravel"
+                id="teamType"
                 name="teamType"
                 onChange={this.onTeamTravelChange}
                 label="Travel Team"
