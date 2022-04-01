@@ -6,7 +6,6 @@ import {
   LoginFooterItem,
   LoginForm,
   LoginMainFooterBandItem,
-  LoginMainFooterLinksItem,
   LoginPage,
   ListItem,
   TextContent,
@@ -16,59 +15,56 @@ import {
 import Linkify from 'react-linkify';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
-import useAuth from '../useAuth';
+import { useNavigate } from 'react-router';
+//import { useAuth0 } from '@auth0/auth0-react'
 
-class AdminLogin extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showHelperText: false,
-      usernameValue: '',
-      isValidUsername: true,
-      passwordValue: '',
-      isValidPassword: true,
-      isModalOpen: false
-    };
-
-    this.handleUsernameChange = value => {
-      this.setState({ usernameValue: value });
-    };
-
-    this.handlePasswordChange = passwordValue => {
-      this.setState({ passwordValue });
-    };
-
-//    this.onLoginButtonClick = (event) => {
-//      event.preventDefault();
-//      login().then(() => {
-//        navigate("/admin");
-//      });
-
-//    const navigate = useNavigate();
-//    const { login } = useAuth();
-//    let navigate = useNavigate();
-//    let { login } = useAuth();
-//    this.onLoginButtonClick = (event) => {
-//      event.preventDefault();
-//      login().then(() => {
-//        navigate("/admin");
-//      });
-//      this.setState({ isValidUsername: !!this.state.usernameValue });
-//      this.setState({ isValidPassword: !!this.state.passwordValue });
-//      this.setState({ showHelperText: !this.state.usernameValue || !this.state.passwordValue });
+const AdminLogin = ({ children }) => {
+  const [usernameValue, setUsernameValue] = React.useState("");
+  const [passwordValue, setPasswordValue] = React.useState("");
+  const [isValidUsername, setValidUsername] = React.useState(true);
+  const [isValidPassword, setValidPassword] = React.useState(true);
+  const [showHelperText, setShowHelperText] = React.useState(false);
+  const [isModalOpen, setModalOpen] = React.useState(false);
+  let navigate = useNavigate();
+  //  class AdminLogin extends React.Component {
+//  constructor(props) {
+//    super(props);
+//    this.state = {
+//      showHelperText: false,
+//      usernameValue: '',
+//      isValidUsername: true,
+//      passwordValue: '',
+//      isValidPassword: true,
+//      isModalOpen: false
 //    };
 
-    this.handleModalToggle = (event) => {
-      event.preventDefault();
-      this.setState(({ isModalOpen }) => ({
-        isModalOpen: !isModalOpen
-      }));
-    };
+  const handleUsernameChange = value => {
+    setUsernameValue(value);
+//      this.setState({ usernameValue: value });
+  };
+
+  const handlePasswordChange = passwordValue => {
+    setPasswordValue(passwordValue);
+//      this.setState({ passwordValue });
+  };
+
+  const handleModalToggle = (event) => {
+    event.preventDefault();
+    setModalOpen(!isModalOpen);
+//      this.setState(({ isModalOpen }) => ({
+//        isModalOpen: !isModalOpen
+//      }));
+//    };
   }
 
-  render() {
-    const { isModalOpen } = this.state;
+  const onLoginButtonClick = (event) => {
+    event.preventDefault();
+//    navigate("http://softball-pi4:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code&redirect_uri=http://softball-pi4:3000/admin");
+//    navigate("http://softball-pi4:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code");
+  }
+
+//  return() {
+//    const { isModalOpen } = this.state;
 
     const helperText = (
       <React.Fragment>
@@ -86,10 +82,10 @@ class AdminLogin extends React.Component {
     const listItem = (
       <React.Fragment>
         <ListItem>
-          <LoginFooterItem href="#" onClick={this.handleModalToggle}>Terms of Use/Privacy Policy </LoginFooterItem>
+          <LoginFooterItem href="#" onClick={handleModalToggle}>Terms of Use/Privacy Policy </LoginFooterItem>
 	  <AboutModal
 	    isOpen={isModalOpen}
-	    onClose={this.handleModalToggle}
+	    onClose={handleModalToggle}
 	    trademark="Copyright &copy; 2022 Egg Harbor Township Softball"
             brandImageSrc={brandImg}
 	    brandImageAlt="EHT Softball Logo"
@@ -114,20 +110,20 @@ class AdminLogin extends React.Component {
 
     const loginForm = (
       <LoginForm
-        showHelperText={this.state.showHelperText}
+        showHelperText={showHelperText}
         helperText={helperText}
         helperTextIcon={<ExclamationCircleIcon />}
         usernameLabel="Username"
-        usernameValue={this.state.usernameValue}
-        onChangeUsername={this.handleUsernameChange}
-        isValidUsername={this.state.isValidUsername}
+        usernameValue={usernameValue}
+        onChangeUsername={handleUsernameChange}
+        isValidUsername={isValidUsername}
         passwordLabel="Password"
-        passwordValue={this.state.passwordValue}
+        passwordValue={passwordValue}
         isShowPasswordEnabled
-        onChangePassword={this.handlePasswordChange}
-        isValidPassword={this.state.isValidPassword}
-        onChangeRememberMe={this.onRememberMeClick}
-        onLoginButtonClick={this.onLoginButtonClick}
+        onChangePassword={handlePasswordChange}
+        isValidPassword={isValidPassword}
+//        onChangeRememberMe={onRememberMeClick}
+        onLoginButtonClick={onLoginButtonClick}
         loginButtonLabel="Log in"
       />
     );
@@ -167,7 +163,7 @@ class AdminLogin extends React.Component {
         </LoginPage>
       </div>
     );
-  }
+//  }
 }
 
 export default AdminLogin;

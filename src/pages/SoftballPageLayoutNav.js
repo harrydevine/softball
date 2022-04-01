@@ -12,11 +12,12 @@ import {
   PageSectionVariants,
   PageSidebar
 } from "@patternfly/react-core";
+import { useAuth0 } from "@auth0/auth0-react";
 import SoftballMasthead from "./SoftballMasthead";
+import Footer from "./Footer";
 
 const SoftballPageLayoutNav = ({ children }) => {
   const navigate = useNavigate();
-
   const [activeGroup, setActiveGroup] = React.useState("itemHome");
   const [activeItem, setActiveItem] = React.useState("itemHome");
 
@@ -39,29 +40,28 @@ const SoftballPageLayoutNav = ({ children }) => {
       case "itemFAQ":
         navigate("/faq");
         break;
-        case "grpRecTeams":
-          navigate("/recteams");
-          break;
-          case "grpTravelTeams":
-            navigate("/travelteams");
-            break;
-            case "itemTournaments":
+      case "grpRecTeams":
+        navigate("/recteams");
+        break;
+      case "grpTravelTeams":
+        navigate("/travelteams");
+        break;
+      case "itemTournaments":
         navigate("/tournaments");
         break;
       case "itemForms":
         navigate("/forms");
         break;
+      case "itemMedia":
+        navigate("/media");
+        break;
       case "itemSponsors":
         navigate("/sponsors");
-        break;
-      case "itemAdmin":
-        navigate("/admin");
         break;
       default:
         navigate("/not-found");
     }
   };
-
   
   const PageNav = (
     <Nav onSelect={onNavSelect} aria-label="Nav">
@@ -104,8 +104,11 @@ const SoftballPageLayoutNav = ({ children }) => {
         <NavItem itemId="itemTournaments" isActive={activeItem === "itemTournaments"}>
           Tournaments
         </NavItem>
-	<NavItem itemId="itemFieldInfo" isActive={activeItem === "itemFieldInfo"}>
+	      <NavItem itemId="itemFieldInfo" isActive={activeItem === "itemFieldInfo"}>
           Field Information
+        </NavItem>
+        <NavItem itemId="itemMedia" isActive={activeItem === "itemMedia"}>
+          Image Gallery
         </NavItem>
         <NavItem itemId="itemForms" isActive={activeItem === "itemForms"}>
           Forms & Documents
@@ -115,9 +118,6 @@ const SoftballPageLayoutNav = ({ children }) => {
         </NavItem>
         <NavItem itemId="itemSponsors" isActive={activeItem === "itemSponsors"}>
           Sponsors
-        </NavItem>
-        <NavItem itemId="itemAdmin" isActive={activeItem === "itemAdmin"}>
-          Admin Area
         </NavItem>
       </NavList>
     </Nav>
@@ -135,6 +135,9 @@ const SoftballPageLayoutNav = ({ children }) => {
     >
       <PageSection variant={PageSectionVariants.light}>
         {children}
+      </PageSection>
+      <PageSection variant={PageSectionVariants.darker}>
+        <Footer />
       </PageSection>
     </Page>
   );

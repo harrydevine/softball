@@ -31,7 +31,6 @@ import {
   Tooltip
 } from '@patternfly/react-core';
 import AdminTeamModal from './AdminTeamModal';
-import AdminAddPlayerToTeamModal from './AdminAddPlayerToTeamModal';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
@@ -63,7 +62,7 @@ const AdminTeams = () => {
   const [division, setDivision] = React.useState("");
   const [availablePlayers, setAvailablePlayers] = React.useState([]);
   const [chosenPlayers, setChosenPlayers] = React.useState([]);
-  const [activeSortIndex, setActiveSortIndex] = React.useState(0);
+  const [activeSortIndex, setActiveSortIndex] = React.useState(0); 
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const getSortableRowValues = players => {
     const {playerName, playerNumber} = players;
@@ -85,10 +84,9 @@ const AdminTeams = () => {
 
     playerData?.data.filter(function (data) {
       return data.division === level;
-    }).map((filteredPlayer => (
-//      playersArray.push(filteredPlayer.id),
+    }).map((filteredPlayer => ( 
       playersArray.push(filteredPlayer.playerName)
-)));
+    )));
 
     playerData?.data.filter(function (data) {
       return data.teamId === id;
@@ -98,7 +96,7 @@ const AdminTeams = () => {
 
     filteredArray = playersArray.filter(val => !teamArray.includes(val));
     setAvailablePlayers(filteredArray);
-    setChosenPlayers(teamArray);
+//    setChosenPlayers(teamArray);
 
 }
 
@@ -263,7 +261,7 @@ const AdminTeams = () => {
               Cancel
             </Button>
           ]}
-        >
+        > 
           <DualListSelector
             availableOptionsTitle="Available Players"
             availableOptions={availablePlayers}

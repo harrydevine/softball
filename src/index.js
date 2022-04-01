@@ -12,16 +12,17 @@ import RecTeams from './pages/RecTeams';
 import TravelTeams from './pages/TravelTeams';
 import Sponsors from './pages/Sponsors';
 import Tournaments from './pages/Tournaments';
-import AdminLogin from './pages/AdminLogin';
+import Media from './pages/Media';
 import Admin from './pages/Admin';
 
 import './App.css';
 
 const rootElement = document.getElementById('root');
+
 ReactDOM.render(
-  <BrowserRouter>
-    <Routes>
-      <Route element={<App />}>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<App />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="boardminutes" element={<BoardMinutes />} />
         <Route path="boardmembers" element={<BoardMembers />} />
@@ -32,7 +33,7 @@ ReactDOM.render(
 	<Route path="forms" element={<Forms />} />
 	<Route path="sponsors" element={<Sponsors />} />
 	<Route path="tournaments" element={<Tournaments />} />
-	<Route path="admin" element={<Admin />} />
+	<Route path="media" element={<Media />} />
         <Route
           path="*"
           element={
@@ -42,9 +43,8 @@ ReactDOM.render(
           }
 	/>
       </Route>
-      <Route path="login" element={<AdminLogin />} />
-    </Routes>
-  </BrowserRouter>,
+      </Routes>
+    </BrowserRouter>,
   rootElement
 );
 

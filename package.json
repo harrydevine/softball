@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@auth0/auth0-react": "^1.9.0",
+    "@patternfly/react-charts": "^6.51.19",
     "@patternfly/react-core": "^4.181.1",
     "@patternfly/react-table": "^4.50.1",
     "@react-google-maps/api": "^2.7.0",
@@ -22,6 +24,7 @@
     "react-google-calendar-api": "^1.5.2",
     "react-grid-gallery": "^0.5.5",
     "react-helmet": "^6.1.0",
+    "react-image-gallery": "^1.2.7",
     "react-linkify": "^1.0.0-alpha",
     "react-query": "^3.34.8",
     "react-router-dom": "^6.2.1",
