@@ -73,7 +73,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
   };
 
   const updatePlayer = (id) => {
-    updatePlayerInDatabase('http://192.168.1.21:8081/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: editedDivision, teamId: currentRow.teamId })      
+    updatePlayerInDatabase('https://softball-pi4/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: editedDivision, teamId: currentRow.teamId })      
     .then(data => {
       if (data.message === "Player info updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -89,7 +89,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
 
   const removePlayer = async (id) => {
       setIsEditMode(false);
-      removePlayerInDatabase('http://192.168.1.21:8081/players/'+ id, {})
+      removePlayerInDatabase('https://softball-pi4/players/'+ id, {})
       .then(data => {
         if (data.message === "Player deleted successfully") {
           addSuccessAlert(editedName + " removed successfully");

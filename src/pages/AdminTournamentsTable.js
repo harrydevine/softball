@@ -49,7 +49,7 @@ const AdminTournamentsTable = ({ children }) => {
 
   const fetchTournaments = () => {
     // Fetch Tournament data
-    fetch(`http://192.168.1.21:8081/tournaments`)
+    fetch(`https://softball-pi4/tournaments`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTournamentData(jsonResponse);

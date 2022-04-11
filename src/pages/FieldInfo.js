@@ -40,7 +40,7 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Field Status
-      fetch("http://192.168.1.21:8081/fields")
+      fetch("https://softball-pi4/fields")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setFieldData(jsonResponse);
@@ -53,14 +53,12 @@ const FieldInfo = ({ children }) => {
      }, []);
 	
      useEffect(() => {
-//       console.log(fieldData);
        let count = 0;
      /* Determine the field status and color for presentation */
        if (fieldData?.data.length > 0) {
          fieldData.data.map((field) => {
            if (field.fieldStatus === 0) {
              count = count + 1;
-//             setCount(count++);
            }
          });
        }
@@ -76,7 +74,7 @@ const FieldInfo = ({ children }) => {
 
      useEffect(() => {
       // Fetch data for Locality locations
-      fetch("http://192.168.1.21:8081/localities")
+      fetch("https://softball-pi4/localities")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setLocalityData(jsonResponse);

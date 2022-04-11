@@ -56,7 +56,7 @@ class AdminLatestNewsModal extends React.Component{
           isModalOpen: !isModalOpen
       }));
       /* Add Latest News to database...*/
-      addLatestNewsToDatabase('http://192.168.1.21:8081/news', { title: this.state.title, body: this.state.body, image: this.state.image })
+      addLatestNewsToDatabase('https://softball-pi4/news', { title: this.state.title, body: this.state.body, image: this.state.image })
       .then(data => {
         if (data.message === "'Error in creating Latest News info") {
           this.addFailureAlert();

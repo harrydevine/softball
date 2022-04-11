@@ -73,7 +73,7 @@ class AdminPlayerModal extends React.Component{
         }));
       console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)  
       /* Add Board Member to database...*/
-      addPlayerToDatabase('http://192.168.1.21:8081/players', 
+      addPlayerToDatabase('https://softball-pi4/players', 
         { playerName: this.state.name, playerNumber: this.state.jersey, division: this.state.division, teamId: 0 })
       .then(data => {
         if (data.message === "Player created successfully") {

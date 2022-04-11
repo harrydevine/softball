@@ -55,7 +55,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   };
 
   const updateFieldInfo = (id) => {
-    updateFieldInfoInDatabase('http://192.168.1.21:8081/fields/'+ id, { fieldNum: editedFieldNum, fieldStatus: editedFieldStatus ? 1 : 0, fieldReason: editedFieldReason })      
+    updateFieldInfoInDatabase('https://softball-pi4/fields/'+ id, { fieldNum: editedFieldNum, fieldStatus: editedFieldStatus ? 1 : 0, fieldReason: editedFieldReason })      
     .then(data => {
       if (data.message === "Field Info updated successfully") {
         addSuccessAlert("Field " + editedFieldNum + " updated successfully");
@@ -71,7 +71,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
 
   const removeFieldInfo = async (id) => {
       setIsEditMode(false);
-      removeFieldInfoInDatabase('http://192.168.1.21:8081/fields/'+ id, {})
+      removeFieldInfoInDatabase('https://softball-pi4/fields/'+ id, {})
       .then(data => {
         if (data.message === "Field Info deleted successfully") {
           addSuccessAlert("Field " + editedFieldNum + " deleted successfully");

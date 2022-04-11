@@ -64,7 +64,7 @@ const BoardMinutes = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Board Meetings
-    fetch(`http://192.168.1.21:8081/boardmtg`)
+    fetch(`https://softball-pi4/boardmtg`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);
@@ -77,7 +77,7 @@ const BoardMinutes = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetch(`http://192.168.1.21:8081/minutes`)
+    fetch(`https://softball-pi4/minutes`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);

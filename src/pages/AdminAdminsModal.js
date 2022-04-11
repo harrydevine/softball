@@ -33,7 +33,7 @@ class AdminAdminsModal extends React.Component{
           }));
         console.log(this.name, " ", this.password);      
         /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('http://192.168.1.21:8081/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
+//        addBoardMemberToDatabase('https://softball-pi4/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
 //        .then(data => {
 //          console.log(data);
 //        });

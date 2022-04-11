@@ -1,25 +1,32 @@
 import * as React from 'react';
 import { 
+  Alert, 
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button, 
-  DatePicker,
+  Select,
+  SelectDirection,
+  SelectOption,
+  SelectVariant,
   TextInput
 } from '@patternfly/react-core';
 import { Tr, Td } from '@patternfly/react-table';
-import { columnNames } from './AdminBoardMinutesTable';
+import { columnNames } from './AdminTeams';
 import ConfirmDialog from './ConfirmDialog';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const BoardMinutesEditTableRow = ({ children, ...props }) => {
+const PlayerTeamEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentRow, fetchMinutes, addSuccessAlert, addFailureAlert } = props;
-  const [editedDate, setEditedDate] = React.useState(currentRow.date);
-  const [editedMinutes, setEditedMinutes] = React.useState(currentRow.minutes);
+  const {key, currentRow, division, teamName, fetchPlayers, addSuccessAlert, addFailureAlert } = props;
+  const [editedName, setEditedName] = React.useState(currentRow.playerName);
+  const [editedNumber, setEditedNumber] = React.useState(currentRow.playerNumber);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateMinutesInfoInDatabase (url = '', data = {}) {
+  async function updatePlayerInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -36,9 +43,9 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removeMinutesInfoInDatabase (url = '', data = {}) {
+  async function removePlayerFromTeam  (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: 'PUT',
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'same-origin',
@@ -53,39 +60,39 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updateMinutesInfo = (id) => {
-    updateMinutesInfoInDatabase('https://softball-pi4/minutes/'+ id, { date: editedDate, minutes: editedMinutes })      
+  const updatePlayer = (id) => {
+    updatePlayerInDatabase('https://softball-pi4/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: division, teamId: currentRow.teamId })      
     .then(data => {
-      if (data.message === "Board Minutes info updated successfully") {
-        addSuccessAlert("Board Minutes info updated successfully");
-        fetchMinutes();
+      if (data.message === "Player info updated successfully") {
+        addSuccessAlert(editedName + " updated successfully");
+        fetchPlayers();
       }
       else {
-        addFailureAlert("Board Minutes update unsuccessful");
-        fetchMinutes();
-        console.log("Error updating Board Minutes info!")
+        addFailureAlert(editedName + " update unsuccessful");
+        fetchPlayers();
+        console.log("Error updating " + editedName);
       }
-  });
+    });
   }
 
-  const removeMinutesInfo = async (id) => {
+  const removeFromTeam = async (id) => {
       setIsEditMode(false);
-      removeMinutesInfoInDatabase('https://softball-pi4/minutes/'+ id, {})
+      removePlayerFromTeam('https://softball-pi4/players/resetTeam/'+ id, {})
       .then(data => {
-        if (data.message === "Board Minutes deleted successfully") {
-          addSuccessAlert("Board Minutes for " + editedDate + " deleted successfully");
-          fetchMinutes();
+        if (data.message === "Player/Team assignment reset successfully") {
+          addSuccessAlert(editedName + " removed from " + teamName + " successfully");
+          fetchPlayers();
         }
         else {
-          addFailureAlert("Board Minutes removal for " + editedDate + " unsuccessful");
-          fetchMinutes();
-          console.log("Error removing Board Minutes!")
+          addFailureAlert(editedName + " removal unsuccessful");
+          fetchPlayers();
+          console.log("Error removing " + editedName + "from " + teamName);
         }
       });
   }
 
   const handleYes = () => {
-    removeMinutesInfo(currentRow.id);
+    removeFromTeam(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -93,48 +100,34 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
     setConfirmDlgOpen(false);
   }
 
-  const dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/\//g,'-');
-  const dateParse = date => {
-    return date;
-  };
-
-  const onDateChange = (str, date) => {
-    console.log('str', str, 'date', date);
-    setEditedDate( str );
-  }
-
-  const onMinutesChange = (value) => {
-    setEditedMinutes( value );
-  }
-
   return (
     <React.Fragment>
-      <ConfirmDialog title={"Are you sure you want to meeting minutes for " + editedDate + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
+      <ConfirmDialog title={"Are you sure you want to remove " + editedName + " from " + teamName + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
-        <Td dataLabel={columnNames.bmDate}>
-          {isEditMode ? (
-            <DatePicker
-              value={editedDate}
-              placeholder="MM-DD-YYYY"
-              dateFormat={dateFormat}
-              dateParse={dateParse}
-              onChange={onDateChange}
-          />
-        ) : (
-            editedDate
-          )}
-        </Td>
-        <Td dataLabel={columnNames.bmTime}>
+        <Td dataLabel={columnNames.playerName}>
           {isEditMode ? (
             <TextInput
-            value={editedMinutes}
-            type="text"
-            aria-label="mtg-minutes"
-            onChange={(value) => {
-              setEditedMinutes(value);
-            }} />
-        ) : (
-            editedMinutes
+              value={editedName}
+              type="text"
+              aria-label="edit-player-name"
+              onChange={(value) => {
+                setEditedName(value);
+              } } />
+          ) : (
+            editedName
+          )}
+        </Td>
+        <Td dataLabel={columnNames.playerNumber}>
+          {isEditMode ? (
+            <TextInput
+              value={editedNumber}
+              type="number"
+              aria-label="edit-player-number"
+              onChange={(value) => {
+                setEditedNumber(value);
+              } } />
+          ) : (
+            editedNumber
           )}
         </Td>
         <Td modifier="nowrap">
@@ -158,7 +151,7 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
                   setConfirmDlgOpen(true);
                 }}
               >
-                Remove
+                Remove From Team
               </Button>
             </React.Fragment>
           ) : (
@@ -168,7 +161,7 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  updateMinutesInfo(currentRow.id);
+                  updatePlayer(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -187,4 +180,4 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default BoardMinutesEditTableRow;
+export default PlayerTeamEditTableRow;

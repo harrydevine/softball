@@ -18,6 +18,8 @@ import Footer from "./Footer";
 
 const SoftballPageLayoutNav = ({ children }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth0();
+  //  const [isAuthenticated, setAuthenticated] = React.useState(true);
   const [activeGroup, setActiveGroup] = React.useState("itemHome");
   const [activeItem, setActiveItem] = React.useState("itemHome");
 
@@ -55,11 +57,14 @@ const SoftballPageLayoutNav = ({ children }) => {
       case "itemMedia":
         navigate("/media");
         break;
-      case "itemSponsors":
-        navigate("/sponsors");
-        break;
-      default:
-        navigate("/not-found");
+        case "itemSponsors":
+          navigate("/sponsors");
+          break;
+        case "itemAdmin":
+          navigate("/admin");
+          break;
+        default:
+          navigate("/not-found");
     }
   };
   
@@ -119,6 +124,11 @@ const SoftballPageLayoutNav = ({ children }) => {
         <NavItem itemId="itemSponsors" isActive={activeItem === "itemSponsors"}>
           Sponsors
         </NavItem>
+        {isAuthenticated && (
+        <NavItem itemId="itemAdmin" isActive={activeItem === "itemAdmin"}>
+          Admin Area
+        </NavItem>
+        )}
       </NavList>
     </Nav>
   );

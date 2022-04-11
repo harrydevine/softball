@@ -63,7 +63,7 @@ const AdminBoardMemberTable = ({ children }) => {
   }, [boardMemberAdded]);
 
   const fetchBoard = () => {
-    fetch(`http://192.168.1.21:8081/board`)
+    fetch(`https://softball-pi4/board`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setBoardData(jsonResponse);

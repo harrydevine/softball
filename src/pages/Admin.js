@@ -29,6 +29,9 @@ const Admin = ({ children }) => {
 
   const [activeTabKey, setActiveTabKey] = React.useState(0);
   const [activeTabKeySecondary, setActiveTabKeySecondary] = React.useState(10);
+  const [playerData, setPlayerData] = React.useState(null);
+  const [playerLoading, setPlayerLoading] = React.useState(true);
+  const [playerErr, setPlayerErr] = React.useState(false);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
@@ -37,6 +40,20 @@ const Admin = ({ children }) => {
   const handleTabClickSecondary = (event, tabIndex) => {
     setActiveTabKeySecondary(tabIndex);
   };
+
+  const fetchPlayers = () => {
+    // Fetch data for Players
+    fetch(`https://softball-pi4/players`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setPlayerData(jsonResponse);
+      setPlayerLoading(false);
+    })
+    .catch(err => {
+      setPlayerErr(err);
+      setPlayerLoading(false);
+    })
+  }
 
   return (
     <div>
@@ -106,10 +123,10 @@ const Admin = ({ children }) => {
         <Flex direction={{ default: 'column' }} key="adminTabsMainFlex">
           <FlexItem key="adminTabs">
             <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
-	              <AdminPlayersTable />
+	              <AdminPlayersTable fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} />
             </TabContent>
             <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
-              <AdminTeams />
+              <AdminTeams fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} />
             </TabContent>
             <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
               <TabContentBody>
@@ -153,8 +170,7 @@ const Admin = ({ children }) => {
   );
 }
 
-export default Admin;
-//export default withAuthenticationRequired (Admin, {
-//    onRedirecting: () => <Loading />,
-//});
-
+//export default Admin;
+export default withAuthenticationRequired (Admin, {
+    onRedirecting: () => <Loading />,
+});

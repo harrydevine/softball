@@ -35,7 +35,7 @@ class AdminTeamModal extends React.Component{
         coachphone: "",
         coachemail: "",
         division: "",
-        url: "http://192.168.1.21:8081/recteams",
+        url: "https://softball-pi4/recteams",
         alerts: []
       };
 
@@ -117,7 +117,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ coachphone: "" });
       this.setState({ coachemail: "" });
       this.setState({ division: "" });
-      this.setState({ url: "http://192.168.1.21:8081/recteams" });
+      this.setState({ url: "https://softball-pi4/recteams" });
     };
 
     this.handleTeamCancel = () => {
@@ -133,7 +133,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ coachphone: "" });
       this.setState({ coachemail: "" });
       this.setState({ division: "" });
-      this.setState({ url: "http://192.168.1.21:8081/recteams" });
+      this.setState({ url: "https://softball-pi4/recteams" });
     };
 
     async function addTeamToDatabase (url = '', data = {}) {
@@ -204,13 +204,13 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamTravel: false });
       this.setState({ teamRec: true });
       this.setState({ teamType: "rec" })
-      this.setState({ url: "http://192.168.1.21:8081/recteams" });
+      this.setState({ url: "https://softball-pi4/recteams" });
     };
     this.onTeamTravelChange = (_, event) => {
       this.setState({ teamTravel: true });
       this.setState({ teamRec: false });
       this.setState({ teamType: "travel" }); 
-      this.setState({ url: "http://192.168.1.21:8081/travelteams" });
+      this.setState({ url: "https://softball-pi4/travelteams" });
     };
           
   }

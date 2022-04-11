@@ -59,7 +59,7 @@ const LocalityEditTableRow = ({ children, ...props }) => {
   };
 
   const updateLocalityInfo = (id) => {
-    updateLocalityInDatabase('http://192.168.1.21:8081/localities/'+ id, { name: editedName, 
+    updateLocalityInDatabase('https://softball-pi4/localities/'+ id, { name: editedName, 
       street: editedStreet, city: editedCity, state: editedUSState, zip: editedZip, lat: editedLat,
       lng: editedLng, description: editedDescription})      
     .then(data => {
@@ -77,7 +77,7 @@ const LocalityEditTableRow = ({ children, ...props }) => {
 
   const removeLocalityInfo = async (id) => {
       setIsEditMode(false);
-      removeLocalityInDatabase('http://192.168.1.21:8081/localities/'+ id, {})
+      removeLocalityInDatabase('https://softball-pi4/localities/'+ id, {})
       .then(data => {
         if (data.message === "Locality deleted successfully") {
           addSuccessAlert(editedName + " deleted successfully");

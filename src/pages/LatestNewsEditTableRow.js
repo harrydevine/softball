@@ -55,7 +55,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
   };
 
   const updateNewsInfo = (id) => {
-    updateNewsInDatabase('http://192.168.1.21:8081/news/'+ id, { title: editedTitle, body: editedBody, image: editedImage })      
+    updateNewsInDatabase('https://softball-pi4/news/'+ id, { title: editedTitle, body: editedBody, image: editedImage })      
     .then(data => {
       if (data.message === "Latest News info updated successfully") {
         addSuccessAlert("News item updated successfully");
@@ -71,7 +71,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
 
   const removeNewsInfo = async (id) => {
       setIsEditMode(false);
-      removeNewsInDatabase('http://192.168.1.21:8081/news/'+ id, {})
+      removeNewsInDatabase('https://softball-pi4/news/'+ id, {})
       .then(data => {
         if (data.message === "Latest News deleted successfully") {
           addSuccessAlert("News item deleted successfully");

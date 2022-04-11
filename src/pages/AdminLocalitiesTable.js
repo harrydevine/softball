@@ -67,7 +67,7 @@ const AdminLocalitiesTable = ({ children }) => {
   
   // Fetch data for Localities
   const fetchLocalities = () => {
-    fetch(`http://192.168.1.21:8081/localities`)
+    fetch(`https://softball-pi4/localities`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setLocalityData(jsonResponse);

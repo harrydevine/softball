@@ -30,7 +30,7 @@ const Tournaments = ({ children }) => {
 
   useEffect(() => {
     // Fetch Tournament
-    fetch(`http://192.168.1.21:8081/tournaments`)
+    fetch(`https://softball-pi4/tournaments`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTournamentData(jsonResponse);
@@ -45,7 +45,7 @@ const Tournaments = ({ children }) => {
   return (
     <div>
       <React.Fragment>
-        <Title headingLevel="h1" size={TitleSizes['4xl']}>2022 Tournament Schedule</Title>
+        <Title headingLevel="h1" size={TitleSizes['4xl']}>{(new Date().getFullYear())} Tournament Schedule</Title>
         <Gallery 
           hasGutter
           minWidths={{

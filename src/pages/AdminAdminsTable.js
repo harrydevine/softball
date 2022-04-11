@@ -31,7 +31,7 @@ class AdminAdminsTable extends React.Component {
   fetchAdmins() {
     this.setState({ loading: true });
 
-    fetch("http://192.168.1.21:8081/admins")
+    fetch("https://softball-pi4/admins")
       .then(resp => resp.json())
       .then(resp => this.setState({adminData: resp, loading: false}))
       .catch(err => this.setState({err: err, loading: false}));

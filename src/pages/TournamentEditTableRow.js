@@ -80,7 +80,7 @@ const TournamentEditTableRow = ({ children, ...props }) => {
 
   const updateTournament = (id) => {
     console.log(editedTitle, editedDateStart, editedDateEnd, editedDescription, editedDivisions, editedDetails, editedImage, editedRegister);
-    updateTournamentInDatabase('http://192.168.1.21:8081/tournaments/'+ id, { title: editedTitle, 
+    updateTournamentInDatabase('https://softball-pi4/tournaments/'+ id, { title: editedTitle, 
       dateStart: editedDateStart, dateEnd: editedDateEnd, description: editedDescription, divisions: editedDivisions, 
       details: editedDetails, tourneyImg: editedImage, registerURL: editedRegister 
     })      
@@ -99,7 +99,7 @@ const TournamentEditTableRow = ({ children, ...props }) => {
 
   const removeTournament = async (id) => {
       setIsEditMode(false);
-      removeTournamentInDatabase('http://192.168.1.21:8081/tournaments/'+ id, {})
+      removeTournamentInDatabase('https://softball-pi4/tournaments/'+ id, {})
       .then(data => {
         if (data.message === "Tournament deleted successfully") {
           addSuccessAlert(editedTitle + " removed successfully");

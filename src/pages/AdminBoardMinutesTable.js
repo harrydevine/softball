@@ -60,7 +60,7 @@ const AdminBoardMinutesTable = ({ children }) => {
   }, [boardMinutesAdded]);
   
   const fetchMinutes = () => {
-    fetch(`http://192.168.1.21:8081/minutes`)
+    fetch(`https://softball-pi4/minutes`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);

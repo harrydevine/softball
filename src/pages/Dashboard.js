@@ -34,7 +34,7 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Latest News
-      fetch(`http://softball-pi4:8081/news`)
+      fetch(`https://softball-pi4/news`)
         .then(async resp => {
           const jsonResponse = await resp.json()
           setNewsData(jsonResponse);
@@ -48,7 +48,7 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for next Board Meeting
-    fetch(`http://softball-pi4:8081/boardmtg`)
+    fetch(`https://softball-pi4/boardmtg`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);
@@ -62,7 +62,7 @@ const Dashboard = ({ children }) => {
     
   useEffect(() => {
     // Fetch data for next Tournament
-    fetch(`http://softball-pi4:8081/nexttournament`)
+    fetch(`https://softball-pi4/nexttournament`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTournamentData(jsonResponse);

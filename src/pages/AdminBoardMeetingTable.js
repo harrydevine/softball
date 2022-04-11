@@ -60,7 +60,7 @@ const AdminBoardMeetingTable = ({ children }) => {
   }, [boardMeetingAdded]);
   
   const fetchMeetings = () => {
-    fetch(`http://192.168.1.21:8081/boardmtg`)
+    fetch(`https//softball-pi4/boardmtg`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);

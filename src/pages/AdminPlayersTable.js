@@ -24,10 +24,11 @@ export const columnNames = {
   division: 'Division'
 };
 
-const AdminPlayersTable = ({ children }) => {
-  const [playerData, setPlayerData] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-  const [err, setErr] = React.useState(null);
+const AdminPlayersTable = ({ children, ...props }) => {
+  const { fetchPlayers, playerData, setPlayerData, playerLoading, setPlayerLoading, playerErr, setPlayerErr } = props;
+//  const [playerData, setPlayerData] = React.useState(null);
+//  const [loading, setLoading] = React.useState(true);
+//  const [err, setErr] = React.useState(null);
   const [activeSortIndex, setActiveSortIndex] = React.useState(0);
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const getSortableRowValues = players => {
@@ -84,9 +85,10 @@ const AdminPlayersTable = ({ children }) => {
     fetchPlayers();
   }, [playerAdded]);
   
+ /* 
   const fetchPlayers = () => {
   // Fetch data for Players
-    fetch(`http://192.168.1.21:8081/players`)
+    fetch(`https://softball-pi4/players`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setPlayerData(jsonResponse);
@@ -97,7 +99,7 @@ const AdminPlayersTable = ({ children }) => {
         setLoading(false);
       })
   }
-
+*/
   const addAlert = (title, variant, key) => {
     setAlerts([ ...alerts, {title: title, variant: variant, key }]);
   };
@@ -145,7 +147,7 @@ const AdminPlayersTable = ({ children }) => {
        </Tr>
        </Thead>
         <Tbody>
-          {!loading && playerData?.data.length === 0 && (
+          {!playerLoading && playerData?.data.length === 0 && (
             <Tr key="0">
               <Td colSpan={4}>
                 <Bullseye>
@@ -162,7 +164,7 @@ const AdminPlayersTable = ({ children }) => {
               </Td>
             </Tr>
           )}
-          {!loading && playerData?.data.map((row, rowIndex) => (
+          {!playerLoading && playerData?.data.map((row, rowIndex) => (
             <PlayerEditTableRow
               key={row.id}
               currentRow={row}
@@ -171,7 +173,7 @@ const AdminPlayersTable = ({ children }) => {
               addFailureAlert={addFailureAlert}
             />
          ))}
-         {loading && (
+         {playerLoading && (
             <Tr>
               <Td colSpan={4}>
               <Bullseye>

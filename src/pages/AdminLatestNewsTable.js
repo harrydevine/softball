@@ -61,7 +61,7 @@ const AdminLatestNewsTable = ({ children }) => {
   }, [newsAdded]);
   
   const fetchNews = () => {
-    fetch(`http://192.168.1.21:8081/news`)
+    fetch(`https://softball-pi4/news`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setNewsData(jsonResponse);

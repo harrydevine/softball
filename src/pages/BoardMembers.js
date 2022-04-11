@@ -12,7 +12,8 @@ import {
   Gallery,
   GalleryItem,
   Spinner,
-  Title
+  Title,
+  TitleSizes
 } from '@patternfly/react-core';
 
 const BoardMembers = ({ children }) => {
@@ -22,7 +23,7 @@ const BoardMembers = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Board Members
-    fetch(`http://192.168.1.21:8081/board`)
+    fetch(`https://softball-pi4/board`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setBoardData(jsonResponse);
@@ -41,7 +42,19 @@ const BoardMembers = ({ children }) => {
           <Spinner size="xl" />
         </Bullseye>
       )}
-      <Gallery hasGutter>
+      <Title headingLevel="h1" size={TitleSizes['4xl']}>{(new Date().getFullYear())} Board Members</Title>
+      <Gallery 
+        hasGutter
+        minWidths={{
+          default: '100%',
+          md: '100px',
+          xl: '500px'
+        }}
+        maxWidths={{
+          md: '750px',
+          xl: '1fr'
+        }}              
+      >
         {boardData?.data.map((board) => (
           <GalleryItem key={board.id}>
             <Card isSelectable>

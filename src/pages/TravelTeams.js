@@ -39,7 +39,7 @@ const TravelTeams = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`http://192.168.1.21:8081/travelteams`)
+    fetch(`https://softball-pi4/travelteams`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTeamData(jsonResponse);
@@ -51,7 +51,7 @@ const TravelTeams = ({ children }) => {
       })
 
     // Fetch data for Players
-    fetch(`http://192.168.1.21:8081/players`)
+    fetch(`https://softball-pi4/players`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setPlayerData(jsonResponse);
