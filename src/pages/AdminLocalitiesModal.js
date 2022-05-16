@@ -61,7 +61,7 @@ class AdminLocalitiesModal extends React.Component{
         }));
 
       /* Add Locality to database...*/
-      addLocalityToDatabase('https://softball-pi4/localities', { name: this.state.name, 
+      addLocalityToDatabase('http://softball-pi4:8081/localities', { name: this.state.name, 
         street: this.state.street, city: this.state.city, state: this.state.usstate, zip: this.state.zip,
         lat: this.state.lat, lng: this.state.lng, description: this.state.description })
       .then(data => {

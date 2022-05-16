@@ -60,7 +60,7 @@ const AdminBoardMeetingTable = ({ children }) => {
   }, [boardMeetingAdded]);
   
   const fetchMeetings = () => {
-    fetch(`https//softball-pi4/boardmtg`)
+    fetch(`http://db.hdevine.org/db/GetBoardMeetings.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);
@@ -100,7 +100,7 @@ const AdminBoardMeetingTable = ({ children }) => {
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && mtgData?.data.length === 0 && (
+            {!loading && mtgData?.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
@@ -117,7 +117,7 @@ const AdminBoardMeetingTable = ({ children }) => {
                 </Td>
               </Tr>
             )}
-          {!loading && mtgData?.data.map(row => (
+          {!loading && mtgData?.map(row => (
             <BoardMeetingEditTableRow
               key={row.id}
               currentRow={row}

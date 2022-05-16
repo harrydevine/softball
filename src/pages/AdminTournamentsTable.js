@@ -49,7 +49,7 @@ const AdminTournamentsTable = ({ children }) => {
 
   const fetchTournaments = () => {
     // Fetch Tournament data
-    fetch(`https://softball-pi4/tournaments`)
+    fetch(`http://db.hdevine.org/db/GetTournaments.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTournamentData(jsonResponse);
@@ -113,9 +113,9 @@ const AdminTournamentsTable = ({ children }) => {
           </Tr>
          </Thead>
           <Tbody>
-            {!loading && tournamentData?.data.length === 0 && (
+            {!loading && tournamentData?.length === 0 && (
               <Tr key="tournamentEmptyState">
-                <Td colSpan={4}>
+                <Td colSpan={8}>
                   <Bullseye>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <EmptyStateIcon icon={SearchIcon} />
@@ -130,7 +130,7 @@ const AdminTournamentsTable = ({ children }) => {
                 </Td>
               </Tr>
             )}
-            {!loading && tournamentData?.data.map((row, index) => (
+            {!loading && tournamentData?.map((row, index) => (
               <TournamentEditTableRow
                 key={row.id}
                 currentRow={row}

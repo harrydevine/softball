@@ -55,7 +55,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
   };
 
   const updateNewsInfo = (id) => {
-    updateNewsInDatabase('https://softball-pi4/news/'+ id, { title: editedTitle, body: editedBody, image: editedImage })      
+    updateNewsInDatabase('http://softball-pi4:8081/news/'+ id, { title: editedTitle, body: editedBody, image: editedImage })      
     .then(data => {
       if (data.message === "Latest News info updated successfully") {
         addSuccessAlert("News item updated successfully");
@@ -71,7 +71,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
 
   const removeNewsInfo = async (id) => {
       setIsEditMode(false);
-      removeNewsInDatabase('https://softball-pi4/news/'+ id, {})
+      removeNewsInDatabase('htts://softball-pi4:8081/news/'+ id, {})
       .then(data => {
         if (data.message === "Latest News deleted successfully") {
           addSuccessAlert("News item deleted successfully");

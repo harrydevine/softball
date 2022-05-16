@@ -19,34 +19,16 @@ import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const PlayerEditTableRow = ({ children, ...props }) => {
+const CoachEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentRow, fetchPlayers, addSuccessAlert, addFailureAlert } = props;
-  const [editedName, setEditedName] = React.useState(currentRow.playerName);
-  const [editedNumber, setEditedNumber] = React.useState(currentRow.playerNumber);
-  const [editedDivision, setEditedDivision] = React.useState(currentRow.division);
-  const [editedType, setEditedType] = React.useState(currentRow.type);
+  const {key, currentRow, fetchCoach, addSuccessAlert, addFailureAlert } = props;
+  const [editedName, setEditedName] = React.useState(currentRow.coachName);
+  const [editedPhone, setEditedPhone] = React.useState(currentRow.coachPhone);
+  const [editedEmail, setEditedEmail] = React.useState(currentRow.coachEmail);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isTypeOpen, setIsTypeOpen] = React.useState(false);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  const divisionDropdownItems = [
-    <SelectOption key={0} value="Select a Division" label="Select a Division" isPlaceholder />,
-    <SelectOption key={1} value="6U" label="6U" />,
-    <SelectOption key={2} value="8U" label="8U" />,
-    <SelectOption key={3} value="10U" label="10U" />,
-    <SelectOption key={4} value="12U" label="12U" />,
-    <SelectOption key={5} value="14U" label="14U"/>,
-    <SelectOption key={6} value="16U" label="16U" />
-  ];
-
-  const typeDropdownItems = [
-    <SelectOption key={0} value="Select a Player Type" label="Select a Player Type" isPlaceholder />,
-    <SelectOption key={1} value="rec" label="Rec" />,
-    <SelectOption key={2} value="travel" label="Travel" />
-  ];
-
-  async function updatePlayerInDatabase (url = '', data = {}) {
+  async function updateCoachInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -63,7 +45,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removePlayerInDatabase (url = '', data = {}) {
+  async function removeCoachInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'DELETE',
       mode: 'cors',
@@ -80,32 +62,32 @@ const PlayerEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updatePlayer = (id) => {
-     updatePlayerInDatabase('http://softball-pi4:8081/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: editedDivision, type: editedType, teamId: currentRow.teamId })      
+  const updateCoach = (id) => {
+     updateCoachInDatabase('http://softball-pi4:8081/coach/'+ id, { name: editedName, phone: editedPhone, email: editedEmail })      
     .then(data => {
-      if (data.message === "Player info updated successfully") {
+      if (data.message === "Coach updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
-        fetchPlayers();
+        fetchCoach();
       }
       else {
         addFailureAlert(editedName + " update unsuccessful");
-        fetchPlayers();
+        fetchCoach();
         console.log("Error updating " + editedName);
       }
     });
   }
 
-  const removePlayer = async (id) => {
+  const removeCoach = async (id) => {
       setIsEditMode(false);
-      removePlayerInDatabase('http://softball-pi4:8081/players/'+ id, {})
+      removeCoachInDatabase('http://softball-pi4:8081/coach/'+ id, {})
       .then(data => {
-        if (data.message === "Player deleted successfully") {
+        if (data.message === "Coach deleted successfully") {
           addSuccessAlert(editedName + " removed successfully");
-          fetchPlayers();
+          fetchCoach();
         }
         else {
           addFailureAlert(editedName + " removal unsuccessful");
-          fetchPlayers();
+          fetchCoach();
           console.log("Error removing " + editedName);
         }
       });
@@ -115,34 +97,8 @@ const PlayerEditTableRow = ({ children, ...props }) => {
     setIsOpen( isOpen );
   };
 
-  const onTypeToggle = isTypeOpen => {
-    setIsTypeOpen( isTypeOpen );
-  };
-  
-  const onSelect = (event, selection, isPlaceholder) => {
-    if (isPlaceholder) {
-        setEditedDivision("");
-        setIsOpen(false);
-      }
-    else {
-      setEditedDivision(selection);
-      setIsOpen(false);
-      }
-  };
-
-  const onTypeSelect = (event, selection, isPlaceholder) => {
-    if (isPlaceholder) {
-        setEditedType("");
-        setIsTypeOpen(false);
-      }
-    else {
-      setEditedType(selection);
-      setIsTypeOpen(false);
-      }
-  };
-
   const handleYes = () => {
-    removePlayer(currentRow.id);
+    removeCoach(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -154,12 +110,12 @@ const PlayerEditTableRow = ({ children, ...props }) => {
     <React.Fragment>
       <ConfirmDialog title={"Are you sure you want to delete " + editedName + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
-        <Td dataLabel={columnNames.playerName}>
+        <Td dataLabel={columnNames.coachName}>
           {isEditMode ? (
             <TextInput
               value={editedName}
               type="text"
-              aria-label="edit-player-name"
+              aria-label="edit-coach-name"
               onChange={(value) => {
                 setEditedName(value);
               } } />
@@ -167,61 +123,30 @@ const PlayerEditTableRow = ({ children, ...props }) => {
             editedName
           )}
         </Td>
-        <Td dataLabel={columnNames.playerNumber}>
+        <Td dataLabel={columnNames.coachPhone}>
           {isEditMode ? (
             <TextInput
-              value={editedNumber}
-              type="number"
-              aria-label="edit-player-number"
+              value={editedPhone}
+              type="text"
+              aria-label="edit-coach-phone"
               onChange={(value) => {
-                setEditedNumber(value);
+                setEditedPhone(value);
               } } />
           ) : (
-            editedNumber
+            editedPhone
           )}
         </Td>
-        <Td dataLabel={columnNames.division}>
+        <Td dataLabel={columnNames.coachEmail}>
           {isEditMode ? (
-            <Select
-              variant={SelectVariant.single}
-              aria-label="Select Division"
-              onToggle={onToggle}
-              onSelect={onSelect}
+            <TextInput
+              value={editedEmail}
+              type="text"
+              aria-label="edit-coach-email"
               onChange={(value) => {
-                setEditedDivision(value);
-              }}
-              selections={editedDivision}
-              isOpen={isOpen}
-              aria-labelledby="edit-player-division"
-              direction={SelectDirection.down}
-              menuAppendTo={() => document.body}
-            >
-              { divisionDropdownItems }
-          </Select>
-        ) : (
-            editedDivision
-          )}
-        </Td>
-        <Td dataLabel={columnNames.type}>
-          {isEditMode ? (
-            <Select
-              variant={SelectVariant.single}
-              aria-label="Select Player Type"
-              onToggle={onTypeToggle}
-              onSelect={onTypeSelect}
-              onChange={(value) => {
-                setEditedType(value);
-              }}
-              selections={editedType}
-              isOpen={isTypeOpen}
-              aria-labelledby="edit-player-type"
-              direction={SelectDirection.down}
-              menuAppendTo={() => document.body}
-            >
-              { typeDropdownItems }
-          </Select>
-        ) : (
-            editedType
+                setEditedEmail(value);
+              } } />
+          ) : (
+            editedEmail
           )}
         </Td>
         <Td modifier="nowrap">
@@ -255,7 +180,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  updatePlayer(currentRow.id);
+                  updateCoach(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -274,4 +199,4 @@ const PlayerEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default PlayerEditTableRow;
+export default CoachEditTableRow;

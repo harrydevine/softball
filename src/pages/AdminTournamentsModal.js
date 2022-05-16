@@ -82,7 +82,7 @@ class AdminTournamentsModal extends React.Component{
       console.log(this.state.dateStart, this.state.dateEnd, this.state.description, this.state.tourneyImg, this.state.title, this.state.divisions, this.state.details, this.state.registerURL);      
       
       /* Add Tournament to database...*/
-      addTournamentToDatabase('https://softball-pi4/tournaments', 
+      addTournamentToDatabase('http://softball-pi4:8081/tournaments', 
         { title: this.state.title, dateStart: this.state.dateStart, dateEnd: this.state.dateEnd, 
           description: this.state.description, tourneyImg: this.state.tourneyImg, divisions: this.state.divisions,
           details: this.state.details, registerURL: this.state.registerURL

@@ -60,7 +60,7 @@ const AdminBoardMinutesTable = ({ children }) => {
   }, [boardMinutesAdded]);
   
   const fetchMinutes = () => {
-    fetch(`https://softball-pi4/minutes`)
+    fetch(`http://db.hdevine.org/db/GetBoardMinutes.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);
@@ -100,7 +100,7 @@ const AdminBoardMinutesTable = ({ children }) => {
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && minutesData?.data.length === 0 && (
+            {!loading && minutesData?.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
@@ -117,7 +117,7 @@ const AdminBoardMinutesTable = ({ children }) => {
                 </Td>
               </Tr>
             )}
-          {!loading && minutesData?.data.map(row => (
+          {!loading && minutesData?.map(row => (
             <BoardMinutesEditTableRow
               key={row.id}
               currentRow={row}

@@ -26,10 +26,10 @@ const BoardMinutes = ({ children }) => {
     return [date, minutes];
   };
 
-  if (minutesData?.data.length > 0) {
+  if (minutesData?.length > 0) {
     let sortedMinutes = minutesData?.data;
     if (sortedMinutes !== null) {
-      sortedMinutes = minutesData?.data.sort((a, b) => {
+      sortedMinutes = minutesData?.sort((a, b) => {
         const aValue = getSortableRowValues(a)[activeSortIndex];
         const bValue = getSortableRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
@@ -64,7 +64,7 @@ const BoardMinutes = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Board Meetings
-    fetch(`https://softball-pi4/boardmtg`)
+    fetch(`http://db.hdevine.org/db/GetBoardMeetings.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);
@@ -77,7 +77,7 @@ const BoardMinutes = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetch(`https://softball-pi4/minutes`)
+    fetch(`http://db.hdevine.org/db/GetBoardMinutes.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);
@@ -111,7 +111,7 @@ const BoardMinutes = ({ children }) => {
               </Tr>
             </Thead>
             <Tbody>
-              {!loading && mtgData?.data.map(row => (
+              {!loading && mtgData?.map(row => (
                 <Tr key={row.id}>
                   <Td dataLabel="Date">{row.date}</Td>
                   <Td dataLabel="Time">{row.time}</Td>
@@ -126,15 +126,15 @@ const BoardMinutes = ({ children }) => {
                   </Td>
                 </Tr>
               )}
-              {!loading && mtgData?.data.length === 0 && (
+              {!loading && mtgData?.length === 0 && (
                 <Tr>
                   <Td colSpan={2}>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <Title headingLevel="h2" size="lg">
-                        Unable to connect
+                        No Board Meetings Found
                       </Title>
                       <EmptyStateBody>
-                        There was an error retrieving data.  Check your connection and reload the page.
+                        No Board Meetings are available at this time.
                       </EmptyStateBody>
                     </EmptyState>
                   </Td>
@@ -154,7 +154,7 @@ const BoardMinutes = ({ children }) => {
               </Tr>
             </Thead>
             <Tbody>
-              {!minutesLoading && minutesData?.data.map(post => (
+              {!minutesLoading && minutesData?.map(post => (
                 <Tr key={post.id}>
                   <Td dataLabel="Date">{post.date}</Td>
                   <Td dataLabel="Minutes">
@@ -172,7 +172,7 @@ const BoardMinutes = ({ children }) => {
                   </Td>
                 </Tr>
               )}
-              {!minutesLoading && minutesData?.data.length === 0 && (
+              {!minutesLoading && minutesData?.length === 0 && (
                 <Tr>
                   <Td colSpan={2}>
                     <EmptyState variant={EmptyStateVariant.small}>
@@ -180,7 +180,7 @@ const BoardMinutes = ({ children }) => {
 		                    No Board Minutes Found
 		                  </Title>
 		                  <EmptyStateBody>
-		                    There is no Board Meeting Minutes available at this time.
+		                    No Board Meeting Minutes are available at this time.
 		                  </EmptyStateBody>
                     </EmptyState>
                   </Td>

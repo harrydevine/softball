@@ -63,7 +63,7 @@ class AdminBoardMinutesModal extends React.Component{
       console.log(this.state.boardDate, " ", this.state.boardMinutes);      
 
       /* Add Minutes to database...*/
-      addMinutesToDatabase('https://softball-pi4/minutes', { date: this.state.boardDate, minutes: this.state.boardMinutes })
+      addMinutesToDatabase('http://softball-pi4/minutes', { date: this.state.boardDate, minutes: this.state.boardMinutes })
       .then(data => {
         if (data.message === "Board Minutes created successfully") {
           this.props.setMinutesAdded(true);

@@ -13,6 +13,7 @@ import {
 } from '@patternfly/react-core';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import AdminPlayersTable from './AdminPlayersTable';
+import AdminCoachTable from './AdminCoachTable';
 import AdminTeams from './AdminTeams'
 import AdminFieldsTable from './AdminFieldsTable';
 import AdminBoardMemberTable from './AdminBoardMemberTable';
@@ -32,6 +33,9 @@ const Admin = ({ children }) => {
   const [playerData, setPlayerData] = React.useState(null);
   const [playerLoading, setPlayerLoading] = React.useState(true);
   const [playerErr, setPlayerErr] = React.useState(false);
+  const [coachData, setCoachData] = React.useState(null);
+  const [coachLoading, setCoachLoading] = React.useState(true);
+  const [coachErr, setCoachErr] = React.useState(false);
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
@@ -43,7 +47,7 @@ const Admin = ({ children }) => {
 
   const fetchPlayers = () => {
     // Fetch data for Players
-    fetch(`https://softball-pi4/players`)
+    fetch(`http://softball-pi4:8081/players`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setPlayerData(jsonResponse);
@@ -52,6 +56,20 @@ const Admin = ({ children }) => {
     .catch(err => {
       setPlayerErr(err);
       setPlayerLoading(false);
+    })
+  }
+
+  const fetchCoach = () => {
+    // Fetch data for Coaches
+    fetch(`http://softball-pi4:8081/coach`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setCoachData(jsonResponse);
+      setCoachLoading(false);
+    })
+    .catch(err => {
+      setCoachErr(err);
+      setCoachLoading(false);
     })
   }
 
@@ -74,48 +92,53 @@ const Admin = ({ children }) => {
         <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets id="tabAdminFunctions">
           <Tab
             eventKey={0}
-            title={<TabTitleText>Players</TabTitleText>}
+            title={<TabTitleText>Coaches</TabTitleText>}
             tabContentId={`tabContent${0}`}
           />
           <Tab
             eventKey={1}
-            title={<TabTitleText>Teams</TabTitleText>}
+            title={<TabTitleText>Players</TabTitleText>}
             tabContentId={`tabContent${1}`}
           />
           <Tab
             eventKey={2}
-            title={<TabTitleText>Fields</TabTitleText>}
+            title={<TabTitleText>Teams</TabTitleText>}
             tabContentId={`tabContent${2}`}
           />
           <Tab
             eventKey={3}
-            title={<TabTitleText>Tournaments</TabTitleText>}
+            title={<TabTitleText>Fields</TabTitleText>}
             tabContentId={`tabContent${3}`}
           />
           <Tab
             eventKey={4}
-            title={<TabTitleText>Localities</TabTitleText>}
+            title={<TabTitleText>Tournaments</TabTitleText>}
             tabContentId={`tabContent${4}`}
           />
           <Tab
             eventKey={5}
-            title={<TabTitleText>Board Members</TabTitleText>}
+            title={<TabTitleText>Localities</TabTitleText>}
             tabContentId={`tabContent${5}`}
           />
           <Tab
             eventKey={6}
-            title={<TabTitleText>Board Meetings</TabTitleText>}
+            title={<TabTitleText>Board Members</TabTitleText>}
             tabContentId={`tabContent${6}`}
           />
           <Tab
             eventKey={7}
-            title={<TabTitleText>Board Minutes</TabTitleText>}
+            title={<TabTitleText>Board Meetings</TabTitleText>}
             tabContentId={`tabContent${7}`}
           />
           <Tab
             eventKey={8}
-            title={<TabTitleText>Latest News</TabTitleText>}
+            title={<TabTitleText>Board Minutes</TabTitleText>}
             tabContentId={`tabContent${8}`}
+          />
+          <Tab
+            eventKey={9}
+            title={<TabTitleText>Latest News</TabTitleText>}
+            tabContentId={`tabContent${9}`}
           />
 	      </Tabs>
       </PageSection>
@@ -123,45 +146,34 @@ const Admin = ({ children }) => {
         <Flex direction={{ default: 'column' }} key="adminTabsMainFlex">
           <FlexItem key="adminTabs">
             <TabContent key={0} eventKey={0} id={`tabContent${0}`} activeKey={activeTabKey} hidden={0 !== activeTabKey}>
-	              <AdminPlayersTable fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} />
+	            <AdminCoachTable fetchCoach={fetchCoach} coachData={coachData} setCoachData={setCoachData} coachLoading={coachLoading} setCoachLoading={setCoachLoading} coachErr={coachErr} setCoachErr={setCoachErr} />
             </TabContent>
             <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
-              <AdminTeams fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} />
+	            <AdminPlayersTable fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} />
             </TabContent>
             <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
-              <TabContentBody>
-                <AdminFieldsTable />
-              </TabContentBody>
+              <AdminTeams fetchPlayers={fetchPlayers} playerData={playerData} setPlayerData={setPlayerData} playerLoading={playerLoading} setPlayerLoading={setPlayerLoading} playerErr={playerErr} setPlayerErr={setPlayerErr} fetchCoach={fetchCoach} coachData={coachData} setCoachData={setCoachData} coachLoading={coachLoading} setCoachLoading={setCoachLoading} coachErr={coachErr} setCoachErr={setCoachErr} />
             </TabContent>
             <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
-              <TabContentBody>
-                <AdminTournamentsTable />
-              </TabContentBody>
+              <AdminFieldsTable />
             </TabContent>
             <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
-              <TabContentBody>
-                <AdminLocalitiesTable />
-              </TabContentBody>
+              <AdminTournamentsTable />
             </TabContent>
             <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
-              <TabContentBody>
-                <AdminBoardMemberTable />
-              </TabContentBody>
+              <AdminLocalitiesTable />
             </TabContent>
             <TabContent key={6} eventKey={6} id={`tabContent${6}`} activeKey={activeTabKey} hidden={6 !== activeTabKey}>
-              <TabContentBody>
-              <AdminBoardMeetingTable />
-              </TabContentBody>
+              <AdminBoardMemberTable />
             </TabContent>
             <TabContent key={7} eventKey={7} id={`tabContent${7}`} activeKey={activeTabKey} hidden={7 !== activeTabKey}>
-              <TabContentBody>
-              <AdminBoardMinutesTable />
-              </TabContentBody>
+              <AdminBoardMeetingTable />
             </TabContent>
             <TabContent key={8} eventKey={8} id={`tabContent${8}`} activeKey={activeTabKey} hidden={8 !== activeTabKey}>
-              <TabContentBody>
+              <AdminBoardMinutesTable />
+            </TabContent>
+            <TabContent key={9} eventKey={9} id={`tabContent${9}`} activeKey={activeTabKey} hidden={9 !== activeTabKey}>
               <AdminLatestNewsTable />
-              </TabContentBody>
             </TabContent>
 	        </FlexItem>
 	      </Flex>
@@ -170,7 +182,7 @@ const Admin = ({ children }) => {
   );
 }
 
-//export default Admin;
-export default withAuthenticationRequired (Admin, {
-    onRedirecting: () => <Loading />,
-});
+export default Admin;
+//export default withAuthenticationRequired (Admin, {
+//    onRedirecting: () => <Loading />,
+//});

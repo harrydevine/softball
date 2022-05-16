@@ -67,7 +67,7 @@ class AdminFieldsModal extends React.Component{
       }));
       console.log(this.state.fieldNum, " ", this.state.fieldStatus, " ", this.state.fieldReason)      
       /* Add Board Member to database...*/
-      addNewFieldToDatabase('https://softball-pi4/fields', { fieldNum: this.state.fieldNum, fieldStatus: this.state.fieldStatus, fieldReason: this.state.fieldReason })
+      addNewFieldToDatabase('http://softball-pi4:8081/fields', { fieldNum: this.state.fieldNum, fieldStatus: this.state.fieldStatus, fieldReason: this.state.fieldReason })
       .then(data => {
         if (data.message === "Error while creating Fields Info") {
           this.addFailureAlert();

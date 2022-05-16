@@ -54,7 +54,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
   };
 
   const updateMeetingInfo = (id) => {
-    updateMeetingInfoInDatabase('https://softball-pi4/boardmtg/'+ id, { date: editedDate, time: editedTime })      
+    updateMeetingInfoInDatabase('http://softball-pi4:8081/boardmtg/'+ id, { date: editedDate, time: editedTime })      
     .then(data => {
       if (data.message === "Board Meeting info updated successfully") {
         addSuccessAlert("Board Meeting info updated successfully");
@@ -70,7 +70,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
 
   const removeMeetingInfo = async (id) => {
       setIsEditMode(false);
-      removeMeetingInfoInDatabase('https://softball-pi4/boardmtg/'+ id, {})
+      removeMeetingInfoInDatabase('http://softball-pi4:8081/boardmtg/'+ id, {})
       .then(data => {
         if (data.message === "Board Meeting deleted successfully") {
           addSuccessAlert("Board Meeting deleted successfully");

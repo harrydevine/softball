@@ -68,7 +68,7 @@ const AdminFieldsTable = ({ children }) => {
       
   // Fetch field data
   const fetchFieldInfo = () => {
-    fetch(`https://softball-pi4/fields`)
+    fetch(`http://softball-pi4:8081/fields`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setFieldData(jsonResponse);

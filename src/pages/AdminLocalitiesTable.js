@@ -67,7 +67,7 @@ const AdminLocalitiesTable = ({ children }) => {
   
   // Fetch data for Localities
   const fetchLocalities = () => {
-    fetch(`https://softball-pi4/localities`)
+    fetch(`http://db.hdevine.org/db/GetLocalities.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setLocalityData(jsonResponse);
@@ -112,9 +112,9 @@ const AdminLocalitiesTable = ({ children }) => {
         </Tr>
        </Thead>
           <Tbody>
-          {!loading && localityData?.data.length === 0 && (
+          {!loading && localityData?.length === 0 && (
             <Tr key="0">
-              <Td colSpan={4}>
+              <Td colSpan={8}>
                 <Bullseye>
                   <EmptyState variant={EmptyStateVariant.small}>
                     <EmptyStateIcon icon={SearchIcon} />
@@ -129,7 +129,7 @@ const AdminLocalitiesTable = ({ children }) => {
               </Td>
             </Tr>
           )}
-          {!loading && localityData?.data.map(row => (
+          {!loading && localityData?.map(row => (
             <LocalityEditTableRow
               key={row.id}
               currentRow={row}

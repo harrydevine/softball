@@ -37,7 +37,7 @@ const RecTeams = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`https://softball-pi4/recteams`)
+    fetch(`http://softball-pi4:8081/recteams`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -51,7 +51,7 @@ const RecTeams = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Players
-    fetch(`https://softball-pi4/players`)
+    fetch(`http://softball-pi4:8081/players`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setPlayerData(jsonResponse);
@@ -146,34 +146,55 @@ const RecTeams = ({ children }) => {
                   <CardHeader>
                     <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                   </CardHeader>
-                  <CardTitle>Coach: {row.coach}</CardTitle>
                     <CardBody>
-                      Phone Number: {row.coach_phone}
-                      <Text component="br" />
-                      Email: {row.coach_email}
-                      <Text component="br" />
-                      <Text component="br" />
-                      <Title headingLevel="h2" size="lg">Roster</Title>
-                        <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                          <Thead>
-                            <Tr>
-                              <Th width={50}>Name</Th>
-                              <Th width={50}>Jersey Number</Th>
+                    <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                    </TableComposable>
+                    <Title headingLevel="h2" size="lg">Roster</Title>
+                      <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                        <Thead>
+                          <Tr>
+                            <Th width={50}>Name</Th>
+                            <Th width={50}>Jersey Number</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                        {!playerLoading && playerData?.data
+                          .filter(function (data) {
+                            return data.teamId === row.id;
+                          })
+                          .map((player => (
+                            <Tr key={"player"+player.id}>
+                              <Td>{player.playerName}</Td>
+                              <Td>{player.playerNumber}</Td>
                             </Tr>
-                          </Thead>
-                          <Tbody>
-                          {!playerLoading && playerData?.data
-                            .filter(function (data) {
-                              return data.teamId === row.id;
-                            })
-                            .map((player => (
-                              <Tr key={"player"+player.id}>
-                                <Td>{player.playerName}</Td>
-                                <Td>{player.playerNumber}</Td>
-                              </Tr>
-                            )))}
-                          </Tbody>
-                        </TableComposable>
+                          )))}
+                        </Tbody>
+                      </TableComposable>
                     </CardBody>
                   </Card>
                 )))}
@@ -208,13 +229,34 @@ const RecTeams = ({ children }) => {
                         <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                  </TableComposable>
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -270,13 +312,34 @@ const RecTeams = ({ children }) => {
                         <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                  </TableComposable>
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -332,13 +395,34 @@ const RecTeams = ({ children }) => {
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                  </TableComposable>
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -394,13 +478,34 @@ const RecTeams = ({ children }) => {
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                  </TableComposable>
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -456,13 +561,34 @@ const RecTeams = ({ children }) => {
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      <Tr key={"coach1"}>
+                        <Td>{row.coach1}</Td>
+                        <Td>{row.coach1_phone}</Td>
+                        <Td>{row.coach1_email}</Td>
+                      </Tr>
+                      <Tr key={"coach2"}>
+                        <Td>{row.coach2}</Td>
+                        <Td>{row.coach2_phone}</Td>
+                        <Td>{row.coach2_email}</Td>
+                      </Tr>
+                      <Tr key={"coach3"}>
+                        <Td>{row.coach3}</Td>
+                        <Td>{row.coach3_phone}</Td>
+                        <Td>{row.coach3_email}</Td>
+                      </Tr>
+                    </Tbody>
+                  </TableComposable>
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>

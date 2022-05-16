@@ -8,6 +8,7 @@ import {
   Form,
   FormGroup,
   Popover,
+  Radio,
   Select,
   SelectDirection,
   SelectOption,
@@ -24,9 +25,12 @@ class AdminPlayerModal extends React.Component{
     this.state = {
       isModalOpen: false,
       isOpen: false,
+      playerRec: true,
+      playerTravel: false,
       name: "",
       jersey: "",
       division: "",
+      playerType: "rec",
       alerts: []
     };
 
@@ -71,10 +75,10 @@ class AdminPlayerModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
-      console.log(this.state.name, " ", this.state.jersey, " ", this.state.division)  
+      console.log(this.state.name, " ", this.state.jersey, " ", this.state.division, " ", this.state.playerType)  
       /* Add Board Member to database...*/
-      addPlayerToDatabase('https://softball-pi4/players', 
-        { playerName: this.state.name, playerNumber: this.state.jersey, division: this.state.division, teamId: 0 })
+      addPlayerToDatabase('http://softball-pi4:8081/players', 
+        { playerName: this.state.name, playerNumber: this.state.jersey, division: this.state.division, type: this.state.playerType, teamId: 0 })
       .then(data => {
         if (data.message === "Player created successfully") {
           this.props.setPlayerAdded(true);
@@ -90,6 +94,7 @@ class AdminPlayerModal extends React.Component{
       this.setState({ name: "" });
       this.setState({ jersey: "" });
       this.setState({ division: "" });
+      this.setState({ playerType: "rec" });
     };
 
     this.handlePlayerCancel = () => {
@@ -101,6 +106,7 @@ class AdminPlayerModal extends React.Component{
       this.setState({ name: "" });
       this.setState({ jersey: "" });
       this.setState({ division: "" });
+      this.setState({ playerType: "rec" });
     };
 
     async function addPlayerToDatabase (url = '', data = {}) {
@@ -146,10 +152,21 @@ class AdminPlayerModal extends React.Component{
       }
     };
             
+    this.onPlayerRecChange = (_, event) => {
+      this.setState({ playerTravel: false });
+      this.setState({ playerRec: true });
+      this.setState({ playerType: "rec" });
+    };
+    this.onPlayerTravelChange = (_, event) => {
+      this.setState({ playerTravel: true });
+      this.setState({ playerRec: false });
+      this.setState({ playerType: "travel" });
+    };
+
   }
 
   render() {
-    const { isModalOpen, isOpen, name, jersey, division } = this.state;
+    const { isModalOpen, isOpen, name, jersey, division, playerRec, playerTravel, playerType } = this.state;
     
     return (
       <React.Fragment>
@@ -288,6 +305,48 @@ class AdminPlayerModal extends React.Component{
             >
                 { this.divisionDropdownItems }
             </Select>
+          </FormGroup>
+          <FormGroup
+            label="Player Type"
+            labelIcon={
+            <Popover
+               headerContent={
+                 <div>Is this player a Rec player or a Travel player?</div>
+               }
+               bodyContent={
+                 <div>Select a player type (Rec is the default player type)</div>
+               }
+            >
+            <button
+              type="button"
+              aria-label="More info for the player type field"
+              onClick={e => e.preventDefault()}
+              aria-describedby="add-player-type"
+              className="pf-c-form__group-label-help"
+            >
+              <HelpIcon noVerticalAlign />
+            </button>
+            </Popover>
+            }
+            fieldId="add-player-type">
+              <Radio
+                isChecked={this.state.playerRec}
+                id="playerType"
+                name="playerType"
+                onChange={this.onPlayerRecChange}
+                label="Rec Player"
+                value="rec"
+              >
+              </Radio>
+              <Radio
+                isChecked={this.state.playerTravel}
+                id="playerType"
+                name="playerType"
+                onChange={this.onPlayerTravelChange}
+                label="Travel Player"
+                value="travel"
+              >
+              </Radio>
           </FormGroup>
         </Form>
         </Modal>

@@ -61,7 +61,7 @@ const AdminLatestNewsTable = ({ children }) => {
   }, [newsAdded]);
   
   const fetchNews = () => {
-    fetch(`https://softball-pi4/news`)
+    fetch(`http://db.hdevine.org/db/GetLatestNews.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setNewsData(jsonResponse);
@@ -102,7 +102,7 @@ const AdminLatestNewsTable = ({ children }) => {
 	        </Tr>
 	        </Thead>
           <Tbody>
-            {!loading && newsData?.data.length === 0 && (
+            {!loading && newsData?.length === 0 && (
               <Tr key="0">
                 <Td colSpan={3}>
                   <Bullseye>
@@ -119,7 +119,7 @@ const AdminLatestNewsTable = ({ children }) => {
                 </Td>
               </Tr>
             )}
-          {!loading && newsData?.data.map(row => (
+          {!loading && newsData?.map(row => (
             <LatestNewsEditTableRow
               key={row.id}
               currentRow={row}

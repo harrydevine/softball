@@ -5,6 +5,10 @@ import {
   CardFooter,
   CardHeader,
   CardBody,
+  EmptyState,
+  EmptyStateVariant,
+  EmptyStateBody,
+  EmptyStateIcon,
   Flex,
   FlexItem,
   Gallery,
@@ -23,15 +27,19 @@ import {
   Text,
   Title
 } from '@patternfly/react-core';
+import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SoftballGoogleMaps from './GoogleMaps';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import ArrowUpIcon from '@patternfly/react-icons/dist/js/icons/arrow-up-icon';
 import ArrowDownIcon from '@patternfly/react-icons/dist/js/icons/arrow-down-icon';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 const FieldInfo = ({ children }) => {
     const [activeTabKey, setActiveTabKey] = React.useState(0);
     const [fieldData, setFieldData] = React.useState(null);
     const [localityData, setLocalityData] = React.useState(null);
+    const [localityLoading, setLocalityLoading] = React.useState(true);
+    const [localityErr, setLocalityErr] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
     const [statusColor, setStatusColor] = React.useState("green");
@@ -40,7 +48,7 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Field Status
-      fetch("https://softball-pi4/fields")
+      fetch("http://softball-pi4:8081/fields")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setFieldData(jsonResponse);
@@ -74,15 +82,15 @@ const FieldInfo = ({ children }) => {
 
      useEffect(() => {
       // Fetch data for Locality locations
-      fetch("https://softball-pi4/localities")
+      fetch("http://db.hdevine.org/db/GetLocalities.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setLocalityData(jsonResponse);
-           setLoading(false);
+           setLocalityLoading(false);
         })
         .catch(err => {
-          setError(err);
-          setLoading(false);
+          setLocalityErr(err);
+          setLocalityLoading(false);
         });
      }, []);
 
@@ -170,7 +178,37 @@ const FieldInfo = ({ children }) => {
                   xl: '1fr'
                 }}              
               >
-                {Array.isArray(localityData?.data) && localityData?.data.map((locality) => (
+              <TableComposable variant={TableVariant.default}  aria-label="Field Info - Localities Table">
+                <Tbody>
+              {!localityLoading && localityData?.length === 0 && (
+                <Tr key="0">
+                  <Td colSpan={8}>
+                    <Bullseye>
+                      <EmptyState variant={EmptyStateVariant.small}>
+                        <EmptyStateIcon icon={SearchIcon} />
+                        <Title headingLevel="h2" size="lg">
+                          No Localities retrieved!
+                        </Title>
+                        <EmptyStateBody>
+                          Check your network connection or contact the system administrator.
+                        </EmptyStateBody>
+                      </EmptyState>
+                    </Bullseye>
+                  </Td>
+                </Tr>
+              )}
+              {localityLoading && (
+                  <Tr>
+                    <Td colSpan={8}>
+                      <Bullseye>
+                        <Spinner size="xl" />
+                      </Bullseye>
+                    </Td>
+                  </Tr>
+                )}
+                </Tbody>
+              </TableComposable>
+              {Array.isArray(localityData) && localityData?.map((locality) => (
                 <GalleryItem key={"locality"+locality.id}>
                   <Card key={locality.id}>
 	                  <CardHeader>

@@ -15,34 +15,30 @@ import {
 } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td, Caption} from '@patternfly/react-table';
-import AdminPlayerModal from './AdminPlayerModal';
-import PlayerEditTableRow from './PlayerEditTableRow';
+import AdminCoachModal from './AdminCoachModal';
+import CoachEditTableRow from './CoachEditTableRow';
 
 export const columnNames = {
-  playerName: 'Name',
-  playerNumber: 'Jersey Number',
-  division: 'Division',
-  type: 'Type'
+  coachName: 'Name',
+  coachPhone: 'Phone Number',
+  coachEmail: 'Email Address'
 };
 
-const AdminPlayersTable = ({ children, ...props }) => {
-  const { fetchPlayers, playerData, setPlayerData, playerLoading, setPlayerLoading, playerErr, setPlayerErr } = props;
-//  const [playerData, setPlayerData] = React.useState(null);
-//  const [loading, setLoading] = React.useState(true);
-//  const [err, setErr] = React.useState(null);
+const AdminCoachTable = ({ children, ...props }) => {
+  const { fetchCoach, coachData, setCoachData, coachLoading, setCoachLoading, coachErr, setCoachErr } = props;
   const [activeSortIndex, setActiveSortIndex] = React.useState(0);
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
-  const getSortableRowValues = players => {
-    const {playerName, playerNumber, division, type} = players;
-    return [playerName, playerNumber, division, type];
+  const getSortableRowValues = coach => {
+    const {coachName, coachPhone, coachEmail} = coach;
+    return [coachName, coachPhone, coachEmail];
   };
-  const [playerAdded, setPlayerAdded] = React.useState(false);
+  const [coachAdded, setCoachAdded] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
 
-  if (playerData?.data.length > 0) {
-    let sortedPlayers = playerData?.data;
-    if (sortedPlayers !== null) {
-      sortedPlayers = playerData?.data.sort((a, b) => {
+  if (coachData?.data.length > 0) {
+    let sortedCoach = coachData?.data;
+    if (sortedCoach !== null) {
+      sortedCoach = coachData?.data.sort((a, b) => {
         const aValue = getSortableRowValues(a)[activeSortIndex];
         const bValue = getSortableRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
@@ -76,15 +72,15 @@ const AdminPlayersTable = ({ children, ...props }) => {
   });
 
   useEffect(() => {
-    // Fetch data for Players
-      fetchPlayers();
-      setPlayerAdded(false);
+    // Fetch data for Coaches
+      fetchCoach();
+      setCoachAdded(false);
     }, []);
   
   useEffect(() => {
-  // Fetch data for Players when new player added
-    fetchPlayers();
-  }, [playerAdded]);
+  // Fetch data for Coaches when new coach added
+    fetchCoach();
+  }, [coachAdded]);
   
  /* 
   const fetchPlayers = () => {
@@ -134,29 +130,28 @@ const AdminPlayersTable = ({ children, ...props }) => {
             key={key} />
         ))}
       </AlertGroup>
-      <AdminPlayerModal setPlayerAdded={setPlayerAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
+      <AdminCoachModal setCoachAdded={setCoachAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert} />
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
-      <TableComposable variant={TableVariant.default}  aria-label="Players Table">
-        <Caption>EHT Softball - Players</Caption>
+      <TableComposable variant={TableVariant.default}  aria-label="Coaches Table">
+        <Caption>EHT Softball - Coaches</Caption>
         <Thead>
        <Tr>
-          <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-          <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-          <Th sort={getSortParams(2)}>{columnNames.division}</Th>
-          <Th sort={getSortParams(3)}>{columnNames.type}</Th>
+          <Th sort={getSortParams(0)}>{columnNames.coachName}</Th>
+          <Th sort={getSortParams(1)}>{columnNames.coachPhone}</Th>
+          <Th sort={getSortParams(2)}>{columnNames.coachEmail}</Th>
        </Tr>
        </Thead>
         <Tbody>
-          {!playerLoading && playerData?.data.length === 0 && (
+          {!coachLoading && coachData?.data.length === 0 && (
             <Tr key="0">
               <Td colSpan={4}>
                 <Bullseye>
                   <EmptyState variant={EmptyStateVariant.small}>
                     <EmptyStateIcon icon={SearchIcon} />
                     <Title headingLevel="h2" size="lg">
-                      No Player information retrieved!
+                      No Coach information retrieved!
                     </Title>
                     <EmptyStateBody>
                       Check your network connection or contact the system administrator.
@@ -166,16 +161,16 @@ const AdminPlayersTable = ({ children, ...props }) => {
               </Td>
             </Tr>
           )}
-          {!playerLoading && playerData?.data.map((row, rowIndex) => (
-            <PlayerEditTableRow
+          {!coachLoading && coachData?.data.map((row, rowIndex) => (
+            <CoachEditTableRow
               key={row.id}
               currentRow={row}
-              fetchPlayers={fetchPlayers}
+              fetchCoach={fetchCoach}
               addSuccessAlert={addSuccessAlert} 
               addFailureAlert={addFailureAlert}
             />
          ))}
-         {playerLoading && (
+         {coachLoading && (
             <Tr>
               <Td colSpan={4}>
               <Bullseye>
@@ -190,5 +185,5 @@ const AdminPlayersTable = ({ children, ...props }) => {
   );
 }
 
-export default AdminPlayersTable;
+export default AdminCoachTable;
 

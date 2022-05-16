@@ -9,12 +9,17 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   DescriptionListDescription,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
+  EmptyStateIcon,
   Gallery,
   GalleryItem,
   Spinner,
   Title,
   TitleSizes
 } from '@patternfly/react-core';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 const BoardMembers = ({ children }) => {
   const [boardData, setBoardData] = React.useState(null);
@@ -23,7 +28,7 @@ const BoardMembers = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Board Members
-    fetch(`https://softball-pi4/board`)
+  fetch(`http://db.hdevine.org/db/GetBoardMembers.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setBoardData(jsonResponse);
@@ -55,7 +60,20 @@ const BoardMembers = ({ children }) => {
           xl: '1fr'
         }}              
       >
-        {boardData?.data.map((board) => (
+        {!loading && boardData?.length === 0 && (
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.small}>
+              <EmptyStateIcon icon={SearchIcon} />
+                <Title headingLevel="h2" size="lg">
+                  No Board Members found!
+                </Title>
+              <EmptyStateBody>
+                Check your network connection or contact the system administrator.
+              </EmptyStateBody>
+            </EmptyState>
+          </Bullseye>
+        )}
+        {boardData?.map((board) => (
           <GalleryItem key={board.id}>
             <Card isSelectable>
               <CardTitle>

@@ -1,26 +1,33 @@
 import * as React from 'react';
 import { 
+  Alert, 
+  AlertGroup,
+  AlertActionCloseButton,
+  AlertVariant,
   Button, 
-  TextInput, 
-  Switch
+  Select,
+  SelectDirection,
+  SelectOption,
+  SelectVariant,
+  TextInput
 } from '@patternfly/react-core';
 import { Tr, Td } from '@patternfly/react-table';
-import { columnNames } from './AdminFieldsTable';
+import { columnNames } from './AdminCoachTable';
 import ConfirmDialog from './ConfirmDialog';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import Remove2Icon from '@patternfly/react-icons/dist/esm/icons/remove2-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
-const FieldsEditTableRow = ({ children, ...props }) => {
+const CoachTeamEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentField, fetchFieldInfo, addSuccessAlert, addFailureAlert } = props;
-  const [editedFieldNum, setEditedFieldNum] = React.useState(currentField.fieldNum);
-  const [editedFieldStatus, setEditedFieldStatus] = React.useState(currentField.fieldStatus);
-  const [editedFieldReason, setEditedFieldReason] = React.useState(currentField.fieldReason);
+  const {key, currentRow, division, teamName, fetchCoach, addSuccessAlert, addFailureAlert } = props;
+  const [editedName, setEditedName] = React.useState(currentRow.coachName);
+  const [editedPhone, setEditedPhone] = React.useState(currentRow.coachPhone);
+  const [editedEmail, setEditedEmail] = React.useState(currentRow.coachEmail);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-    async function updateFieldInfoInDatabase (url = '', data = {}) {
+  async function updateCoachInDatabase (url = '', data = {}) {
     const response = await fetch(url, {
       method: 'PUT',
       mode: 'cors',
@@ -37,9 +44,9 @@ const FieldsEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  async function removeFieldInfoInDatabase (url = '', data = {}) {
+  async function removeCoachFromTeam  (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: 'PUT',
       mode: 'cors',
       cache: 'no-cache',
       credentials: 'same-origin',
@@ -54,39 +61,39 @@ const FieldsEditTableRow = ({ children, ...props }) => {
     return response.json();
   };
 
-  const updateFieldInfo = (id) => {
-    updateFieldInfoInDatabase('http://softball-pi4:8081/fields/'+ id, { fieldNum: editedFieldNum, fieldStatus: editedFieldStatus ? 1 : 0, fieldReason: editedFieldReason })      
+  const updateCoach = (id) => {
+    updateCoachInDatabase('http://softball-pi4:8081/coach/'+ id, { name: editedName, phone: editedPhone, email: editedEmail })      
     .then(data => {
-      if (data.message === "Field Info updated successfully") {
-        addSuccessAlert("Field " + editedFieldNum + " updated successfully");
-        fetchFieldInfo();
+      if (data.message === "Coach updated successfully") {
+        addSuccessAlert(editedName + " updated successfully");
+        fetchCoach();
       }
       else {
-        addFailureAlert("Field update unsuccessful");
-        fetchFieldInfo();
-        console.log("Error updating field info!")
+        addFailureAlert(editedName + " update unsuccessful");
+        fetchCoach();
+        console.log("Error updating " + editedName);
       }
-  });
+    });
   }
 
-  const removeFieldInfo = async (id) => {
+  const removeFromTeam = async (id) => {
       setIsEditMode(false);
-      removeFieldInfoInDatabase('http://softball-pi4:8081/fields/'+ id, {})
+      removeCoachFromTeam('http://softball-pi4:8081/coach/resetTeam/'+ id, {})
       .then(data => {
-        if (data.message === "Field Info deleted successfully") {
-          addSuccessAlert("Field " + editedFieldNum + " deleted successfully");
-          fetchFieldInfo();
+        if (data.message === "Coach/Team assignment reset successfully") {
+          addSuccessAlert(editedName + " removed from " + teamName + " successfully");
+          fetchCoach();
         }
         else {
-          addFailureAlert("Field removal unsuccessful");
-          fetchFieldInfo();
-          console.log("Error removing field!")
+          addFailureAlert(editedName + " removal unsuccessful");
+          fetchCoach();
+          console.log("Error removing " + editedName + "from " + teamName);
         }
       });
   }
 
   const handleYes = () => {
-    removeFieldInfo(currentField.id);
+    removeFromTeam(currentRow.id);
     setConfirmDlgOpen(false);
   }
 
@@ -96,46 +103,45 @@ const FieldsEditTableRow = ({ children, ...props }) => {
 
   return (
     <React.Fragment>
-      <ConfirmDialog title={"Are you sure you want to delete this field?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
+      <ConfirmDialog title={"Are you sure you want to remove " + editedName + " from " + teamName + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <Tr key={key}>
-        <Td dataLabel={columnNames.fieldNum}>
+        <Td dataLabel={columnNames.coachName}>
           {isEditMode ? (
             <TextInput
-              value={editedFieldNum}
+              value={editedName}
               type="text"
-              aria-label="field-number"
+              aria-label="edit-player-name"
               onChange={(value) => {
-                setEditedFieldNum(value);
+                setEditedName(value);
               } } />
           ) : (
-            editedFieldNum
+            editedName
           )}
         </Td>
-        <Td dataLabel={columnNames.fieldStatus}>
-          {isEditMode ? (
-            <Switch
-              id={`switch-${currentField.id}`}
-              label="Open"
-              labelOff="Closed"
-              isChecked={editedFieldStatus}
-              onChange={(isChecked) => {
-                setEditedFieldStatus(isChecked);
-              } } />
-          ) : (
-            editedFieldStatus ? "Open" : "Closed"
-          )}
-        </Td>
-        <Td dataLabel={columnNames.fieldReason}>
+        <Td dataLabel={columnNames.coachPhone}>
           {isEditMode ? (
             <TextInput
-              value={editedFieldReason}
+              value={editedPhone}
               type="text"
-              aria-label="field-reason"
+              aria-label="edit-coach-phone"
               onChange={(value) => {
-                setEditedFieldReason(value);
+                setEditedPhone(value);
               } } />
           ) : (
-            editedFieldReason
+            editedPhone
+          )}
+        </Td>
+        <Td dataLabel={columnNames.coachEmail}>
+          {isEditMode ? (
+            <TextInput
+              value={editedEmail}
+              type="text"
+              aria-label="edit-coach-email"
+              onChange={(value) => {
+                setEditedEmail(value);
+              } } />
+          ) : (
+            editedEmail
           )}
         </Td>
         <Td modifier="nowrap">
@@ -159,7 +165,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
                   setConfirmDlgOpen(true);
                 }}
               >
-                Remove
+                Remove From Team
               </Button>
             </React.Fragment>
           ) : (
@@ -169,8 +175,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  console.log(currentField.id, editedFieldNum ? 1 : 0, editedFieldStatus, editedFieldReason);
-                  updateFieldInfo(currentField.id);
+                  updateCoach(currentRow.id);
                 } } />
               <Button
                 variant="plain"
@@ -189,4 +194,4 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   );
 }
 
-export default FieldsEditTableRow;
+export default CoachTeamEditTableRow;

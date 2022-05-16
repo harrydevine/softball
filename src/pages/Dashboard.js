@@ -34,24 +34,20 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Latest News
-      fetch(`https://softball-pi4/news`)
-        .then(async resp => {
-          const jsonResponse = await resp.json()
-          setNewsData(jsonResponse);
-          setNewsLoading(false);
-        })
-        .catch(err => {
-          setNewsErr(err);
-          setNewsLoading(false);
-        })
+      fetch(`http://db.hdevine.org/db/GetLatestNews.php`)
+      .then(async resp => { 
+        const response = await resp.json();
+        setNewsData(response);
+        setNewsLoading(false);
+      })
       }, []);
 
   useEffect(() => {
     // Fetch data for next Board Meeting
-    fetch(`https://softball-pi4/boardmtg`)
+    fetch(`http://db.hdevine.org/db/GetNextBoardMeeting.php`)
     .then(async resp => {
-      const jsonResponse = await resp.json()
-      setMtgData(jsonResponse);
+      const response = await resp.json();
+      setMtgData(response);
       setLoading(false);
     })
     .catch(err => {
@@ -62,10 +58,10 @@ const Dashboard = ({ children }) => {
     
   useEffect(() => {
     // Fetch data for next Tournament
-    fetch(`https://softball-pi4/nexttournament`)
+    fetch(`http://db.hdevine.org/db/GetNextTournament.php`)
     .then(async resp => {
-      const jsonResponse = await resp.json()
-      setTournamentData(jsonResponse);
+      const response = await resp.json();
+      setTournamentData(response);
       setTournamentLoading(false);
     })
     .catch(err => {
@@ -82,7 +78,7 @@ const Dashboard = ({ children }) => {
 	  	      <Spinner size="xl" />
 		      </Bullseye>
         )}
-        {!newsLoading && newsData?.data.length === 0 && (
+        {!newsLoading && newsData?.length === 0 && (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
@@ -95,7 +91,7 @@ const Dashboard = ({ children }) => {
             </EmptyState>
           </Bullseye>
         )}
-        {!newsLoading && newsData?.data.map(row => (
+        {!newsLoading && newsData?.map(row => (
         <Card isSelectable key={row.id}>
           <CardTitle><u>{row.title}</u></CardTitle>
           <CardBody>
@@ -112,7 +108,7 @@ const Dashboard = ({ children }) => {
 	  	      <Spinner size="xl" />
 		      </Bullseye>
         )}
-        {!tournamentLoading && tournamentData?.data.length === 0 && (
+        {!tournamentLoading && tournamentData?.length === 0 && (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
@@ -125,7 +121,7 @@ const Dashboard = ({ children }) => {
             </EmptyState>
           </Bullseye>
         )}
-        {!tournamentLoading && tournamentData?.data.map(row => (
+        {!tournamentLoading && tournamentData?.map(row => (
           <Card isSelectable key="next_tournament_card">
 	          <CardHeader>
 	            <CardHeaderMain>
@@ -153,7 +149,7 @@ const Dashboard = ({ children }) => {
 	  	       <Spinner size="xl" />
 		       </Bullseye>
          )}
-         {!loading && mtgData?.data.length === 0 && (
+         {!loading && mtgData?.length === 0 && (
            <Bullseye>
              <EmptyState variant={EmptyStateVariant.small}>
                <EmptyStateIcon icon={SearchIcon} />
@@ -166,7 +162,7 @@ const Dashboard = ({ children }) => {
              </EmptyState>
            </Bullseye>
          )}
-         {!loading && mtgData?.data.map(row => (
+         {!loading && mtgData?.map(row => (
 	         <Card isSelectable key="next_meeting_card">
              <CardTitle><u>Next Board Meeting</u></CardTitle>
                <CardBody>Date: {row.date} </CardBody>

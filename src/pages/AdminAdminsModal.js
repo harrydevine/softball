@@ -32,12 +32,6 @@ class AdminAdminsModal extends React.Component{
             isModalOpen: !isModalOpen
           }));
         console.log(this.name, " ", this.password);      
-        /* Add Board Member to database...*/
-//        addBoardMemberToDatabase('https://softball-pi4/board', { name: boardMemberNameValue, title: boardMemberPositionValue, phone: boardMemberPhoneNumberValue, email: boardMemberEmailValue })
-//        .then(data => {
-//          console.log(data);
-//        });
-    
         /* Reset dialog fields for next time */
         this.setState({ name: "" });
         this.setState({ password: "" });

@@ -65,7 +65,7 @@ class AdminFieldsMasterStatusModal extends React.Component{
           isModalOpen: !isModalOpen
       }));
       /* Update All Fields; use ID of 1, which is ignored, but the MySQL backend route for /fields requires it. */
-      updateFieldsMasterStatus('https://softball-pi4/fields/master/1', { fieldStatus: (this.state.fieldStatus === "Open") ? 1 : 0, fieldReason: this.state.fieldReason })
+      updateFieldsMasterStatus('http://softball-pi4:8081/fields/master/1', { fieldStatus: (this.state.fieldStatus === "Open") ? 1 : 0, fieldReason: this.state.fieldReason })
       .then(data => {
         if (data.message === "Error while updating Master Field Info") {
           this.addFailureAlert();

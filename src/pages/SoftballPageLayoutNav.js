@@ -16,10 +16,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import SoftballMasthead from "./SoftballMasthead";
 import Footer from "./Footer";
 
-const SoftballPageLayoutNav = ({ children }) => {
+const SoftballPageLayoutNav = ({ children}) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth0();
-  //  const [isAuthenticated, setAuthenticated] = React.useState(true);
+  //const { isAuthenticated } = useAuth0();
+  const [isAuthenticated, setAuthenticated] = React.useState(true);
   const [activeGroup, setActiveGroup] = React.useState("itemHome");
   const [activeItem, setActiveItem] = React.useState("itemHome");
 

@@ -12,6 +12,9 @@ import {
   CardHeader,
   CardFooter,
   CardTitle,
+  DragDrop,
+  Draggable,
+  Droppable,
   DualListSelector,
   EmptyState,
   EmptyStateIcon,
@@ -23,6 +26,8 @@ import {
   PageSection,
   PageSectionVariants,
   Spinner,
+  Split,
+  SplitItem,
   Tabs,
   Tab,
   TabContent,
@@ -33,6 +38,8 @@ import {
 } from '@patternfly/react-core';
 import AdminTeamModal from './AdminTeamModal';
 import PlayerTeamEditTableRow from './PlayerTeamEditTableRow';
+import CoachTeamEditTableRow from './CoachTeamEditTableRow';
+import ConfirmDialog from './ConfirmDialog';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
@@ -44,25 +51,30 @@ export const columnNames = {
   playerName: 'Name',
   playerNumber: 'Jersey Number'
 };
+export const coachColumnNames = {
+  coachName: 'Name',
+  coachPhone: 'Phone Number',
+  coachEmail: 'Email Address'
+};
 
 //class AdminTeams extends React.Component {
 const AdminTeams = ({ children, ...props }) => {
-  const { fetchPlayers, playerData, setPlayerData, playerLoading, setPlayerLoading, playerErr, setPlayerErr } = props;
+  const { fetchPlayers, playerData, setPlayerData, playerLoading, setPlayerLoading, playerErr, setPlayerErr,
+          fetchCoach, coachData, setCoachData, coachLoading, setCoachLoading, coachErr, setCoachErr } = props;
   const [teamData, setTeamData] = React.useState(null);
   const [teamLoading, setTeamLoading] = React.useState(true);
   const [teamErr, setTeamErr] = React.useState(false);
   const [travelData, setTravelData] = React.useState(null);
   const [travelLoading, setTravelLoading] = React.useState(true);
   const [travelErr, setTravelErr] = React.useState(false);
-//  const [playerData, setPlayerData] = React.useState(null);
-//  const [playerLoading, setPlayerLoading] = React.useState(true);
-//  const [playerErr, setPlayerErr] = React.useState(false);
   const [activeTabKey, setActiveTabKey] = React.useState(0);
   const [teamAdded, setTeamAdded] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
   const [isAddPlayerDlgOpen, setAddPlayerDlgOpen] = React.useState(false);
+  const [isAddCoachDlgOpen, setAddCoachDlgOpen] = React.useState(false);
   const [teamId, setTeamId] = React.useState(0);
   const [teamName, setTeamName] = React.useState("");
+  const [teamType, setTeamType] = React.useState("");
   const [division, setDivision] = React.useState("");
   const [availablePlayers, setAvailablePlayers] = React.useState([]);
   const [chosenPlayers, setChosenPlayers] = React.useState([]);
@@ -70,6 +82,7 @@ const AdminTeams = ({ children, ...props }) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const [availablePlayersState, setAvailablePlayersState] = React.useState([]);
   const [chosenPlayersState, setChosenPlayersState] = React.useState([]);
+  const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
   const getSortableRowValues = players => {
     const {playerName, playerNumber} = players;
     return [playerName, playerNumber];
@@ -97,11 +110,7 @@ const AdminTeams = ({ children, ...props }) => {
     </Button>,
   ];
 
-//  const handleAddNewPlayerButton = () => {
-//    console.log("Handled Add new player to this team button click")
-//  };
-
-  const handleAddPlayerToTeam = (id, level, name) => {
+  const handleAddPlayerToTeam = (id, level, name, type) => {
     let playersArray = Array();
     let teamArray = Array();
     let filteredArray = Array();
@@ -111,7 +120,7 @@ const AdminTeams = ({ children, ...props }) => {
     setAddPlayerDlgOpen(true);
 
     playerData?.data.filter(function (data) {
-      return data.division === level;
+      return ((data.division === level) && (data.type === type)) ;
     }).map((filteredPlayer => ( 
       playersArray.push(<span id={filteredPlayer.id}>{filteredPlayer.playerName}</span>)
     )));
@@ -138,8 +147,19 @@ const AdminTeams = ({ children, ...props }) => {
     setAvailablePlayersState(filteredArray);
   }
 
-  const handleRemoveTeam = (id) => {
-    console.log(id);
+  const handleAddCoachToTeam = (id, level, name) => {
+    console.log("Add Coach To Team logic");
+    setTeamId(id);
+    setTeamName(name);
+    setDivision(level);
+    setAddCoachDlgOpen(true);
+}
+
+  const handleRemoveTeam = (id, type, name) => {
+    setTeamId(id);
+    setTeamName(name);
+    setTeamType(type);
+    setConfirmDlgOpen(true);
   }
 
   const handleAddModalOK = () => {
@@ -155,6 +175,14 @@ const AdminTeams = ({ children, ...props }) => {
 
   const handleAddModalCancel = () => {
     setAddPlayerDlgOpen(false);
+  }
+
+  const handleAddCoachModalOK = () => {
+    setAddCoachDlgOpen(false);
+  }
+
+  const handleAddCoachModalCancel = () => {
+    setAddCoachDlgOpen(false);
   }
 
   async function addPlayerToTeam (url = '', data = {}) {
@@ -175,7 +203,7 @@ const AdminTeams = ({ children, ...props }) => {
   };
 
   const addPlayer = (id, teamId, name, teamName) => {
-    addPlayerToTeam('https://softball-pi4/players/addPlayerToTeam/'+ id, { teamId: teamId })      
+    addPlayerToTeam('http://softball-pi4:8081/players/addPlayerToTeam/'+ id, { teamId: teamId })      
     .then(data => {
       if (data.message === "Player/Team assignment updated successfully") {
         addSuccessAlert(name + " added to " + teamName + " successfully");
@@ -187,6 +215,97 @@ const AdminTeams = ({ children, ...props }) => {
         console.log("Error adding " + name + " to " + teamName);
       }
     });
+  }
+
+  async function removePlayerFromTeam  (url = '', data = {}) {
+    const response = await fetch(url, {
+      method: 'PUT',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  };
+
+  const removeFromTeam = async (id, playerName, team) => {
+      removePlayerFromTeam('http://softball-pi4:8081/players/resetTeam/'+ id, {})
+      .then(data => {
+        if (data.message === "Player/Team assignment reset successfully") {
+          addSuccessAlert(playerName + " removed from " + team + " successfully");
+          fetchPlayers();
+        }
+        else {
+          addFailureAlert(playerName + " removal unsuccessful");
+          fetchPlayers();
+          console.log("Error removing " + playerName + "from " + team);
+        }
+      });
+  }
+
+  async function removeTeamFromDatabase (url = '', data = {}) {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  };
+
+  const removeTeam = async (id, type, name) => {
+      let url = "";
+      if (type === "rec") {
+        url = "http://softball-pi4:8081/recteams/" + id;
+      }
+      if (type === "travel") {
+        url = "http://softball-pi4:8081/travelteams/" + id;
+      }
+      removeTeamFromDatabase(url, {})
+      .then(data => {
+        if ((data.message === "Error while deleting Rec Team info") || (data.message === "Error while deleting Travel Team info")) {
+          addFailureAlert(teamName + " removal unsuccessful");
+          fetchRecTeams();
+          fetchTravelTeams();
+          console.log("Error removing " + teamName);
+        }
+        else {
+          addSuccessAlert(teamName + " removed successfully");
+          fetchRecTeams();
+          fetchTravelTeams();
+        }
+      });
+  }
+
+  const handleYes = () => {
+    setConfirmDlgOpen(false);
+
+    // Reset all players on this team (essentially removing them from the team
+    playerData?.data.filter(function (data) {
+      return data.teamId === teamId;
+    }).map((teamPlayer => (
+      removeFromTeam(teamPlayer.id, teamPlayer.playerName, teamName)
+    )));
+
+    // Remove the selected team
+    removeTeam(teamId, teamType, teamName);
+  }
+
+  const handleNo = () => {
+    setConfirmDlgOpen(false);
   }
 
   const handleTabClick = (_, tabIndex) => setActiveTabKey(tabIndex);
@@ -259,7 +378,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const fetchRecTeams = () => {
     // Fetch data for Rec Teams
-    fetch(`https://softball-pi4/recteams`)
+    fetch(`http://softball-pi4:8081/recteams`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -273,7 +392,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const fetchTravelTeams = () => {
     // Fetch data for Travel Teams
-    fetch(`https://softball-pi4/travelteams`)
+    fetch(`http://softball-pi4:8081/travelteams`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTravelData(jsonResponse);
@@ -285,21 +404,6 @@ const AdminTeams = ({ children, ...props }) => {
     })
   }
 
-  /*
-  const fetchPlayers = () => {
-    // Fetch data for Players
-    fetch(`https://softball-pi4/players`)
-    .then(async resp => {
-      const jsonResponse = await resp.json()
-      setPlayerData(jsonResponse);
-      setPlayerLoading(false);
-    })
-    .catch(err => {
-      setPlayerErr(err);
-      setPlayerLoading(false);
-    })
-  }
-*/
   const onSort = (panel) => {
     if (panel === "available") {
       setAvailablePlayersState((prevAvailablePlayersState) => {
@@ -340,6 +444,7 @@ const AdminTeams = ({ children, ...props }) => {
   return (
     <div>
       <PageSection variant={PageSectionVariants.light} key="adminTeamsSection1">
+      <ConfirmDialog title={"Are you sure you want to remove " + teamName + "?"} isModalOpen={isConfirmDlgOpen} handleYes={handleYes} handleNo={handleNo}/>
       <AlertGroup isToast isLiveRegion>
       {alerts.map(({ key, variant, title }) => (
         <Alert
@@ -382,6 +487,45 @@ const AdminTeams = ({ children, ...props }) => {
           onListChange={onListChange}
           id="playerTeamSelector"
         />
+      </Modal>
+      <Modal
+        variant={ModalVariant.medium}
+        title="Add Coach To Team"
+        description={"Adds a coach to " + teamName + " - " + division}
+        isOpen={isAddCoachDlgOpen}
+        onClose={handleAddCoachModalCancel}
+        actions={[
+          <Button key="addCoach" variant="primary" form="add-coach-team-form" onClick={handleAddCoachModalOK}>
+            Add Coach
+          </Button>,
+          <Button key="cancelAddCoach" variant="link" onClick={handleAddCoachModalCancel}>
+            Cancel
+          </Button>
+        ]}
+      >
+        <Split hasGutter>
+          <DragDrop>
+          <SplitItem>
+            <Draggable>
+              Coach 1
+            </Draggable>
+            <Draggable>
+              Coach 2
+            </Draggable>
+          </SplitItem>
+          <SplitItem>
+            <Droppable>
+              Head Coach
+            </Droppable>
+            <Droppable>
+              Assistant Coach 1
+            </Droppable>
+            <Droppable>
+              Assistant Coach 2
+            </Droppable>
+            </SplitItem>
+          </DragDrop>  
+        </Split>          
       </Modal>
 
       <AdminTeamModal setTeamAdded={setTeamAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert}  />
@@ -427,17 +571,17 @@ const AdminTeams = ({ children, ...props }) => {
                 <CardHeader>
                 <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
                 <Tooltip content="Add Player to this Team">
-                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "6U", row.teamName)} />{'  '}
+                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "6U", row.teamName, row.type)} />{'  '}
                 </Tooltip>
                 <Tooltip content="Remove this Team">
-                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
                 </Tooltip>
                 </CardHeader>
-                <CardTitle>Coach: {row.coach}</CardTitle>
+                <CardTitle>Head Coach: {row.coach1}</CardTitle>
                   <CardBody>
-                    Phone Number: {row.coach_phone}
+                    Phone Number: {row.coach1_phone}
                     <Text component="br" />
-                    Email: {row.coach_email}
+                    Email: {row.coach1_email}
                     <Text component="br" />
                     <Text component="br" />
                     <Title headingLevel="h2" size="lg">Roster</Title>
@@ -500,17 +644,17 @@ const AdminTeams = ({ children, ...props }) => {
               <CardHeader>
                 <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
                 <Tooltip content="Add Player to this Team">
-                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "8U", row.teamName)} />{'  '}
+                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "8U", row.teamName, row.type)} />{'  '}
                 </Tooltip>
                 <Tooltip content="Remove this Team">
-                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
                 </Tooltip>
               </CardHeader>
-              <CardTitle>Coach: {row.coach}</CardTitle>
+              <CardTitle>Head Coach: {row.coach1}</CardTitle>
               <CardBody>
-                Phone Number: {row.coach_phone}
+                Phone Number: {row.coach1_phone}
                 <Text component="br" />
-                  Email: {row.coach_email}
+                  Email: {row.coach1_email}
                   <Text component="br" />
                   <Text component="br" />
                   <Title headingLevel="h2" size="lg">Roster</Title>
@@ -572,18 +716,45 @@ const AdminTeams = ({ children, ...props }) => {
                       <Card key={row.id} isSelectable>
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                          <Tooltip content="Add Player to this Team">
-                            <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "10U", row.teamName)} />{'  '}
-                            </Tooltip>
-                          <Tooltip content="Remove this Team">
-                            <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
-                          </Tooltip>
-                        </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
-                        <CardBody>
-                          Phone Number: {row.coach_phone}
                           <Text component="br" />
-                          Email: {row.coach_email}
+                          <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "10U", row.teamName, row.type)}>
+                            Add Player to Team
+                          </Button>{'    '}
+                          <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "10U", row.teamName)}>
+                            Add Coach to Team
+                          </Button>{'    '}
+                          <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}>
+                            Remove this Team
+                          </Button>{'    '}
+                        </CardHeader>
+                        <CardBody>
+                          <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                          <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                              <Thead>
+                                <Tr>
+                                  <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                  <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                  <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {!coachLoading && coachData?.data
+                                .filter(function (data) {
+                                  return data.teamId === row.id;
+                                })
+                                .map((coach => (
+                                  <CoachTeamEditTableRow
+                                    key={"CoachForTeam_"+coach.id}
+                                    currentRow={coach}
+                                    division="10U"
+                                    teamName={row.teamName}
+                                    fetchCoach={fetchCoach}
+                                    addSuccessAlert={addSuccessAlert} 
+                                    addFailureAlert={addFailureAlert}
+                                  />
+                                )))}
+                              </Tbody>
+                            </TableComposable>
                           <Text component="br" />
                           <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
@@ -648,17 +819,17 @@ const AdminTeams = ({ children, ...props }) => {
                         <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
                         <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "12U", row.teamName)} />{'  '}
+                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "12U", row.teamName, row.type)} />{'  '}
                         </Tooltip>
                         <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
                         </Tooltip>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
+                          Phone Number: {row.coach1_phone}
                           <Text component="br" />
-                          Email: {row.coach_email}
+                          Email: {row.coach1_email}
                           <Text component="br" />
                           <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
@@ -721,17 +892,17 @@ const AdminTeams = ({ children, ...props }) => {
                         <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
                         <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "14U", row.teamName)} />{'  '}
+                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "14U", row.teamName, row.type)} />{'  '}
                         </Tooltip>
                         <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
                         </Tooltip>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
+                          Phone Number: {row.coach1_phone}
                           <Text component="br" />
-                          Email: {row.coach_email}
+                          Email: {row.coach1_email}
                           <Text component="br" />
                           <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
@@ -794,17 +965,17 @@ const AdminTeams = ({ children, ...props }) => {
                         <CardHeader>
                           <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
                           <Tooltip content="Add Player to this Team">
-                            <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "16U", row.teamName)} />{'  '}
+                            <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "16U", row.teamName, row.type)} />{'  '}
                           </Tooltip>
                           <Tooltip content="Remove this Team">
-                            <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                            <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
                           </Tooltip>
                         </CardHeader>
-                        <CardTitle>Coach: {row.coach}</CardTitle>
+                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
                         <CardBody>
-                          Phone Number: {row.coach_phone}
+                          Phone Number: {row.coach1_phone}
                           <Text component="br" />
-                          Email: {row.coach_email}
+                          Email: {row.coach1_email}
                           <Text component="br" />
                           <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
@@ -863,19 +1034,35 @@ const AdminTeams = ({ children, ...props }) => {
                       <CardHeader>
                         <Label icon={<InfoCircleIcon />} color={`${row.teamColor}`} >{row.teamName}</Label>{'  '}
                         <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, row.division, row.teamName)} />{'  '}
+                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, row.division, row.teamName, row.type)} />{'  '}
                         </Tooltip>
                         <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id)}/>{'  '}
+                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "travel", row.teamName)}/>{'  '}
                         </Tooltip>
                       </CardHeader>
-                      <CardTitle>Coach: {row.coach}</CardTitle>
+                      <CardTitle></CardTitle>
                       <CardBody>
-                        Phone Number: {row.coach_phone}
-                          <Text component="br" />
-                          Email: {row.coach_email}
-                          <Text component="br" />
-                          <Text component="br" />
+                        Head Coach: {row.coach1}
+                        <Text component="br" />
+                        Phone Number: {row.coach1_phone}
+                        <Text component="br" />
+                        Email: {row.coach1_email}
+                        <Text component="br" />
+                        <Text component="br" />
+                        Assistant Coach: {row.coach2}
+                        <Text component="br" />
+                        Phone Number: {row.coach2_phone}
+                        <Text component="br" />
+                        Email: {row.coach2_email}
+                        <Text component="br" />
+                        <Text component="br" />
+                        Assistant Coach: {row.coach3}
+                        <Text component="br" />
+                        Phone Number: {row.coach3_phone}
+                        <Text component="br" />
+                        Email: {row.coach3_email}
+                        <Text component="br" />
+                        <Text component="br" />
                         <Title headingLevel="h2" size="lg">Roster</Title>
                           <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                             <Thead>

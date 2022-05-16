@@ -74,7 +74,7 @@ class AdminBoardMemberModal extends React.Component{
             isModalOpen: !isModalOpen
           }));
         /* Add Board Member to database...*/
-        addBoardMemberToDatabase('https://softball-pi4/board', 
+        addBoardMemberToDatabase('http://softball-pi4:8081/board', 
           { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
         .then(data => {
           if (data.message === "Board Member created successfully") {

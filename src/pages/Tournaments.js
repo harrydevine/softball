@@ -30,7 +30,7 @@ const Tournaments = ({ children }) => {
 
   useEffect(() => {
     // Fetch Tournament
-    fetch(`https://softball-pi4/tournaments`)
+    fetch(`http://db.hdevine.org/db/GetTournaments.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTournamentData(jsonResponse);
@@ -63,7 +63,7 @@ const Tournaments = ({ children }) => {
 	  	      <Spinner size="xl" />
 		      </Bullseye>
         )}
-        {!tournamentLoading && tournamentData?.data.length === 0 && (
+        {!tournamentLoading && tournamentData?.length === 0 && (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
@@ -76,7 +76,7 @@ const Tournaments = ({ children }) => {
             </EmptyState>
           </Bullseye>
         )}
-        {!tournamentLoading && tournamentData?.data.map(row => (
+        {!tournamentLoading && tournamentData?.map(row => (
           <GalleryItem key={"gallery-"+getUniqueId()}>
           <Card isSelectable key={"tourney-"+getUniqueId()}>
 	          <CardHeader>

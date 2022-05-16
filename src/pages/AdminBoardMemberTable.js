@@ -63,7 +63,7 @@ const AdminBoardMemberTable = ({ children }) => {
   }, [boardMemberAdded]);
 
   const fetchBoard = () => {
-    fetch(`https://softball-pi4/board`)
+    fetch(`http://db.hdevine.org/db/GetBoardMembers.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setBoardData(jsonResponse);
@@ -105,7 +105,7 @@ const AdminBoardMemberTable = ({ children }) => {
          </Tr>
          </Thead>
           <Tbody>
-            {!loading && boardData?.data.length === 0 && (
+            {!loading && boardData?.length === 0 && (
               <Tr key="0">
                 <Td colSpan={4}>
                   <Bullseye>
@@ -122,7 +122,7 @@ const AdminBoardMemberTable = ({ children }) => {
                 </Td>
               </Tr>
             )}
-            {!loading && boardData?.data.map(row => (
+            {!loading && boardData?.map(row => (
               <BoardMemberEditTableRow
                 key={row.id}
                 currentRow={row}

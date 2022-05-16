@@ -59,8 +59,8 @@ const AdminLogin = ({ children }) => {
 
   const onLoginButtonClick = (event) => {
     event.preventDefault();
-//    navigate("http://softball-pi4:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code&redirect_uri=http://softball-pi4:3000/admin");
-//    navigate("http://softball-pi4:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code");
+//    navigate("http://softball-pi4:8081:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code&redirect_uri=http://softball-pi4:8081:3000/admin");
+//    navigate("http://softball-pi4:8081:9011/oauth2/authorize?client_id=b4f122f7-f06a-465f-ba19-2419f75dd6b9&response_type=code");
   }
 
 //  return() {
