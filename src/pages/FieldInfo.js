@@ -48,7 +48,7 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Field Status
-      fetch("http://softball-pi4:8081/fields")
+      fetch("http://db.hdevine.org/db/GetFields.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setFieldData(jsonResponse);
@@ -63,9 +63,9 @@ const FieldInfo = ({ children }) => {
      useEffect(() => {
        let count = 0;
      /* Determine the field status and color for presentation */
-       if (fieldData?.data.length > 0) {
-         fieldData.data.map((field) => {
-           if (field.fieldStatus === 0) {
+       if (fieldData?.length > 0) {
+         fieldData.map((field) => {
+           if (field.fieldStatus === "Closed") {
              count = count + 1;
            }
          });
@@ -133,19 +133,40 @@ const FieldInfo = ({ children }) => {
                     <Spinner size="xl" />
                   </Bullseye>
                 )}
-                {Array.isArray(fieldData?.data) && fieldData?.data.map((field) => (
-	                <LevelItem key={field.id}>
+                {!loading && fieldData?.length === 0 && (
+                <TableComposable variant={TableVariant.default}  aria-label="Field Info - Localities Table">
+                <Tbody>
+                  <Tr key="0">
+                    <Td colSpan={3}>
+                      <Bullseye>
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={SearchIcon} />
+                          <Title headingLevel="h2" size="lg">
+                            No Field Information retrieved!
+                          </Title>
+                          <EmptyStateBody>
+                            Check your network connection or contact the system administrator.
+                          </EmptyStateBody>
+                        </EmptyState>
+                      </Bullseye>
+                    </Td>
+                  </Tr>
+                  </Tbody>
+                </TableComposable>
+                )}
+                {Array.isArray(fieldData) && fieldData.map((field) => (
+                <LevelItem key={field.id}>
 	                  <Card key={"field"+field.fieldNum}>
                     <CardHeader>Field {field.fieldNum}</CardHeader>
-                      {field.fieldStatus === 1 && (
+                      {field.fieldStatus === "Open" && (
                       <CardBody>
 		                    <ArrowUpIcon color="green" style={{ height: '50px' }} />
-			                    Open
-                          <Text component="br" />
-                            {field.fieldReason}				
+			                  Open
+                        <Text component="br" />
+                        {field.fieldReason}				
                       </CardBody>
                       )}
-                      {field.fieldStatus === 0 && (
+                      {field.fieldStatus === "Closed" && (
                       <CardBody>
                         <ArrowDownIcon color="red" style={{ height: '50px' }} />
 			                  Closed
@@ -154,7 +175,7 @@ const FieldInfo = ({ children }) => {
                       </CardBody>
                       )}
 	                  </Card>
-	                </LevelItem>
+                </LevelItem>
 		            ))}
 	            </Level>
               <Text>{"\n\n\n"}</Text>

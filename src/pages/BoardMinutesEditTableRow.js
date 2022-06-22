@@ -19,42 +19,17 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
   const [editedMinutes, setEditedMinutes] = React.useState(currentRow.minutes);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateMinutesInfoInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeMinutesInfoInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateMinutesInfo = (id) => {
-    updateMinutesInfoInDatabase('http://softball-pi4:8081/minutes/'+ id, { date: editedDate, minutes: editedMinutes })      
+    let updateArray = Array(id, editedDate, editedMinutes);
+    updateDatabase('http://db.hdevine.org/db/UpdateBoardMinutes.php', { updateArray })      
     .then(data => {
       if (data.message === "Board Minutes info updated successfully") {
         addSuccessAlert("Board Minutes info updated successfully");
@@ -70,7 +45,8 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
 
   const removeMinutesInfo = async (id) => {
       setIsEditMode(false);
-      removeMinutesInfoInDatabase('http://softball-pi4:8081/minutes/'+ id, {})
+      let delID=Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeleteBoardMinutes.php', { delID })
       .then(data => {
         if (data.message === "Board Minutes deleted successfully") {
           addSuccessAlert("Board Minutes for " + editedDate + " deleted successfully");
@@ -99,7 +75,6 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
   };
 
   const onDateChange = (str, date) => {
-    console.log('str', str, 'date', date);
     setEditedDate( str );
   }
 

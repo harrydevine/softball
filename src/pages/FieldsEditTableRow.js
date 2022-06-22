@@ -20,44 +20,19 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   const [editedFieldReason, setEditedFieldReason] = React.useState(currentField.fieldReason);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-    async function updateFieldInfoInDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeFieldInfoInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateFieldInfo = (id) => {
-    updateFieldInfoInDatabase('http://softball-pi4:8081/fields/'+ id, { fieldNum: editedFieldNum, fieldStatus: editedFieldStatus ? 1 : 0, fieldReason: editedFieldReason })      
+    let updateArray = Array(id, editedFieldNum, editedFieldStatus, editedFieldReason);
+    updateDatabase('http://db.hdevine.org/db/UpdateField.php', { updateArray })      
     .then(data => {
-      if (data.message === "Field Info updated successfully") {
+      if (data.message === "Field updated successfully") {
         addSuccessAlert("Field " + editedFieldNum + " updated successfully");
         fetchFieldInfo();
       }
@@ -71,9 +46,10 @@ const FieldsEditTableRow = ({ children, ...props }) => {
 
   const removeFieldInfo = async (id) => {
       setIsEditMode(false);
-      removeFieldInfoInDatabase('http://softball-pi4:8081/fields/'+ id, {})
+      let delID = Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeleteField.php', { delID })
       .then(data => {
-        if (data.message === "Field Info deleted successfully") {
+        if (data.message === "Field deleted successfully") {
           addSuccessAlert("Field " + editedFieldNum + " deleted successfully");
           fetchFieldInfo();
         }
@@ -117,12 +93,12 @@ const FieldsEditTableRow = ({ children, ...props }) => {
               id={`switch-${currentField.id}`}
               label="Open"
               labelOff="Closed"
-              isChecked={editedFieldStatus}
+              isChecked={(editedFieldStatus === "Open")}
               onChange={(isChecked) => {
-                setEditedFieldStatus(isChecked);
+                setEditedFieldStatus(isChecked ? "Open" : "Closed");
               } } />
           ) : (
-            editedFieldStatus ? "Open" : "Closed"
+            editedFieldStatus
           )}
         </Td>
         <Td dataLabel={columnNames.fieldReason}>
@@ -169,7 +145,6 @@ const FieldsEditTableRow = ({ children, ...props }) => {
                 icon={<CheckIcon />}
                 onClick={() => {
                   setIsEditMode(false);
-                  console.log(currentField.id, editedFieldNum ? 1 : 0, editedFieldStatus, editedFieldReason);
                   updateFieldInfo(currentField.id);
                 } } />
               <Button

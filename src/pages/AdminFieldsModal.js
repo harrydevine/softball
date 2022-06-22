@@ -26,7 +26,7 @@ class AdminFieldsModal extends React.Component{
         isOpen: false,
         fieldNum: "",
         fieldReason: "",
-        fieldStatus: 0,
+        fieldStatus: "Closed",
         alerts: []
       };
 
@@ -65,11 +65,11 @@ class AdminFieldsModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
       }));
-      console.log(this.state.fieldNum, " ", this.state.fieldStatus, " ", this.state.fieldReason)      
-      /* Add Board Member to database...*/
-      addNewFieldToDatabase('http://softball-pi4:8081/fields', { fieldNum: this.state.fieldNum, fieldStatus: this.state.fieldStatus, fieldReason: this.state.fieldReason })
+      /* Add Field to database...*/
+      let data = Array(this.state.fieldNum, this.state.fieldStatus, this.state.fieldReason);
+      updateDatabase('http://db.hdevine.org/db/AddField.php', { data })
       .then(data => {
-        if (data.message === "Error while creating Fields Info") {
+        if (data.message === "Error in creating field") {
           this.addFailureAlert();
         }
         else {
@@ -80,29 +80,26 @@ class AdminFieldsModal extends React.Component{
     
       /* Reset dialog fields for next time */
       this.setState({ fieldNum: "" });
-      this.setState({ fieldStatus: 0 });
+      this.setState({ fieldStatus: "Closed" });
       this.setState({ fieldReason: "" });
     };
 
     this.handleFieldCancel = () => {
-      console.log("Hit handleFieldCancel....")
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
       
       /* Reset dialog fields for next time */
       this.setState({ fieldNum: "" });
-      this.setState({ fieldStatus: 0 });
+      this.setState({ fieldStatus: "Closed" });
       this.setState({ fieldReason: "" });
     };
 
     this.onFieldNumChange = newValue => {
-        console.log("New value for fieldNum: ", newValue)
-        this.setState(({ fieldNum: newValue }));
+      this.setState(({ fieldNum: newValue }));
     };
 
     this.onFieldReasonChange = newValue => {
-      console.log("New value for fieldReason: ", newValue)
       this.setState(({ fieldReason: newValue }));
     };
 
@@ -113,38 +110,23 @@ class AdminFieldsModal extends React.Component{
     };
 
     this.onToggle = isOpen => {
-      console.log("isOpen: ", isOpen);
       this.setState({ isOpen });
     };
     
     this.onSelect = (event, selection, isPlaceholder) => {
-      console.log("Hit onSelect ", selection);
       if (isPlaceholder) {
-        this.setState({ fieldStatus: 0});
+        this.setState({ fieldStatus: "Closed"});
         this.setState({ isOpen: false })
       }
       else {
-        console.log("New value for fieldStatus: ", selection)
-        let status = 0;
-        if (selection === "Open")
-          status = 1;
-        this.setState({ fieldStatus: status});
+        this.setState({ fieldStatus: selection});
         this.setState({ isOpen: false })
       }
     };
 
-    async function addNewFieldToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

@@ -20,44 +20,19 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
   const [editedImage, setEditedImage] = React.useState(currentRow.image);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateNewsInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeNewsInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateNewsInfo = (id) => {
-    updateNewsInDatabase('http://softball-pi4:8081/news/'+ id, { title: editedTitle, body: editedBody, image: editedImage })      
+    let updateArray = Array(id, editedTitle, editedBody, editedImage);
+    updateDatabase('http://db.hdevine.org/db/UpdateNewsItem.php', { updateArray })      
     .then(data => {
-      if (data.message === "Latest News info updated successfully") {
+      if (data.message === "News Item updated successfully") {
         addSuccessAlert("News item updated successfully");
         fetchNews();
       }
@@ -71,7 +46,8 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
 
   const removeNewsInfo = async (id) => {
       setIsEditMode(false);
-      removeNewsInDatabase('htts://softball-pi4:8081/news/'+ id, {})
+      let delID=Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeleteNewsItem.php', {delID})
       .then(data => {
         if (data.message === "Latest News deleted successfully") {
           addSuccessAlert("News item deleted successfully");

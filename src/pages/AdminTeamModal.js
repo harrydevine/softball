@@ -31,11 +31,8 @@ class AdminTeamModal extends React.Component{
         teamRec: true,
         teamTravel: false,
         teamType: "rec",
-        coach1name: "",
-        coach1phone: "",
-        coach1email: "",
         division: "",
-        url: "http://softball-pi4:8081/recteams",
+        url: "http://db.hdevine.org/db/AddRecTeam.php",
         alerts: []
       };
 
@@ -94,10 +91,9 @@ class AdminTeamModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
-      console.log(this.state.team, this.state.teamColor, this.state.teamType, this.state.coach1name, this.state.coach1phone, this.state.coach1email, this.state.division, this.state.url);
       /* Add Team to database...*/
-      addTeamToDatabase(this.state.url, { teamName: this.state.team, color: this.state.teamColor, coach1: this.state.coach1name,
-        coach1phone: this.state.coach1phone, coach1email: this.state.coach1email, division: this.state.division })
+      let data = Array(this.state.team, this.state.division, this.state.teamColor);
+      updateDatabase(this.state.url, { data })
       .then(data => {
         if ((data.message === "Rec Team created successfully") || (data.message === "Travel Team created successfully")) {
           this.props.setTeamAdded(true);
@@ -113,11 +109,8 @@ class AdminTeamModal extends React.Component{
       this.setState({ team: "" });
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
-      this.setState({ coach1name: "" });
-      this.setState({ coach1phone: "" });
-      this.setState({ coach1email: "" });
       this.setState({ division: "" });
-      this.setState({ url: "http://softball-pi4:8081/recteams" });
+      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
     };
 
     this.handleTeamCancel = () => {
@@ -129,25 +122,13 @@ class AdminTeamModal extends React.Component{
       this.setState({ team: "" });
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
-      this.setState({ coach1name: "" });
-      this.setState({ coach1phone: "" });
-      this.setState({ coach1email: "" });
       this.setState({ division: "" });
-      this.setState({ url: "http://softball-pi4:8081/recteams" });
+      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
     };
 
-    async function addTeamToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();
@@ -155,15 +136,6 @@ class AdminTeamModal extends React.Component{
 
     this.onTeamChange = newValue => {
       this.setState(({ team: newValue }));
-    };
-    this.onCoach1NameChange = newValue => {
-      this.setState(({ coach1name: newValue }));
-    };
-    this.onCoach1PhoneChange = newValue => {
-      this.setState(({ coach1phone: newValue }));
-    };
-    this.onCoach1EmailChange = newValue => {
-      this.setState(({ coach1email: newValue }));
     };
     this.onEscapePress = () => {
       this.setState(({ isDivisionOpen }) => ({
@@ -204,13 +176,13 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamTravel: false });
       this.setState({ teamRec: true });
       this.setState({ teamType: "rec" })
-      this.setState({ url: "http://softball-pi4:8081/recteams" });
+      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
     };
     this.onTeamTravelChange = (_, event) => {
       this.setState({ teamTravel: true });
       this.setState({ teamRec: false });
       this.setState({ teamType: "travel" }); 
-      this.setState({ url: "http://softball-pi4:8081/travelteams" });
+      this.setState({ url: "http://db.hdevine.org/db/AddTravelTeam.php" });
     };
           
   }
@@ -365,102 +337,6 @@ class AdminTeamModal extends React.Component{
                 value="travel"
               >
               </Radio>
-          </FormGroup>
-          <FormGroup
-            label="Head Coach Name"
-            labelIcon={
-            <Popover
-              headerContent={
-                <div>The team's head coach name</div>
-              }
-              bodyContent={
-                <div>Enter the team's head coach.</div>
-              }
-            >
-            <button
-              type="button"
-              aria-label="More info for head coach name field"
-              onClick={e => e.preventDefault()}
-              aria-describedby="add-team-coach1name"
-              className="pf-c-form__group-label-help"
-            >
-              <HelpIcon noVerticalAlign />
-            </button>
-            </Popover>
-            }
-            fieldId="add-team-coach1name">
-            <TextInput
-              isRequired
-              type="text"
-              id="modal-with-form-coach1name"
-              name="modal-with-form-coach1name"
-              value={this.coach1name}
-              onChange={this.onCoach1NameChange}
-            />
-          </FormGroup>
-          <FormGroup
-            label="Head Coach Phone"
-            labelIcon={
-            <Popover
-              headerContent={
-                <div>The head coach's phone number</div>
-              }
-              bodyContent={
-                <div>Enter the head coach's phone number.</div>
-              }
-            >
-            <button
-              type="button"
-              aria-label="More info for head coach phone field"
-              onClick={e => e.preventDefault()}
-              aria-describedby="add-team-coach1phone"
-              className="pf-c-form__group-label-help"
-            >
-              <HelpIcon noVerticalAlign />
-            </button>
-            </Popover>
-            }
-            fieldId="add-team-coach1phone">
-            <TextInput
-              isRequired
-              type="text"
-              id="modal-with-form-coach1phone"
-              name="modal-with-form-coach1phone"
-              value={this.coach1phone}
-              onChange={this.onCoach1PhoneChange}
-            />
-          </FormGroup>
-          <FormGroup
-            label="Head Coach Email"
-            labelIcon={
-            <Popover
-              headerContent={
-                <div>The team's head coach email</div>
-              }
-              bodyContent={
-                <div>Enter the head coach's email.</div>
-              }
-            >
-            <button
-              type="button"
-              aria-label="More info for head coach email field"
-              onClick={e => e.preventDefault()}
-              aria-describedby="add-team-coach1email"
-              className="pf-c-form__group-label-help"
-            >
-              <HelpIcon noVerticalAlign />
-            </button>
-            </Popover>
-            }
-            fieldId="add-team-coach1email">
-            <TextInput
-              isRequired
-              type="text"
-              id="modal-with-form-coach1email"
-              name="modal-with-form-coach1email"
-              value={this.coach1email}
-              onChange={this.onCoach1EmailChange}
-            />
           </FormGroup>
           <FormGroup
             label="Division"

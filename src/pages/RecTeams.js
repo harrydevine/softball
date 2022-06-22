@@ -34,10 +34,13 @@ const RecTeams = ({ children }) => {
   const [playerData, setPlayerData] = React.useState(null);
   const [playerLoading, setPlayerLoading] = React.useState(true);
   const [playerError, setPlayerError] = React.useState(null);
+  const [coachData, setCoachData] = React.useState(null);
+  const [coachLoading, setCoachLoading] = React.useState(true);
+  const [coachError, setCoachError] = React.useState(null);
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`http://softball-pi4:8081/recteams`)
+    fetch(`http://db.hdevine.org/db/GetRecTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -51,7 +54,7 @@ const RecTeams = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Players
-    fetch(`http://softball-pi4:8081/players`)
+    fetch(`http://db.hdevine.org/db/GetPlayers.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setPlayerData(jsonResponse);
@@ -63,7 +66,21 @@ const RecTeams = ({ children }) => {
     })
   }, []);
 
-  const handleTabClick = (event, tabIndex) => {
+  useEffect(() => {
+    // Fetch data for Coaches
+    fetch(`http://db.hdevine.org/db/GetCoaches.php`)
+    .then(async resp => {
+      const jsonResponse = await resp.json()
+      setCoachData(jsonResponse);
+      setCoachLoading(false);
+    })
+    .catch(err => {
+      setCoachError(err);
+      setCoachLoading(false);
+    })
+  }, []);
+
+    const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
   };
 
@@ -123,7 +140,7 @@ const RecTeams = ({ children }) => {
               <Spinner size="xl" />
             </Bullseye>
           )}
-          {!loading && teamData?.data.length === 0 && (
+          {!loading && teamData?.length === 0 && (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.small}>
                 <EmptyStateIcon icon={SearchIcon} />
@@ -137,7 +154,7 @@ const RecTeams = ({ children }) => {
             </Bullseye>
           )}
           <React.Fragment key="6u_teams">
-            {!loading && teamData?.data
+            {!loading && teamData
               .filter(function (data) {
                 return data.division === "6U";
               })
@@ -157,23 +174,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
-                    </TableComposable>
+                  </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                     <Title headingLevel="h2" size="lg">Roster</Title>
                       <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                         <Thead>
@@ -183,7 +200,7 @@ const RecTeams = ({ children }) => {
                           </Tr>
                         </Thead>
                         <Tbody>
-                        {!playerLoading && playerData?.data
+                        {!playerLoading && playerData
                           .filter(function (data) {
                             return data.teamId === row.id;
                           })
@@ -206,7 +223,7 @@ const RecTeams = ({ children }) => {
                 <Spinner size="xl" />
               </Bullseye>
             )}
-            {!loading && teamData?.data.length === 0 && (
+            {!loading && teamData?.length === 0 && (
               <Bullseye>
                 <EmptyState variant={EmptyStateVariant.small}>
                   <EmptyStateIcon icon={SearchIcon} />
@@ -220,7 +237,7 @@ const RecTeams = ({ children }) => {
               </Bullseye>
             )}
                     <React.Fragment key="8u_teams">
-                    {!loading && teamData?.data
+                    {!loading && teamData
                     .filter(function (data) {
                       return data.division === "8U";
                     })
@@ -231,7 +248,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardBody>
                         <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                        <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
                         <Th width={50}>Coach</Th>
@@ -240,23 +257,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
                   </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -266,7 +283,7 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                              {!playerLoading && playerData?.data
+                              {!playerLoading && playerData
                                 .filter(function (data) {
                                   return data.teamId === row.id;
                                 })
@@ -289,7 +306,7 @@ const RecTeams = ({ children }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!loading && teamData?.data.length === 0 && (
+                    {!loading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -303,7 +320,7 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="10u_teams">
-                    {!loading && teamData?.data
+                    {!loading && teamData
                     .filter(function (data) {
                       return data.division === "10U";
                     })
@@ -323,23 +340,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
                   </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -349,7 +366,7 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                              {!playerLoading && playerData?.data
+                              {!playerLoading && playerData
                                 .filter(function (data) {
                                   return data.teamId === row.id;
                                 })
@@ -372,7 +389,7 @@ const RecTeams = ({ children }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!loading && teamData?.data.length === 0 && (
+                    {!loading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -386,7 +403,7 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="12u_teams">
-                    {!loading && teamData?.data
+                    {!loading && teamData
                     .filter(function (data) {
                       return data.division === "12U";
                     })
@@ -397,7 +414,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardBody>
                         <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                        <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
                         <Th width={50}>Coach</Th>
@@ -406,23 +423,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
                   </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -432,7 +449,7 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                              {!playerLoading && playerData?.data
+                              {!playerLoading && playerData
                                 .filter(function (data) {
                                   return data.teamId === row.id;
                                 })
@@ -455,7 +472,7 @@ const RecTeams = ({ children }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!loading && teamData?.data.length === 0 && (
+                    {!loading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -469,7 +486,7 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="14u_teams">
-                    {!loading && teamData?.data
+                    {!loading && teamData
                     .filter(function (data) {
                       return data.division === "14U";
                     })
@@ -480,7 +497,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardBody>
                         <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                        <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
                         <Th width={50}>Coach</Th>
@@ -489,23 +506,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
                   </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -515,7 +532,7 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                              {!playerLoading && playerData?.data
+                              {!playerLoading && playerData
                                 .filter(function (data) {
                                   return data.teamId === row.id;
                                 })
@@ -538,7 +555,7 @@ const RecTeams = ({ children }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!loading && teamData?.data.length === 0 && (
+                    {!loading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -552,7 +569,7 @@ const RecTeams = ({ children }) => {
                      </Bullseye>
                     )}
                     <React.Fragment>
-                    {!loading && teamData?.data
+                    {!loading && teamData
                     .filter(function (data) {
                       return data.division === "16U";
                     })
@@ -563,7 +580,7 @@ const RecTeams = ({ children }) => {
                         </CardHeader>
                         <CardBody>
                         <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                    <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
+                        <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
                         <Th width={50}>Coach</Th>
@@ -572,23 +589,23 @@ const RecTeams = ({ children }) => {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      <Tr key={"coach1"}>
-                        <Td>{row.coach1}</Td>
-                        <Td>{row.coach1_phone}</Td>
-                        <Td>{row.coach1_email}</Td>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
                       </Tr>
-                      <Tr key={"coach2"}>
-                        <Td>{row.coach2}</Td>
-                        <Td>{row.coach2_phone}</Td>
-                        <Td>{row.coach2_email}</Td>
-                      </Tr>
-                      <Tr key={"coach3"}>
-                        <Td>{row.coach3}</Td>
-                        <Td>{row.coach3_phone}</Td>
-                        <Td>{row.coach3_email}</Td>
-                      </Tr>
+                    )))}
                     </Tbody>
                   </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
                           <Title headingLevel="h2" size="lg">Roster</Title>
                             <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
                               <Thead>
@@ -598,7 +615,7 @@ const RecTeams = ({ children }) => {
                                 </Tr>
                               </Thead>
                               <Tbody>
-                              {!playerLoading && playerData?.data
+                              {!playerLoading && playerData
                                 .filter(function (data) {
                                   return data.teamId === row.id;
                                 })

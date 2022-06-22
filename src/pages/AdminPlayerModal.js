@@ -75,10 +75,9 @@ class AdminPlayerModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
-      console.log(this.state.name, " ", this.state.jersey, " ", this.state.division, " ", this.state.playerType)  
-      /* Add Board Member to database...*/
-      addPlayerToDatabase('http://softball-pi4:8081/players', 
-        { playerName: this.state.name, playerNumber: this.state.jersey, division: this.state.division, type: this.state.playerType, teamId: 0 })
+        /* Add Board Member to database...*/
+        let data = Array(this.state.name, this.state.jersey,this.state.division, this.state.playerType, 0)  
+        updateDatabase('http://db.hdevine.org/db/AddPlayer.php', { data })
       .then(data => {
         if (data.message === "Player created successfully") {
           this.props.setPlayerAdded(true);
@@ -109,18 +108,9 @@ class AdminPlayerModal extends React.Component{
       this.setState({ playerType: "rec" });
     };
 
-    async function addPlayerToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

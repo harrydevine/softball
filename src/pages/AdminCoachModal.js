@@ -61,10 +61,9 @@ class AdminCoachModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
         }));
-      console.log(this.state.name, " ", this.state.phone, " ", this.state.email)  
+      let data = Array(this.state.name, this.state.phone, this.state.email);
       /* Add Coach to database...*/
-      addCoachToDatabase('http://softball-pi4:8081/coach', 
-        { name: this.state.name, phone: this.state.phone, email: this.state.email})      
+      updateDatabase('http://db.hdevine.org/db/AddCoach.php', { data })      
         .then(data => {
         if (data.message === "Coach created successfully") {
           this.props.setCoachAdded(true);
@@ -93,18 +92,9 @@ class AdminCoachModal extends React.Component{
       this.setState({ email: "" });
     };
 
-    async function addCoachToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

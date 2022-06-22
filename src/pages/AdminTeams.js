@@ -20,11 +20,16 @@ import {
   EmptyStateIcon,
   EmptyStateVariant,
   EmptyStateBody,
+  Grid,
+  GridItem,
   Label,
+  List,
+  ListItem,
   Modal,
   ModalVariant,
   PageSection,
   PageSectionVariants,
+  Radio,
   Spinner,
   Split,
   SplitItem,
@@ -36,6 +41,7 @@ import {
   Title,
   Tooltip
 } from '@patternfly/react-core';
+import "@patternfly/react-core/dist/styles/base.css";
 import AdminTeamModal from './AdminTeamModal';
 import PlayerTeamEditTableRow from './PlayerTeamEditTableRow';
 import CoachTeamEditTableRow from './CoachTeamEditTableRow';
@@ -76,8 +82,15 @@ const AdminTeams = ({ children, ...props }) => {
   const [teamName, setTeamName] = React.useState("");
   const [teamType, setTeamType] = React.useState("");
   const [division, setDivision] = React.useState("");
+  const [isHeadCoachChecked, setHeadCoachChecked] = React.useState(true);
+  const [isAssistant1Checked, setAssistant1Checked] = React.useState(false);
+  const [isAssistant2Checked, setAssistant2Checked] = React.useState(false);
   const [availablePlayers, setAvailablePlayers] = React.useState([]);
   const [chosenPlayers, setChosenPlayers] = React.useState([]);
+  const [availableCoach, setAvailableCoach] = React.useState([]);
+  const [destHeadCoach, setDestHeadCoach] = React.useState([]);
+  const [destAssistantCoach1, setDestAssistantCoach1] = React.useState([]);
+  const [destAssistantCoach2, setDestAssistantCoach2] = React.useState([]);
   const [activeSortIndex, setActiveSortIndex] = React.useState(0); 
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const [availablePlayersState, setAvailablePlayersState] = React.useState([]);
@@ -119,13 +132,13 @@ const AdminTeams = ({ children, ...props }) => {
     setDivision(level);
     setAddPlayerDlgOpen(true);
 
-    playerData?.data.filter(function (data) {
+    playerData.filter(function (data) {
       return ((data.division === level) && (data.type === type)) ;
     }).map((filteredPlayer => ( 
       playersArray.push(<span id={filteredPlayer.id}>{filteredPlayer.playerName}</span>)
     )));
 
-    playerData?.data.filter(function (data) {
+    playerData.filter(function (data) {
       return data.teamId === id;
     }).map((teamPlayer => (
       teamArray.push(<span id={teamPlayer.id}>{teamPlayer.playerName}</span>)
@@ -152,20 +165,20 @@ const AdminTeams = ({ children, ...props }) => {
     setTeamId(id);
     setTeamName(name);
     setDivision(level);
+    fetchCoach();
+    setAvailableCoach(coachData);
     setAddCoachDlgOpen(true);
-}
+  }
 
-  const handleRemoveTeam = (id, type, name) => {
+  const handleRemoveTeam = (id, name) => {
     setTeamId(id);
     setTeamName(name);
-    setTeamType(type);
     setConfirmDlgOpen(true);
   }
 
   const handleAddModalOK = () => {
     setAddPlayerDlgOpen(false);
 
-    console.log(teamId);
     for (let i=0; i < chosenPlayers.length; i++) {
       addPlayer(chosenPlayers[i].props.id, teamId, chosenPlayers[i].props.children, teamName);
     }
@@ -183,27 +196,24 @@ const AdminTeams = ({ children, ...props }) => {
 
   const handleAddCoachModalCancel = () => {
     setAddCoachDlgOpen(false);
+    fetchCoach();
+    setAvailableCoach(coachData);
+    setDestHeadCoach([]);
+    setDestAssistantCoach1([]);
+    setDestAssistantCoach2([]);
   }
 
-  async function addPlayerToTeam (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const addPlayer = (id, teamId, name, teamName) => {
-    addPlayerToTeam('http://softball-pi4:8081/players/addPlayerToTeam/'+ id, { teamId: teamId })      
+    let data = Array(id, teamId);
+    updateDatabase('http://db.hdevine.org/db/AddPlayerToTeam.php', { data })      
     .then(data => {
       if (data.message === "Player/Team assignment updated successfully") {
         addSuccessAlert(name + " added to " + teamName + " successfully");
@@ -217,25 +227,9 @@ const AdminTeams = ({ children, ...props }) => {
     });
   }
 
-  async function removePlayerFromTeam  (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
   const removeFromTeam = async (id, playerName, team) => {
-      removePlayerFromTeam('http://softball-pi4:8081/players/resetTeam/'+ id, {})
+    let playerId = Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeletePlayerFromTeam.php', { playerId })
       .then(data => {
         if (data.message === "Player/Team assignment reset successfully") {
           addSuccessAlert(playerName + " removed from " + team + " successfully");
@@ -249,59 +243,36 @@ const AdminTeams = ({ children, ...props }) => {
       });
   }
 
-  async function removeTeamFromDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
+  const removeTeam = async (id, name) => {
+    let delID = Array(id);
+    updateDatabase("http://db.hdevine.org/db/DeleteTeam.php", { delID })
+    .then(data => {
+      if ((data.message === "Error in deleting Team")) {
+        addFailureAlert(teamName + " removal unsuccessful");
+        fetchRecTeams();
+        fetchTravelTeams();
+        console.log("Error removing " + teamName);
+      }
+      else {
+        addSuccessAlert(teamName + " removed successfully");
+        fetchRecTeams();
+        fetchTravelTeams();
+      }
     });
-    return response.json();
-  };
-
-  const removeTeam = async (id, type, name) => {
-      let url = "";
-      if (type === "rec") {
-        url = "http://softball-pi4:8081/recteams/" + id;
-      }
-      if (type === "travel") {
-        url = "http://softball-pi4:8081/travelteams/" + id;
-      }
-      removeTeamFromDatabase(url, {})
-      .then(data => {
-        if ((data.message === "Error while deleting Rec Team info") || (data.message === "Error while deleting Travel Team info")) {
-          addFailureAlert(teamName + " removal unsuccessful");
-          fetchRecTeams();
-          fetchTravelTeams();
-          console.log("Error removing " + teamName);
-        }
-        else {
-          addSuccessAlert(teamName + " removed successfully");
-          fetchRecTeams();
-          fetchTravelTeams();
-        }
-      });
   }
 
   const handleYes = () => {
     setConfirmDlgOpen(false);
 
     // Reset all players on this team (essentially removing them from the team
-    playerData?.data.filter(function (data) {
+    playerData.filter(function (data) {
       return data.teamId === teamId;
     }).map((teamPlayer => (
       removeFromTeam(teamPlayer.id, teamPlayer.playerName, teamName)
     )));
 
     // Remove the selected team
-    removeTeam(teamId, teamType, teamName);
+    removeTeam(teamId, teamName);
   }
 
   const handleNo = () => {
@@ -328,10 +299,10 @@ const AdminTeams = ({ children, ...props }) => {
     addAlert(string, 'danger', getUniqueId()) 
   };
 
-  if (playerData?.data.length > 0) {
-    let sortedPlayers = playerData?.data;
+  if (playerData?.length > 0) {
+    let sortedPlayers = playerData;
     if (sortedPlayers !== null) {
-      sortedPlayers = playerData?.data.sort((a, b) => {
+      sortedPlayers = playerData.sort((a, b) => {
         const aValue = getSortableRowValues(a)[activeSortIndex];
         const bValue = getSortableRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
@@ -374,11 +345,63 @@ const AdminTeams = ({ children, ...props }) => {
     fetchRecTeams();
     fetchTravelTeams();
     fetchPlayers();
+    fetchCoach();
+    setAvailableCoach(coachData);
   }, []);
+
+  useEffect(() => {
+    if (isAddCoachDlgOpen) {
+      // Determine head coach for the selected team
+      teamData.filter(function (data) {
+          return data.id === teamId;
+        })
+      .map((team => (
+        coachData.filter(function (data) {
+          return data.id === team.headcoach;
+        })
+      .map(( headcoach => (
+        setDestHeadCoach(headcoach)
+      ))))))
+
+      // Determine assistant coach 1 for the selected team
+      teamData.filter(function (data) {
+        return data.id === teamId;
+      })
+    .map((team => (
+      coachData.filter(function (data) {
+        return data.id === team.assistantcoach1;
+      })
+    .map(( coach1 => (
+      setDestAssistantCoach1(coach1)
+    ))))))
+
+    // Determine assistant coach 2 for the selected team
+    teamData.filter(function (data) {
+      return data.id === teamId;
+    })
+    .map((team => (
+      coachData.filter(function (data) {
+        return data.id === team.assistantcoach2;
+      })
+    .map(( coach2 => (
+      setDestAssistantCoach2(coach2)
+    ))))))
+
+    // Remove any coach identified above from the available coach list
+    let hcIndex = availableCoach.indexOf(destHeadCoach.name);
+    let a1Index = availableCoach.indexOf(destAssistantCoach1.name);
+    let a2Index = availableCoach.indexOf(destAssistantCoach2.name);
+    console.log(hcIndex, destHeadCoach, a1Index, destAssistantCoach1, destAssistantCoach2, a2Index);
+
+    availableCoach.splice(hcIndex, 1);
+    availableCoach.splice(a1Index, 1);
+    availableCoach.splice(a2Index, 1);    
+  }
+  }, [isAddCoachDlgOpen]);
 
   const fetchRecTeams = () => {
     // Fetch data for Rec Teams
-    fetch(`http://softball-pi4:8081/recteams`)
+    fetch(`http://db.hdevine.org/db/GetRecTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -392,7 +415,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const fetchTravelTeams = () => {
     // Fetch data for Travel Teams
-    fetch(`http://softball-pi4:8081/travelteams`)
+    fetch(`http://db.hdevine.org/db/GetTravelTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTravelData(jsonResponse);
@@ -440,6 +463,66 @@ const AdminTeams = ({ children, ...props }) => {
     setChosenPlayers( newChosenPlayers.sort() );
     setChosenPlayersState( newChosenPlayers.sort() );
   };
+
+  const move = (source, destination, type, sourceIndex, destIndex) => {
+    const sourceClone = source;
+    const destClone = destination;
+    const [removed] = sourceClone.splice(sourceIndex, 1);
+    destClone.splice(destIndex, 0, removed);
+    switch (type){
+      case "headcoach":
+        console.log(destClone);
+        setDestHeadCoach(destClone);
+        break;
+      case "assistant1":
+        setDestAssistantCoach1(destClone);
+        break;
+      case "assistant2":
+        setDestAssistantCoach2(destClone);
+        break;
+    }
+    return [sourceClone, destClone];
+};
+
+  const onDrop = (source, dest) => {
+    if (dest) {
+      switch(dest.droppableId){
+        case '0':
+          break;
+        case '1':
+          if (destHeadCoach.length === 0){
+            move(availableCoach, destHeadCoach, "headcoach", source.index, dest.index);
+            return true;
+          }
+          else {
+            return false;
+          }
+          break;
+        case '2':
+          if (destAssistantCoach1.length === 0){
+            move(availableCoach, destAssistantCoach1, "assistant1", source.index, dest.index);
+            return true;
+          }
+          else {
+            return false;
+          }
+          break;
+        case '3':
+          if (destAssistantCoach2.length === 0){
+            move(availableCoach, destAssistantCoach2, "assistant2", source.index, dest.index);
+            return true;
+          }
+          else {
+            return false;
+          }
+          break;
+      }
+      return true;
+    } else {
+      return false;
+    }
+    
+  }
 
   return (
     <div>
@@ -503,29 +586,52 @@ const AdminTeams = ({ children, ...props }) => {
           </Button>
         ]}
       >
-        <Split hasGutter>
-          <DragDrop>
-          <SplitItem>
-            <Draggable>
-              Coach 1
-            </Draggable>
-            <Draggable>
-              Coach 2
-            </Draggable>
-          </SplitItem>
-          <SplitItem>
-            <Droppable>
-              Head Coach
-            </Droppable>
-            <Droppable>
-              Assistant Coach 1
-            </Droppable>
-            <Droppable>
-              Assistant Coach 2
-            </Droppable>
-            </SplitItem>
-          </DragDrop>  
-        </Split>          
+        <DragDrop onDrop={onDrop}>
+          <Grid>
+            <GridItem span={6} rowSpan={3}>
+              <Title headingLevel="h2" size="lg">Coaches</Title>
+              <Droppable droppableId={0}>
+                <List isPlain className="coach_available">
+                {!coachLoading && coachData.map((coach => (
+                  <Draggable key={"coach_" + coach.id}>
+                    <ListItem><span id={coach.id}>{coach.name}</span></ListItem>
+                  </Draggable>
+                )))}
+                </List>
+              </Droppable>
+            </GridItem>
+            <GridItem span={6} rowSpan={1}>
+              <Title headingLevel="h2" size="lg">Head Coach</Title>
+              <Droppable droppableId={1}>
+                <List isPlain className="coach_list">
+                <Draggable key={"headcoach_" + destHeadCoach.id}>
+                <ListItem><span id={destHeadCoach.id}>{destHeadCoach.name}</span></ListItem>
+                  </Draggable>
+                </List>
+              </Droppable>
+            </GridItem>
+            <GridItem span={6} rowSpan={1}>
+              <Title headingLevel="h2" size="lg">Assistant Coach 1</Title>
+              <Droppable droppableId={2}>
+                <List isPlain className="coach_list">
+                  <Draggable>
+                  <ListItem><span id={destAssistantCoach1.id}>{destAssistantCoach1.name}</span></ListItem>
+                  </Draggable>
+                </List>
+              </Droppable>
+            </GridItem>
+            <GridItem span={6} rowSpan={1}>
+              <Title headingLevel="h2" size="lg">Assistant Coach 2</Title>
+              <Droppable droppableId={3}>
+                <List isPlain className="coach_list">
+                  <Draggable>
+                  <ListItem><span id={destAssistantCoach2.id}>{destAssistantCoach2.name}</span></ListItem>
+                  </Draggable>
+                </List>
+              </Droppable>
+            </GridItem>
+          </Grid>
+          </DragDrop>
       </Modal>
 
       <AdminTeamModal setTeamAdded={setTeamAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert}  />
@@ -548,7 +654,7 @@ const AdminTeams = ({ children, ...props }) => {
             <Spinner size="xl" />
           </Bullseye>
         )}
-        {!teamLoading && teamData?.data.length === 0 && (
+        {!teamLoading && teamData?.length === 0 && (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
@@ -562,57 +668,86 @@ const AdminTeams = ({ children, ...props }) => {
           </Bullseye>
         )}
           <React.Fragment key="6u_teams">
-          {!teamLoading && teamData?.data
+          {!teamLoading && teamData
             .filter(function (data) {
               return data.division === "6U";
             })
             .map((row => (
               <Card key={row.id} isSelectable>
-                <CardHeader>
+              <CardHeader>
                 <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                <Tooltip content="Add Player to this Team">
-                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "6U", row.teamName, row.type)} />{'  '}
-                </Tooltip>
-                <Tooltip content="Remove this Team">
-                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
-                </Tooltip>
-                </CardHeader>
-                <CardTitle>Head Coach: {row.coach1}</CardTitle>
-                  <CardBody>
-                    Phone Number: {row.coach1_phone}
-                    <Text component="br" />
-                    Email: {row.coach1_email}
-                    <Text component="br" />
-                    <Text component="br" />
-                    <Title headingLevel="h2" size="lg">Roster</Title>
-                      <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                        <Thead>
-                          <Tr>
-                            <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                            <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
-                        {!playerLoading && playerData?.data
-                              .filter(function (data) {
-                                return data.teamId === row.id;
-                              })
-                              .map((player => (
-                                <PlayerTeamEditTableRow
-                                key={"PlayerOnTeam_"+player.id}
-                                currentRow={player}
-                                division="6U"
-                                teamName={row.teamName}
-                                fetchPlayers={fetchPlayers}
-                                addSuccessAlert={addSuccessAlert} 
-                                addFailureAlert={addFailureAlert}
-                              />
-                            )))}
+                <Text component="br" />
+                <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "6U", row.teamName, row.type)}>
+                  Add Player to Team
+                </Button>{'    '}
+                <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "6U", row.teamName)}>
+                  Add Coach to Team
+                </Button>{'    '}
+                <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                  Remove this Team
+                </Button>{'    '}
+              </CardHeader>
+              <CardBody>
+                <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                    <Thead>
+                      <Tr>
+                        <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                        <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                        <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {!coachLoading && coachData
+                      .filter(function (data) {
+                        return data.teamId === row.id;
+                      })
+                      .map((coach => (
+                        <CoachTeamEditTableRow
+                          key={"CoachForTeam_"+coach.id}
+                          currentRow={coach}
+                          division="6U"
+                          teamName={row.teamName}
+                          fetchCoach={fetchCoach}
+                          addSuccessAlert={addSuccessAlert} 
+                          addFailureAlert={addFailureAlert}
+                        />
+                      )))}
                     </Tbody>
-                      </TableComposable>
-                  </CardBody>
-                </Card>
-              )))}
+                  </TableComposable>
+                <Text component="br" />
+                <Text component="br" />
+                <Title headingLevel="h2" size="lg">Roster</Title>
+                <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                  <Thead>
+                    <Tr>
+                      <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                      <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                  {!playerLoading && playerData
+                  .filter(function (data) {
+                    return data.teamId === row.id;
+                  })
+                  .map((player => (
+                    <PlayerTeamEditTableRow
+                      key={"PlayerOnTeam_"+player.id}
+                      currentRow={player}
+                      division="6U"
+                      teamName={row.teamName}
+                      fetchPlayers={fetchPlayers}
+                      addSuccessAlert={addSuccessAlert} 
+                      addFailureAlert={addFailureAlert}
+                    />
+                  )))}
+                  </Tbody>
+                </TableComposable>
+              </CardBody>
+              <CardFooter>
+              </CardFooter>
+            </Card>
+          )))}
             </React.Fragment>
           </TabContent>
         <TabContent key={1} eventKey={1} id={`tabContent${1}`} activeKey={activeTabKey} hidden={1 !== activeTabKey}>
@@ -621,7 +756,7 @@ const AdminTeams = ({ children, ...props }) => {
               <Spinner size="xl" />
             </Bullseye> 
           )}
-          {!teamLoading && teamData?.data.length === 0 && (
+          {!teamLoading && teamData?.length === 0 && (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.small}>
                 <EmptyStateIcon icon={SearchIcon} />
@@ -635,7 +770,7 @@ const AdminTeams = ({ children, ...props }) => {
             </Bullseye>
           )}
          <React.Fragment key="8u_teams">
-           {!teamLoading && teamData?.data
+           {!teamLoading && teamData
             .filter(function (data) {
               return data.division === "8U";
             })
@@ -643,35 +778,62 @@ const AdminTeams = ({ children, ...props }) => {
               <Card key={row.id} isSelectable>
               <CardHeader>
                 <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                <Tooltip content="Add Player to this Team">
-                  <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "8U", row.teamName, row.type)} />{'  '}
-                </Tooltip>
-                <Tooltip content="Remove this Team">
-                  <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
-                </Tooltip>
-              </CardHeader>
-              <CardTitle>Head Coach: {row.coach1}</CardTitle>
-              <CardBody>
-                Phone Number: {row.coach1_phone}
                 <Text component="br" />
-                  Email: {row.coach1_email}
-                  <Text component="br" />
-                  <Text component="br" />
-                  <Title headingLevel="h2" size="lg">Roster</Title>
-                  <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "8U", row.teamName, row.type)}>
+                  Add Player to Team
+                </Button>{'    '}
+                <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "8U", row.teamName)}>
+                  Add Coach to Team
+                </Button>{'    '}
+                <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                  Remove this Team
+                </Button>{'    '}
+              </CardHeader>
+              <CardBody>
+                <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                     <Thead>
+                      <Tr>
+                        <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                        <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                        <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {!coachLoading && coachData
+                      .filter(function (data) {
+                        return data.teamId === row.id;
+                      })
+                      .map((coach => (
+                        <CoachTeamEditTableRow
+                          key={"CoachForTeam_"+coach.id}
+                          currentRow={coach}
+                          division="8U"
+                          teamName={row.teamName}
+                          fetchCoach={fetchCoach}
+                          addSuccessAlert={addSuccessAlert} 
+                          addFailureAlert={addFailureAlert}
+                        />
+                      )))}
+                    </Tbody>
+                  </TableComposable>
+                <Text component="br" />
+                <Text component="br" />
+                <Title headingLevel="h2" size="lg">Roster</Title>
+                <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                  <Thead>
                     <Tr>
                       <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
                       <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
                     </Tr>
-                    </Thead>
-                    <Tbody>
-                    {!playerLoading && playerData?.data
-                     .filter(function (data) {
-                       return data.teamId === row.id;
-                    })
-                    .map((player => (
-                      <PlayerTeamEditTableRow
+                  </Thead>
+                  <Tbody>
+                  {!playerLoading &&  playerData  
+                  .filter(function (data) {
+                    return data.teamId === row.id;
+                  })
+                  .map((player => (
+                    <PlayerTeamEditTableRow
                       key={"PlayerOnTeam_"+player.id}
                       currentRow={player}
                       division="8U"
@@ -680,12 +842,14 @@ const AdminTeams = ({ children, ...props }) => {
                       addSuccessAlert={addSuccessAlert} 
                       addFailureAlert={addFailureAlert}
                     />
-                    )))}
-                   </Tbody>
-                  </TableComposable>
-                </CardBody>
-              </Card>
-              )))}
+                  )))}
+                  </Tbody>
+                </TableComposable>
+              </CardBody>
+              <CardFooter>
+              </CardFooter>
+            </Card>
+          )))}
             </React.Fragment>
           </TabContent>
           <TabContent key={2} eventKey={2} id={`tabContent${2}`} activeKey={activeTabKey} hidden={2 !== activeTabKey}>
@@ -694,7 +858,7 @@ const AdminTeams = ({ children, ...props }) => {
                 <Spinner size="xl" />
               </Bullseye>
             )}
-            {!teamLoading && teamData?.data.length === 0 && (
+            {!teamLoading && teamData?.length === 0 && (
               <Bullseye>
                 <EmptyState variant={EmptyStateVariant.small}>
                   <EmptyStateIcon icon={SearchIcon} />
@@ -707,88 +871,90 @@ const AdminTeams = ({ children, ...props }) => {
                 </EmptyState>
               </Bullseye>
             )}
-                    <React.Fragment key="10u_teams">
-                    {!teamLoading && teamData?.data
-                    .filter(function (data) {
-                      return data.division === "10U";
-                    })
-                    .map((row => (
-                      <Card key={row.id} isSelectable>
-                        <CardHeader>
-                          <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                          <Text component="br" />
-                          <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "10U", row.teamName, row.type)}>
-                            Add Player to Team
-                          </Button>{'    '}
-                          <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "10U", row.teamName)}>
-                            Add Coach to Team
-                          </Button>{'    '}
-                          <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}>
-                            Remove this Team
-                          </Button>{'    '}
-                        </CardHeader>
-                        <CardBody>
-                          <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                          <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
-                              <Thead>
-                                <Tr>
-                                  <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                                  <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                                  <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                                {!coachLoading && coachData?.data
-                                .filter(function (data) {
-                                  return data.teamId === row.id;
-                                })
-                                .map((coach => (
-                                  <CoachTeamEditTableRow
-                                    key={"CoachForTeam_"+coach.id}
-                                    currentRow={coach}
-                                    division="10U"
-                                    teamName={row.teamName}
-                                    fetchCoach={fetchCoach}
-                                    addSuccessAlert={addSuccessAlert} 
-                                    addFailureAlert={addFailureAlert}
-                                  />
-                                )))}
-                              </Tbody>
-                            </TableComposable>
-                          <Text component="br" />
-                          <Text component="br" />
-                          <Title headingLevel="h2" size="lg">Roster</Title>
-                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                              <Thead>
-                                <Tr>
-                                  <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                                  <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                                {!playerLoading && playerData?.data
-                                .filter(function (data) {
-                                  return data.teamId === row.id;
-                                })
-                                .map((player => (
-                                  <PlayerTeamEditTableRow
-                                    key={"PlayerOnTeam_"+player.id}
-                                    currentRow={player}
-                                    division="10U"
-                                    teamName={row.teamName}
-                                    fetchPlayers={fetchPlayers}
-                                    addSuccessAlert={addSuccessAlert} 
-                                    addFailureAlert={addFailureAlert}
-                                  />
-                                )))}
-                              </Tbody>
-                            </TableComposable>
-                        </CardBody>
-                        <CardFooter>
-                        </CardFooter>
-                      </Card>
-                    )))}
-                  </React.Fragment>
+            <React.Fragment key="10u_teams">
+            {!teamLoading && teamData
+              .filter(function (data) {
+                return data.division === "10U";
+              })
+              .map((row => (
+                <Card key={row.id} isSelectable>
+                  <CardHeader>
+                    <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
+                    <Text component="br" />
+                    <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "10U", row.teamName, row.type)}>
+                      Add Player to Team
+                    </Button>{'    '}
+                    <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "10U", row.teamName)}>
+                      Add Coach to Team
+                    </Button>{'    '}
+                    <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                      Remove this Team
+                    </Button>{'    '}
+                  </CardHeader>
+                  <CardBody>
+                    <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                    <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                        <Thead>
+                          <Tr>
+                            <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                            <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                            <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {!coachLoading && coachData
+                          .filter(function (data) {
+                            return ( (data.id === row.headcoach) ||
+                                     (data.id === row.assistantcoach1) ||
+                                     (data.id === row.assistantcoach2) );
+                          })
+                          .map((coach => (
+                            <CoachTeamEditTableRow
+                              key={"CoachForTeam_"+coach.id}
+                              currentRow={coach}
+                              division="10U"
+                              teamName={row.teamName}
+                              fetchCoach={fetchCoach}
+                              addSuccessAlert={addSuccessAlert} 
+                              addFailureAlert={addFailureAlert}
+                            />
+                          )))}
+                        </Tbody>
+                      </TableComposable>
+                    <Text component="br" />
+                    <Text component="br" />
+                    <Title headingLevel="h2" size="lg">Roster</Title>
+                    <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                      <Thead>
+                        <Tr>
+                          <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                          <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                      {!playerLoading && playerData
+                      .filter(function (data) {
+                        return data.teamId === row.id;
+                      })
+                      .map((player => (
+                        <PlayerTeamEditTableRow
+                          key={"PlayerOnTeam_"+player.id}
+                          currentRow={player}
+                          division="10U"
+                          teamName={row.teamName}
+                          fetchPlayers={fetchPlayers}
+                          addSuccessAlert={addSuccessAlert} 
+                          addFailureAlert={addFailureAlert}
+                        />
+                      )))}
+                      </Tbody>
+                    </TableComposable>
+                  </CardBody>
+                  <CardFooter>
+                  </CardFooter>
+                </Card>
+                )))}
+                </React.Fragment>
                 </TabContent>
                 <TabContent key={3} eventKey={3} id={`tabContent${3}`} activeKey={activeTabKey} hidden={3 !== activeTabKey}>
                 {teamLoading && (
@@ -796,7 +962,7 @@ const AdminTeams = ({ children, ...props }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!teamLoading && teamData?.data.length === 0 && (
+                    {!teamLoading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -810,57 +976,86 @@ const AdminTeams = ({ children, ...props }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="12u_teams">
-                    {!teamLoading && teamData?.data
+                    {!teamLoading && teamData
                     .filter(function (data) {
                       return data.division === "12U";
                     })
                     .map((row => (
                       <Card key={row.id} isSelectable>
-                        <CardHeader>
+                      <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                        <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "12U", row.teamName, row.type)} />{'  '}
-                        </Tooltip>
-                        <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
-                        </Tooltip>
-                        </CardHeader>
-                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
-                        <CardBody>
-                          Phone Number: {row.coach1_phone}
-                          <Text component="br" />
-                          Email: {row.coach1_email}
-                          <Text component="br" />
-                          <Text component="br" />
-                          <Title headingLevel="h2" size="lg">Roster</Title>
-                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                              <Thead>
-                                <Tr>
-                                  <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                                  <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                              {!playerLoading && playerData?.data
-                                .filter(function (data) {
-                                  return data.teamId === row.id;
-                                })
-                                .map((player => (
-                                  <PlayerTeamEditTableRow
-                                    key={"PlayerOnTeam_"+player.id}
-                                    currentRow={player}
-                                    division="12U"
-                                    teamName={row.teamName}
-                                    fetchPlayers={fetchPlayers}
-                                    addSuccessAlert={addSuccessAlert} 
-                                    addFailureAlert={addFailureAlert}
-                                  />
-                                )))}
-                              </Tbody>
-                            </TableComposable>
-                        </CardBody>
-                      </Card>
-                    )))}
+                        <Text component="br" />
+                        <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "12U", row.teamName, row.type)}>
+                          Add Player to Team
+                        </Button>{'    '}
+                        <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "12U", row.teamName)}>
+                          Add Coach to Team
+                        </Button>{'    '}
+                        <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                          Remove this Team
+                        </Button>{'    '}
+                      </CardHeader>
+                      <CardBody>
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                            <Thead>
+                              <Tr>
+                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {!coachLoading && coachData
+                              .filter(function (data) {
+                                return data.teamId === row.id;
+                              })
+                              .map((coach => (
+                                <CoachTeamEditTableRow
+                                  key={"CoachForTeam_"+coach.id}
+                                  currentRow={coach}
+                                  division="12U"
+                                  teamName={row.teamName}
+                                  fetchCoach={fetchCoach}
+                                  addSuccessAlert={addSuccessAlert} 
+                                  addFailureAlert={addFailureAlert}
+                                />
+                              )))}
+                            </Tbody>
+                          </TableComposable>
+                        <Text component="br" />
+                        <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Roster</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                          <Thead>
+                            <Tr>
+                              <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                              <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                          {!playerLoading && playerData
+                          .filter(function (data) {
+                            return data.teamId === row.id;
+                          })
+                          .map((player => (
+                            <PlayerTeamEditTableRow
+                              key={"PlayerOnTeam_"+player.id}
+                              currentRow={player}
+                              division="12U"
+                              teamName={row.teamName}
+                              fetchPlayers={fetchPlayers}
+                              addSuccessAlert={addSuccessAlert} 
+                              addFailureAlert={addFailureAlert}
+                            />
+                          )))}
+                          </Tbody>
+                        </TableComposable>
+                      </CardBody>
+                      <CardFooter>
+                      </CardFooter>
+                    </Card>
+                        )))}
                     </React.Fragment>
                 </TabContent>
                 <TabContent key={4} eventKey={4} id={`tabContent${4}`} activeKey={activeTabKey} hidden={4 !== activeTabKey}>
@@ -869,7 +1064,7 @@ const AdminTeams = ({ children, ...props }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!teamLoading && teamData?.data.length === 0 && (
+                    {!teamLoading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -883,57 +1078,86 @@ const AdminTeams = ({ children, ...props }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="14u_teams">
-                    {!teamLoading && teamData?.data
+                    {!teamLoading && teamData
                     .filter(function (data) {
                       return data.division === "14U";
                     })
                     .map((row => (
                       <Card key={row.id} isSelectable>
-                        <CardHeader>
+                      <CardHeader>
                         <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                        <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "14U", row.teamName, row.type)} />{'  '}
-                        </Tooltip>
-                        <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
-                        </Tooltip>
-                        </CardHeader>
-                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
-                        <CardBody>
-                          Phone Number: {row.coach1_phone}
-                          <Text component="br" />
-                          Email: {row.coach1_email}
-                          <Text component="br" />
-                          <Text component="br" />
-                          <Title headingLevel="h2" size="lg">Roster</Title>
-                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                              <Thead>
-                                <Tr>
-                                  <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                                  <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                              {!playerLoading && playerData?.data
-                                .filter(function (data) {
-                                  return data.teamId === row.id;
-                                })
-                                .map((player => (
-                                  <PlayerTeamEditTableRow
-                                    key={"PlayerOnTeam_"+player.id}
-                                    currentRow={player}
-                                    division="14U"
-                                    teamName={row.teamName}
-                                    fetchPlayers={fetchPlayers}
-                                    addSuccessAlert={addSuccessAlert} 
-                                    addFailureAlert={addFailureAlert}
-                                  />
-                                )))}
-                              </Tbody>
-                            </TableComposable>
-                        </CardBody>
-                      </Card>
-                    )))}
+                        <Text component="br" />
+                        <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "14U", row.teamName, row.type)}>
+                          Add Player to Team
+                        </Button>{'    '}
+                        <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "14U", row.teamName)}>
+                          Add Coach to Team
+                        </Button>{'    '}
+                        <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                          Remove this Team
+                        </Button>{'    '}
+                      </CardHeader>
+                      <CardBody>
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                            <Thead>
+                              <Tr>
+                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {!coachLoading && coachData
+                              .filter(function (data) {
+                                return data.teamId === row.id;
+                              })
+                              .map((coach => (
+                                <CoachTeamEditTableRow
+                                  key={"CoachForTeam_"+coach.id}
+                                  currentRow={coach}
+                                  division="14U"
+                                  teamName={row.teamName}
+                                  fetchCoach={fetchCoach}
+                                  addSuccessAlert={addSuccessAlert} 
+                                  addFailureAlert={addFailureAlert}
+                                />
+                              )))}
+                            </Tbody>
+                          </TableComposable>
+                        <Text component="br" />
+                        <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Roster</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                          <Thead>
+                            <Tr>
+                              <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                              <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                          {!playerLoading && playerData
+                          .filter(function (data) {
+                            return data.teamId === row.id;
+                          })
+                          .map((player => (
+                            <PlayerTeamEditTableRow
+                              key={"PlayerOnTeam_"+player.id}
+                              currentRow={player}
+                              division="14U"
+                              teamName={row.teamName}
+                              fetchPlayers={fetchPlayers}
+                              addSuccessAlert={addSuccessAlert} 
+                              addFailureAlert={addFailureAlert}
+                            />
+                          )))}
+                          </Tbody>
+                        </TableComposable>
+                      </CardBody>
+                      <CardFooter>
+                      </CardFooter>
+                    </Card>
+                        )))}
                   </React.Fragment>
                 </TabContent>
                 <TabContent key={5} eventKey={5} id={`tabContent${5}`} activeKey={activeTabKey} hidden={5 !== activeTabKey}>
@@ -942,7 +1166,7 @@ const AdminTeams = ({ children, ...props }) => {
                         <Spinner size="xl" />
                       </Bullseye>
                     )}
-                    {!teamLoading && teamData?.data.length === 0 && (
+                    {!teamLoading && teamData?.length === 0 && (
                       <Bullseye>
                         <EmptyState variant={EmptyStateVariant.small}>
                           <EmptyStateIcon icon={SearchIcon} />
@@ -956,57 +1180,86 @@ const AdminTeams = ({ children, ...props }) => {
                      </Bullseye>
                     )}
                     <React.Fragment key="16u_teams">
-                    {!teamLoading && teamData?.data
+                    {!teamLoading && teamData
                     .filter(function (data) {
                       return data.division === "16U";
                     })
                     .map((row => (
                       <Card key={row.id} isSelectable>
-                        <CardHeader>
-                          <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
-                          <Tooltip content="Add Player to this Team">
-                            <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, "16U", row.teamName, row.type)} />{'  '}
-                          </Tooltip>
-                          <Tooltip content="Remove this Team">
-                            <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "rec", row.teamName)}/>{'  '}
-                          </Tooltip>
-                        </CardHeader>
-                        <CardTitle>Head Coach: {row.coach1}</CardTitle>
-                        <CardBody>
-                          Phone Number: {row.coach1_phone}
-                          <Text component="br" />
-                          Email: {row.coach1_email}
-                          <Text component="br" />
-                          <Text component="br" />
-                          <Title headingLevel="h2" size="lg">Roster</Title>
-                            <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                              <Thead>
-                                <Tr>
-                                  <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                                  <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                              {!playerLoading && playerData?.data
-                                .filter(function (data) {
-                                  return data.teamId === row.id;
-                                })
-                                .map((player => (
-                                  <PlayerTeamEditTableRow
-                                    key={"PlayerOnTeam_"+player.id}
-                                    currentRow={player}
-                                    division="16U"
-                                    teamName={row.teamName}
-                                    fetchPlayers={fetchPlayers}
-                                    addSuccessAlert={addSuccessAlert} 
-                                    addFailureAlert={addFailureAlert}
-                                  />
-                                )))}
-                              </Tbody>
-                            </TableComposable>
-                        </CardBody>
-                      </Card>
-                    )))}
+                      <CardHeader>
+                        <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
+                        <Text component="br" />
+                        <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, "16U", row.teamName, row.type)}>
+                          Add Player to Team
+                        </Button>{'    '}
+                        <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, "16U", row.teamName)}>
+                          Add Coach to Team
+                        </Button>{'    '}
+                        <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                          Remove this Team
+                        </Button>{'    '}
+                      </CardHeader>
+                      <CardBody>
+                        <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                            <Thead>
+                              <Tr>
+                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {!coachLoading && coachData
+                              .filter(function (data) {
+                                return data.teamId === row.id;
+                              })
+                              .map((coach => (
+                                <CoachTeamEditTableRow
+                                  key={"CoachForTeam_"+coach.id}
+                                  currentRow={coach}
+                                  division="16U"
+                                  teamName={row.teamName}
+                                  fetchCoach={fetchCoach}
+                                  addSuccessAlert={addSuccessAlert} 
+                                  addFailureAlert={addFailureAlert}
+                                />
+                              )))}
+                            </Tbody>
+                          </TableComposable>
+                        <Text component="br" />
+                        <Text component="br" />
+                        <Title headingLevel="h2" size="lg">Roster</Title>
+                        <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                          <Thead>
+                            <Tr>
+                              <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                              <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                          {!playerLoading && playerData
+                          .filter(function (data) {
+                            return data.teamId === row.id;
+                          })
+                          .map((player => (
+                            <PlayerTeamEditTableRow
+                              key={"PlayerOnTeam_"+player.id}
+                              currentRow={player}
+                              division="16U"
+                              teamName={row.teamName}
+                              fetchPlayers={fetchPlayers}
+                              addSuccessAlert={addSuccessAlert} 
+                              addFailureAlert={addFailureAlert}
+                            />
+                          )))}
+                          </Tbody>
+                        </TableComposable>
+                      </CardBody>
+                      <CardFooter>
+                      </CardFooter>
+                    </Card>
+                        )))}
                   </React.Fragment>
                 </TabContent>
                 <TabContent key={6} eventKey={6} id={`tabContent${6}`} activeKey={activeTabKey} hidden={6 !== activeTabKey}>
@@ -1015,7 +1268,7 @@ const AdminTeams = ({ children, ...props }) => {
                     <Spinner size="xl" />
                   </Bullseye>
                 )}
-                {!travelLoading && travelData?.data.length === 0 && (
+                {!travelLoading && travelData?.length === 0 && (
                   <Bullseye>
                     <EmptyState variant={EmptyStateVariant.small}>
                       <EmptyStateIcon icon={SearchIcon} />
@@ -1029,69 +1282,82 @@ const AdminTeams = ({ children, ...props }) => {
                   </Bullseye>
                 )}
                 <React.Fragment key="travel_teams">
-                  {!travelLoading && travelData?.data.map((row => (
-                    <Card key={row.id} isSelectable>
-                      <CardHeader>
-                        <Label icon={<InfoCircleIcon />} color={`${row.teamColor}`} >{row.teamName}</Label>{'  '}
-                        <Tooltip content="Add Player to this Team">
-                          <Button variant="link" isInline icon={<PlusCircleIcon />} onClick={() => handleAddPlayerToTeam(row.id, row.division, row.teamName, row.type)} />{'  '}
-                        </Tooltip>
-                        <Tooltip content="Remove this Team">
-                          <Button variant="link" isInline icon={<MinusCircleIcon />} onClick={() => handleRemoveTeam(row.id, "travel", row.teamName)}/>{'  '}
-                        </Tooltip>
-                      </CardHeader>
-                      <CardTitle></CardTitle>
-                      <CardBody>
-                        Head Coach: {row.coach1}
-                        <Text component="br" />
-                        Phone Number: {row.coach1_phone}
-                        <Text component="br" />
-                        Email: {row.coach1_email}
-                        <Text component="br" />
-                        <Text component="br" />
-                        Assistant Coach: {row.coach2}
-                        <Text component="br" />
-                        Phone Number: {row.coach2_phone}
-                        <Text component="br" />
-                        Email: {row.coach2_email}
-                        <Text component="br" />
-                        <Text component="br" />
-                        Assistant Coach: {row.coach3}
-                        <Text component="br" />
-                        Phone Number: {row.coach3_phone}
-                        <Text component="br" />
-                        Email: {row.coach3_email}
-                        <Text component="br" />
-                        <Text component="br" />
-                        <Title headingLevel="h2" size="lg">Roster</Title>
-                          <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
-                            <Thead>
-                              <Tr>
-                                <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
-                                <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                            {!playerLoading && playerData?.data
-                              .filter(function (data) {
-                                return data.teamId === row.id;
-                              })
-                              .map((player => (
-                                <PlayerTeamEditTableRow
-                                key={"PlayerOnTeam_"+player.id}
-                                currentRow={player}
-                                division={row.division}
-                                teamName={row.teamName}
-                                fetchPlayers={fetchPlayers}
-                                addSuccessAlert={addSuccessAlert} 
-                                addFailureAlert={addFailureAlert}
-                              />
-                            )))}
-                        </Tbody>
-                          </TableComposable>
-                      </CardBody>
-                    </Card>
-                  )))}
+                  {!travelLoading && travelData?.map((row => (
+                <Card key={row.id} isSelectable>
+                <CardHeader>
+                  <Label icon={<InfoCircleIcon />} color="{row.teamColor}" >{row.teamName}</Label>{'  '}
+                  <Text component="br" />
+                  <Button key="addPlayer" variant="link" form="add-player-form" onClick={() => handleAddPlayerToTeam(row.id, row.division, row.teamName, row.type)}>
+                    Add Player to Team
+                  </Button>{'    '}
+                  <Button key="addCoach" variant="link" form="add-coach-form" onClick={() => handleAddCoachToTeam(row.id, row.division, row.teamName)}>
+                    Add Coach to Team
+                  </Button>{'    '}
+                  <Button key="removeTeam" variant="link" form="remove-team-form" onClick={() => handleRemoveTeam(row.id, row.teamName)}>
+                    Remove this Team
+                  </Button>{'    '}
+                </CardHeader>
+                <CardBody>
+                  <Title headingLevel="h2" size="lg">Coaching Staff</Title>
+                  <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                      <Thead>
+                        <Tr>
+                          <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
+                          <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                          <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {!coachLoading && coachData
+                        .filter(function (data) {
+                          return data.teamId === row.id;
+                        })
+                        .map((coach => (
+                          <CoachTeamEditTableRow
+                            key={"CoachForTeam_"+coach.id}
+                            currentRow={coach}
+                            division="10U"
+                            teamName={row.teamName}
+                            fetchCoach={fetchCoach}
+                            addSuccessAlert={addSuccessAlert} 
+                            addFailureAlert={addFailureAlert}
+                          />
+                        )))}
+                      </Tbody>
+                    </TableComposable>
+                  <Text component="br" />
+                  <Text component="br" />
+                  <Title headingLevel="h2" size="lg">Roster</Title>
+                  <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                    <Thead>
+                      <Tr>
+                        <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
+                        <Th sort={getSortParams(1)}>{columnNames.playerNumber}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                    {!playerLoading && playerData
+                    .filter(function (data) {
+                      return data.teamId === row.id;
+                    })
+                    .map((player => (
+                      <PlayerTeamEditTableRow
+                        key={"PlayerOnTeam_"+player.id}
+                        currentRow={player}
+                        division={row.division}
+                        teamName={row.teamName}
+                        fetchPlayers={fetchPlayers}
+                        addSuccessAlert={addSuccessAlert} 
+                        addFailureAlert={addFailureAlert}
+                      />
+                    )))}
+                    </Tbody>
+                  </TableComposable>
+                </CardBody>
+                <CardFooter>
+                </CardFooter>
+              </Card>
+                )))}
                   </React.Fragment>
                 </TabContent>
         </PageSection>

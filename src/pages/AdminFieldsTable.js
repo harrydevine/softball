@@ -30,7 +30,6 @@ const AdminFieldsTable = ({ children }) => {
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
   const [fieldAdded, setFieldAdded] = React.useState(false);
-//  const [fieldMasterUpdated, setFieldMasterUpdated] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
 
   const addAlert = (title, variant, key) => {
@@ -55,25 +54,20 @@ const AdminFieldsTable = ({ children }) => {
   // Fetch data for Fields
     fetchFieldInfo();
     setFieldAdded(false);
-//    setFieldMasterUpdated(false);
   }, []);
 
   useEffect(() => {
-//    console.log("triggered by dependency array ", fieldAdded, fieldMasterUpdated);
     // Fetch data for Fields
       fetchFieldInfo();
-//      setFieldAdded(false);
-//      setFieldMasterUpdated(false);
   }, [fieldAdded]);
       
   // Fetch field data
   const fetchFieldInfo = () => {
-    fetch(`http://softball-pi4:8081/fields`)
+    fetch(`http://db.hdevine.org/db/GetFields.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setFieldData(jsonResponse);
       setLoading(false);
-//      console.log(jsonResponse);
     })
     .catch(err => {
       setErr(err);
@@ -110,7 +104,7 @@ const AdminFieldsTable = ({ children }) => {
        </Tr>
        </Thead>
        <Tbody>
-        {!loading && fieldData?.data.length === 0 && (
+        {!loading && fieldData?.length === 0 && (
           <Tr key="0">
             <Td colSpan={4}>
               <Bullseye>
@@ -127,7 +121,7 @@ const AdminFieldsTable = ({ children }) => {
             </Td>
           </Tr>
         )}
-        {!loading && fieldData?.data.map(row => (
+        {!loading && fieldData.map(row => (
           <FieldsEditTableRow
             key={row.id}
             currentField={row}
@@ -138,7 +132,7 @@ const AdminFieldsTable = ({ children }) => {
         ))}
         {loading && (
           <Tr>
-            <Td colSpan={4}>
+            <Td colSpan={3}>
               <Bullseye>
                 <Spinner size="xl" />
               </Bullseye>

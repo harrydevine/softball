@@ -64,10 +64,11 @@ class AdminFieldsMasterStatusModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
       }));
-      /* Update All Fields; use ID of 1, which is ignored, but the MySQL backend route for /fields requires it. */
-      updateFieldsMasterStatus('http://softball-pi4:8081/fields/master/1', { fieldStatus: (this.state.fieldStatus === "Open") ? 1 : 0, fieldReason: this.state.fieldReason })
+      /* Update All Fields */
+      let data = Array(this.state.fieldStatus, this.state.fieldReason);
+      updateDatabase('http://db.hdevine.org/db/UpdateAllFields.php', { data })
       .then(data => {
-        if (data.message === "Error while updating Master Field Info") {
+        if (data.message === "Error in updating all fields") {
           this.addFailureAlert();
         }
         else {
@@ -117,18 +118,9 @@ class AdminFieldsMasterStatusModal extends React.Component{
       }
     };
 
-    async function updateFieldsMasterStatus (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
-        method: 'PUT',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
+        method: 'POST',
         body: JSON.stringify(data)
       });
       return response.json();

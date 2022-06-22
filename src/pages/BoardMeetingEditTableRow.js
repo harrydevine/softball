@@ -19,42 +19,17 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
   const [editedTime, setEditedTime] = React.useState(currentRow.time);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateMeetingInfoInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeMeetingInfoInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateMeetingInfo = (id) => {
-    updateMeetingInfoInDatabase('http://softball-pi4:8081/boardmtg/'+ id, { date: editedDate, time: editedTime })      
+    let updateArray = Array(id, editedDate, editedTime);
+    updateDatabase('http://db.hdevine.org/db/UpdateBoardMeetings.php', { updateArray })      
     .then(data => {
       if (data.message === "Board Meeting info updated successfully") {
         addSuccessAlert("Board Meeting info updated successfully");
@@ -70,7 +45,8 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
 
   const removeMeetingInfo = async (id) => {
       setIsEditMode(false);
-      removeMeetingInfoInDatabase('http://softball-pi4:8081/boardmtg/'+ id, {})
+      let delID=Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeleteBoardMeetings.php', {delID})
       .then(data => {
         if (data.message === "Board Meeting deleted successfully") {
           addSuccessAlert("Board Meeting deleted successfully");

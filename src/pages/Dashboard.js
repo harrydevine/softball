@@ -98,8 +98,10 @@ const Dashboard = ({ children }) => {
             <Linkify tagName="p" options={{ target: "_blank" }}>
               {row.body}
             </Linkify>
-            {row.image}
-            </CardBody>
+            <Linkify>
+              <img src={row.image}/>
+            </Linkify>
+          </CardBody>
         </Card>
         ))}
 	      <Banner variant="success">Upcoming Tournaments</Banner>

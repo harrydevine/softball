@@ -74,8 +74,8 @@ class AdminBoardMemberModal extends React.Component{
             isModalOpen: !isModalOpen
           }));
         /* Add Board Member to database...*/
-        addBoardMemberToDatabase('http://softball-pi4:8081/board', 
-          { name: this.state.name, title: this.state.position, phone: this.state.phone, email: this.state.email })
+        let data = Array(this.state.name, this.state.position, this.state.phone, this.state.email);
+        updateDatabase('http://db.hdevine.org/db/AddBoardMember.php', { data })
         .then(data => {
           if (data.message === "Board Member created successfully") {
             this.props.setBoardMemberAdded(true);
@@ -107,18 +107,9 @@ class AdminBoardMemberModal extends React.Component{
       this.setState({ email: "" });
     };
 
-    async function addBoardMemberToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

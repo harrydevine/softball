@@ -29,16 +29,16 @@ const AdminCoachTable = ({ children, ...props }) => {
   const [activeSortIndex, setActiveSortIndex] = React.useState(0);
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
   const getSortableRowValues = coach => {
-    const {coachName, coachPhone, coachEmail} = coach;
-    return [coachName, coachPhone, coachEmail];
+    const {name, phone, email} = coach;
+    return [name, phone, email];
   };
   const [coachAdded, setCoachAdded] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
 
-  if (coachData?.data.length > 0) {
-    let sortedCoach = coachData?.data;
+  if (coachData?.length > 0) {
+    let sortedCoach = coachData;
     if (sortedCoach !== null) {
-      sortedCoach = coachData?.data.sort((a, b) => {
+      sortedCoach = coachData.sort((a, b) => {
         const aValue = getSortableRowValues(a)[activeSortIndex];
         const bValue = getSortableRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
@@ -82,21 +82,6 @@ const AdminCoachTable = ({ children, ...props }) => {
     fetchCoach();
   }, [coachAdded]);
   
- /* 
-  const fetchPlayers = () => {
-  // Fetch data for Players
-    fetch(`http://softball-pi4:8081/players`)
-      .then(async resp => {
-        const jsonResponse = await resp.json()
-        setPlayerData(jsonResponse);
-        setLoading(false);
-      })
-      .catch(err => {
-        setErr(err);
-        setLoading(false);
-      })
-  }
-*/
   const addAlert = (title, variant, key) => {
     setAlerts([ ...alerts, {title: title, variant: variant, key }]);
   };
@@ -144,7 +129,7 @@ const AdminCoachTable = ({ children, ...props }) => {
        </Tr>
        </Thead>
         <Tbody>
-          {!coachLoading && coachData?.data.length === 0 && (
+          {!coachLoading && coachData?.length === 0 && (
             <Tr key="0">
               <Td colSpan={4}>
                 <Bullseye>
@@ -161,7 +146,7 @@ const AdminCoachTable = ({ children, ...props }) => {
               </Td>
             </Tr>
           )}
-          {!coachLoading && coachData?.data.map((row, rowIndex) => (
+          {!coachLoading && coachData?.map((row, rowIndex) => (
             <CoachEditTableRow
               key={row.id}
               currentRow={row}

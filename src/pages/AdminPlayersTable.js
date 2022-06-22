@@ -39,10 +39,10 @@ const AdminPlayersTable = ({ children, ...props }) => {
   const [playerAdded, setPlayerAdded] = React.useState(false);
   const [alerts, setAlerts] = React.useState([]);
 
-  if (playerData?.data.length > 0) {
-    let sortedPlayers = playerData?.data;
+  if (playerData?.length > 0) {
+    let sortedPlayers = playerData;
     if (sortedPlayers !== null) {
-      sortedPlayers = playerData?.data.sort((a, b) => {
+      sortedPlayers = playerData?.sort((a, b) => {
         const aValue = getSortableRowValues(a)[activeSortIndex];
         const bValue = getSortableRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
@@ -88,7 +88,7 @@ const AdminPlayersTable = ({ children, ...props }) => {
   
  /* 
   const fetchPlayers = () => {
-  // Fetch data for Players
+  // Fetch data for Players 
     fetch(`http://softball-pi4:8081/players`)
       .then(async resp => {
         const jsonResponse = await resp.json()
@@ -149,7 +149,7 @@ const AdminPlayersTable = ({ children, ...props }) => {
        </Tr>
        </Thead>
         <Tbody>
-          {!playerLoading && playerData?.data.length === 0 && (
+          {!playerLoading && playerData?.length === 0 && (
             <Tr key="0">
               <Td colSpan={4}>
                 <Bullseye>
@@ -166,7 +166,7 @@ const AdminPlayersTable = ({ children, ...props }) => {
               </Td>
             </Tr>
           )}
-          {!playerLoading && playerData?.data.map((row, rowIndex) => (
+          {!playerLoading && playerData?.map((row, rowIndex) => (
             <PlayerEditTableRow
               key={row.id}
               currentRow={row}

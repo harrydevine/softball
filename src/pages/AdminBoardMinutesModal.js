@@ -60,10 +60,10 @@ class AdminBoardMinutesModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
-      console.log(this.state.boardDate, " ", this.state.boardMinutes);      
-
+ 
       /* Add Minutes to database...*/
-      addMinutesToDatabase('http://softball-pi4/minutes', { date: this.state.boardDate, minutes: this.state.boardMinutes })
+      let data = Array(this.state.boardDate, this.state.boardMinutes);
+      updateDatabase('http://db.hdevine.org/db/AddBoardMinutes.php', { data })
       .then(data => {
         if (data.message === "Board Minutes created successfully") {
           this.props.setMinutesAdded(true);
@@ -90,30 +90,19 @@ class AdminBoardMinutesModal extends React.Component{
       this.setState({ boardMinutes: "" });
     };
   
-    async function addMinutesToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();
     };
 
     this.onDateChange = (str, date) => {
-      console.log('str', str, 'date', date);
       this.setState({ boardDate: str });
     }
   
     this.onMinutesChange = (value) => {
-      console.log('minutes', value);
       this.setState({ boardMinutes: value});
     }
   

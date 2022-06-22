@@ -55,10 +55,12 @@ class AdminLatestNewsModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
           isModalOpen: !isModalOpen
       }));
+
       /* Add Latest News to database...*/
-      addLatestNewsToDatabase('http://softball-pi4:8081/news', { title: this.state.title, body: this.state.body, image: this.state.image })
+      let data = Array(this.state.title, this.state.body, this.state.image);
+      updateDatabase('http://db.hdevine.org/db/AddNewsItem.php', { data })
       .then(data => {
-        if (data.message === "'Error in creating Latest News info") {
+        if (data.message === "Error in creating Latest News info") {
           this.addFailureAlert();
         }
         else {
@@ -84,7 +86,7 @@ class AdminLatestNewsModal extends React.Component{
       this.setState({ image: "" });
     };
 
-    this.onTitleChange = newValue => {
+    this.onTitleChange = newValue => {    
         this.setState(({ title: newValue }));
     };
 
@@ -93,21 +95,12 @@ class AdminLatestNewsModal extends React.Component{
       };
 
     this.onImageChange = newValue => {
-      this.setState(({ image: newValue }));
+      this.setState(({ image: newValue })); 
     };
     
-    async function addLatestNewsToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

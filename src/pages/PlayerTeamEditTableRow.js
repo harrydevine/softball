@@ -26,44 +26,19 @@ const PlayerTeamEditTableRow = ({ children, ...props }) => {
   const [editedNumber, setEditedNumber] = React.useState(currentRow.playerNumber);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updatePlayerInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removePlayerFromTeam  (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updatePlayer = (id) => {
-    updatePlayerInDatabase('http://softball-pi4:8081/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: division, teamId: currentRow.teamId })      
+    let updateArray = Array(id, editedName, editedNumber, division, currentRow.type, currentRow.teamId);
+    updateDatabase('http://db.hdevine.org/db/UpdatePlayer.php', { updateArray })      
     .then(data => {
-      if (data.message === "Player info updated successfully") {
+      if (data.message === "Player updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
         fetchPlayers();
       }
@@ -77,7 +52,8 @@ const PlayerTeamEditTableRow = ({ children, ...props }) => {
 
   const removeFromTeam = async (id) => {
       setIsEditMode(false);
-      removePlayerFromTeam('http://softball-pi4:8081/players/resetTeam/'+ id, {})
+      let playerId = Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeletePlayerFromTeam.php', { playerId })
       .then(data => {
         if (data.message === "Player/Team assignment reset successfully") {
           addSuccessAlert(editedName + " removed from " + teamName + " successfully");

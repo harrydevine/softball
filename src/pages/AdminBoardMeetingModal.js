@@ -61,10 +61,10 @@ class AdminBoardMeetingModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
-      console.log(this.state.mtgDate, " ", this.state.mtgTime);      
 
       /* Add Meeting to database...*/
-      addMeetingToDatabase('http://softball-pi4:8081/boardmtg', { date: this.state.mtgDate, time: this.state.mtgTime })
+      let data = Array(this.state.mtgDate, this.state.mtgTime);
+      updateDatabase('http://db.hdevine.org/db/AddBoardMeetings.php', { data })
       .then(data => {
         if (data.message === "Board Meeting created successfully") {
           this.props.setMeetingAdded(true);
@@ -91,30 +91,19 @@ class AdminBoardMeetingModal extends React.Component{
       this.setState({ mtgTime: "" });
     };
   
-    async function addMeetingToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();
     };
 
     this.onDateChange = (str, date) => {
-      console.log('str', str, 'date', date);
       this.setState({ mtgDate: str });
     }
   
     this.onTimeChange = (time, hour, minute, seconds, isValid) => {
-      console.log('time', time);
       this.setState({ mtgTime: time});
     }
   

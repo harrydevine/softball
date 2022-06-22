@@ -61,9 +61,8 @@ class AdminLocalitiesModal extends React.Component{
         }));
 
       /* Add Locality to database...*/
-      addLocalityToDatabase('http://softball-pi4:8081/localities', { name: this.state.name, 
-        street: this.state.street, city: this.state.city, state: this.state.usstate, zip: this.state.zip,
-        lat: this.state.lat, lng: this.state.lng, description: this.state.description })
+      let data = Array(this.state.name, this.state.street, this.state.city, this.state.usstate, this.state.zip, this.state.lat, this.state.lng, this.state.description);
+      updateDatabase('http://db.hdevine.org/db/AddLocality.php', { data })
       .then(data => {
         if (data.message === "Locality created successfully") {
           this.props.setLocalityAdded(true);
@@ -101,18 +100,9 @@ class AdminLocalitiesModal extends React.Component{
       this.setState({ description: ""});
   };
 
-    async function addLocalityToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();

@@ -35,18 +35,6 @@ class AdminTournamentsModal extends React.Component{
     this.dateFormat = date => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).replace(/\//g,'-');
     this.dateParse = date => {
       return date;
-/*      const split = date.split('-');
-      if (split.length !== 3) {
-        return new Date();
-      }
-      let month = split[0];
-      let day = split[1];
-      let year = split[2];
-      let newDate = new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
-      console.log(newDate);
-      return newDate;
-//      return new Date(`${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
-*/
     };
   
     this.addAlert = (title, variant, key) => {
@@ -79,14 +67,11 @@ class AdminTournamentsModal extends React.Component{
       this.setState(({ isModalOpen}) => ({
         isModalOpen: !isModalOpen
       }));
-      console.log(this.state.dateStart, this.state.dateEnd, this.state.description, this.state.tourneyImg, this.state.title, this.state.divisions, this.state.details, this.state.registerURL);      
       
       /* Add Tournament to database...*/
-      addTournamentToDatabase('http://softball-pi4:8081/tournaments', 
-        { title: this.state.title, dateStart: this.state.dateStart, dateEnd: this.state.dateEnd, 
-          description: this.state.description, tourneyImg: this.state.tourneyImg, divisions: this.state.divisions,
-          details: this.state.details, registerURL: this.state.registerURL
-        })
+      let data = Array(this.state.title, this.state.dateStart, this.state.dateEnd, this.state.description, 
+                       this.state.tourneyImg, this.state.divisions, this.state.details, this.state.registerURL);
+      updateDatabase('http://db.hdevine.org/db/AddTournament.php', { data })
       .then(data => {
         if (data.message === "Tournament created successfully") {
           this.props.setTournamentAdded(true);
@@ -125,27 +110,17 @@ class AdminTournamentsModal extends React.Component{
       this.setState({ registerURL: "" });
     };
 
-    async function addTournamentToDatabase (url = '', data = {}) {
+    async function updateDatabase (url = '', data = {}) {
       const response = await fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json();
     };
 
     this.onStartDateChange = (str, date) => {
-      console.log(str, date);
-        this.setState({ dateStart: str });
-      }
+      this.setState({ dateStart: str });
+    }
   
     this.onEndDateChange = (str, date) => {
       this.setState({ dateEnd: str });

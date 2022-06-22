@@ -22,6 +22,7 @@ import {
   TabContent,
   TabContentBody,
   TabTitleText,
+  Text,
   Title
 } from '@patternfly/react-core';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
@@ -36,31 +37,53 @@ const TravelTeams = ({ children }) => {
   const [playerData, setPlayerData] = React.useState(null);
   const [playerLoading, setPlayerLoading] = React.useState(true);
   const [playerError, setPlayerError] = React.useState(null);
+  const [coachData, setCoachData] = React.useState(null);
+  const [coachLoading, setCoachLoading] = React.useState(true);
+  const [coachError, setCoachError] = React.useState(null);
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`http://softball-pi4:8081/travelteams`)
+    fetch(`http://db.hdevine.org/db/GetTravelTeams.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTeamData(jsonResponse);
         setLoading(false);
+
+        // Since the Teams data contains both Rec and Travel Teams, we cannot assume that the
+        // default Travel Team tab index will be 0; so use the first travel team discovered.
+        if (Array.isArray(teamData)){
+          setActiveTabKey(teamData[0].id);
+          console.log(teamData[0].id, activeTabKey);
+        }
       })
       .catch(err => {
         setError(err);
         setLoading(false);
       })
 
-    // Fetch data for Players
-    fetch(`http ://softball-pi4:8081/players`)
-    .then(async resp => {
-      const jsonResponse = await resp.json()
-      setPlayerData(jsonResponse);
-      setPlayerLoading(false);
-    })
-    .catch(err => {
-      setPlayerError(err);
-      setPlayerLoading(false);
-    })
+      // Fetch data for Players
+      fetch(`http://db.hdevine.org/db/GetPlayers.php`)
+      .then(async resp => {
+        const jsonResponse = await resp.json()
+        setPlayerData(jsonResponse);
+        setPlayerLoading(false);
+      })
+      .catch(err => {
+        setPlayerError(err);
+        setPlayerLoading(false);
+      })
+
+      // Fetch data for Coaches
+      fetch(`http://db.hdevine.org/db/GetCoaches.php`)
+      .then(async resp => {
+        const jsonResponse = await resp.json()
+        setCoachData(jsonResponse);
+        setCoachLoading(false);
+      })
+      .catch(err => {
+        setCoachError(err);
+        setCoachLoading(false);
+      })
 
     }, []);
 
@@ -88,7 +111,7 @@ const TravelTeams = ({ children }) => {
             <Spinner size="xl" />
           </Bullseye>
         )}
-        {!loading && teamData?.data.length === 0 && (
+        {!loading && teamData?.length === 0 && (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={SearchIcon} />
@@ -103,7 +126,7 @@ const TravelTeams = ({ children }) => {
         )}
       <PageSection type="tabs" variant={PageSectionVariants.light} key="travelTeamContentTabs">
         <Tabs activeKey={activeTabKey} onSelect={handleTabClick} usePageInsets isBox id="tabTravelTeams" aria-label="tabTravelTeams">
-        {!loading && teamData?.data.map((row, rowIndex) => (
+        {!loading && teamData?.map((row, rowIndex) => (
           <Tab 
             key={`tab${rowIndex}`}
             eventKey={row.id} 
@@ -113,7 +136,7 @@ const TravelTeams = ({ children }) => {
         ))}
         </Tabs>
       </PageSection>
-      {!loading && teamData?.data.map((row, rowIndex) => (
+      {!loading && teamData?.map((row, rowIndex) => (
         <TabContent key={row.id} eventKey={row.id} id={`tabContent${row.id}`} activeKey={activeTabKey} hidden={row.id !== activeTabKey}>
           <React.Fragment key={`travelTeamContent${rowIndex}`}>
             <Card key={`team${rowIndex}`}>
@@ -123,31 +146,31 @@ const TravelTeams = ({ children }) => {
               <CardBody>
                 <Title headingLevel="h2" size="lg">Coaching Staff</Title>
                 <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
-                  <Thead>
-                    <Tr>
-                      <Th width={50}>Coach</Th>
-                      <Th width={25}>Phone Number</Th>
-                      <Th width={25}>Email Address</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                  <Tr key={"coach1"}>
-                    <Td>{row.coach1}</Td>
-                    <Td>{row.coach1_phone}</Td>
-                      <Td>{row.coach1_email}</Td>
-                    </Tr>
-                    <Tr key={"coach2"}>
-                      <Td>{row.coach2}</Td>
-                      <Td>{row.coach2_phone}</Td>
-                      <Td>{row.coach2_email}</Td>
-                    </Tr>
-                    <Tr key={"coach3"}>
-                      <Td>{row.coach3}</Td>
-                      <Td>{row.coach3_phone}</Td>
-                      <Td>{row.coach3_email}</Td>
-                    </Tr>
-                  </Tbody>
-                </TableComposable>
+                    <Thead>
+                      <Tr>
+                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Phone Number</Th>
+                        <Th width={25}>Email Address</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                    {!coachLoading && coachData
+                      .filter(function (data) {
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
+                      })
+                      .map((coach => (
+                        <Tr key={"coach"+coach.id}>
+                        <Td>{coach.name}</Td>
+                        <Td>{coach.phone}</Td>
+                        <Td>{coach.email}</Td>
+                      </Tr>
+                    )))}
+                    </Tbody>
+                  </TableComposable>
+                  <Text component="br" />
+                  <Text component="br" />
                 <Title headingLevel="h2" size="lg">Roster</Title>
                 <TableComposable variant={TableVariant.default} aria-label={`roster${row.teamName}table`}>
                   <Thead>
@@ -157,7 +180,7 @@ const TravelTeams = ({ children }) => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                  {!playerLoading && playerData?.data
+                  {!playerLoading && playerData
                     .filter(function (data) {
                       return data.teamId === row.id;
                     })

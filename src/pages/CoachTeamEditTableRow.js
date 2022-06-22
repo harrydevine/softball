@@ -22,9 +22,9 @@ import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 const CoachTeamEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
   const {key, currentRow, division, teamName, fetchCoach, addSuccessAlert, addFailureAlert } = props;
-  const [editedName, setEditedName] = React.useState(currentRow.coachName);
-  const [editedPhone, setEditedPhone] = React.useState(currentRow.coachPhone);
-  const [editedEmail, setEditedEmail] = React.useState(currentRow.coachEmail);
+  const [editedName, setEditedName] = React.useState(currentRow.name);
+  const [editedPhone, setEditedPhone] = React.useState(currentRow.phone);
+  const [editedEmail, setEditedEmail] = React.useState(currentRow.email);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
   async function updateCoachInDatabase (url = '', data = {}) {

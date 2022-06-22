@@ -44,46 +44,18 @@ const TournamentEditTableRow = ({ children, ...props }) => {
 */
   };
 
-  async function updateTournamentInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeTournamentInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateTournament = (id) => {
-    console.log(editedTitle, editedDateStart, editedDateEnd, editedDescription, editedDivisions, editedDetails, editedImage, editedRegister);
-    updateTournamentInDatabase('http://softball-pi4:8081/tournaments/'+ id, { title: editedTitle, 
-      dateStart: editedDateStart, dateEnd: editedDateEnd, description: editedDescription, divisions: editedDivisions, 
-      details: editedDetails, tourneyImg: editedImage, registerURL: editedRegister 
-    })      
+    let updateArray = Array(id, editedTitle, editedDateStart, editedDateEnd, editedDescription, 
+                            editedDivisions, editedDetails, editedImage, editedRegister);
+    updateDatabase('http://db.hdevine.org/db/UpdateTournament.php', { updateArray })      
     .then(data => {
       if (data.message === "Tournament updated successfully") {
         addSuccessAlert(editedTitle + " updated successfully");
@@ -99,7 +71,8 @@ const TournamentEditTableRow = ({ children, ...props }) => {
 
   const removeTournament = async (id) => {
       setIsEditMode(false);
-      removeTournamentInDatabase('http://softball-pi4:8081/tournaments/'+ id, {})
+      let delID = Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeleteTournament.php', { delID })
       .then(data => {
         if (data.message === "Tournament deleted successfully") {
           addSuccessAlert(editedTitle + " removed successfully");

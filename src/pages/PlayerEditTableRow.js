@@ -46,44 +46,19 @@ const PlayerEditTableRow = ({ children, ...props }) => {
     <SelectOption key={2} value="travel" label="Travel" />
   ];
 
-  async function updatePlayerInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removePlayerInDatabase (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updatePlayer = (id) => {
-     updatePlayerInDatabase('http://softball-pi4:8081/players/'+ id, { playerName: editedName, playerNumber: parseInt(editedNumber), division: editedDivision, type: editedType, teamId: currentRow.teamId })      
+    let updateArray = Array (id, editedName, parseInt(editedNumber), editedDivision, editedType, parseInt(currentRow.teamId));
+    updateDatabase('http://db.hdevine.org/db/UpdatePlayer.php', { updateArray })      
     .then(data => {
-      if (data.message === "Player info updated successfully") {
+      if (data.message === "Player updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
         fetchPlayers();
       }
@@ -97,7 +72,8 @@ const PlayerEditTableRow = ({ children, ...props }) => {
 
   const removePlayer = async (id) => {
       setIsEditMode(false);
-      removePlayerInDatabase('http://softball-pi4:8081/players/'+ id, {})
+      let delID = Array(id);
+      updateDatabase('http://db.hdevine.org/db/DeletePlayer.php', { delID })
       .then(data => {
         if (data.message === "Player deleted successfully") {
           addSuccessAlert(editedName + " removed successfully");
