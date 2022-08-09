@@ -63,7 +63,7 @@ class AdminCoachModal extends React.Component{
         }));
       let data = Array(this.state.name, this.state.phone, this.state.email);
       /* Add Coach to database...*/
-      updateDatabase('http://db.hdevine.org/db/AddCoach.php', { data })      
+      updateDatabase('http://softball-pi4/db/AddCoach.php', { data })      
         .then(data => {
         if (data.message === "Coach created successfully") {
           this.props.setCoachAdded(true);

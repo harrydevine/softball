@@ -38,7 +38,7 @@ const CoachEditTableRow = ({ children, ...props }) => {
 
   const updateCoach = (id) => {
     let updateArray = Array(id, editedName, editedPhone, editedEmail);
-     updateDatabase('http://db.hdevine.org/db/UpdateCoach.php', { updateArray })      
+     updateDatabase('http://softball-pi4/db/UpdateCoach.php', { updateArray })      
     .then(data => {
       if (data.message === "Coach updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -55,7 +55,7 @@ const CoachEditTableRow = ({ children, ...props }) => {
   const removeCoach = async (id) => {
       setIsEditMode(false);
       let delID = Array(id);
-      updateDatabase('http://db.hdevine.org/db/DeleteCoach.php', { delID })
+      updateDatabase('http://softball-pi4/db/DeleteCoach.php', { delID })
       .then(data => {
         if (data.message === "Coach deleted successfully") {
           addSuccessAlert(editedName + " removed successfully");

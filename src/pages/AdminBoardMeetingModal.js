@@ -64,7 +64,7 @@ class AdminBoardMeetingModal extends React.Component{
 
       /* Add Meeting to database...*/
       let data = Array(this.state.mtgDate, this.state.mtgTime);
-      updateDatabase('http://db.hdevine.org/db/AddBoardMeetings.php', { data })
+      updateDatabase('http://softball-pi4/db/AddBoardMeetings.php', { data })
       .then(data => {
         if (data.message === "Board Meeting created successfully") {
           this.props.setMeetingAdded(true);

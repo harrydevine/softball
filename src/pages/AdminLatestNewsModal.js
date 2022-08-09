@@ -58,7 +58,7 @@ class AdminLatestNewsModal extends React.Component{
 
       /* Add Latest News to database...*/
       let data = Array(this.state.title, this.state.body, this.state.image);
-      updateDatabase('http://db.hdevine.org/db/AddNewsItem.php', { data })
+      updateDatabase('http://softball-pi4/db/AddNewsItem.php', { data })
       .then(data => {
         if (data.message === "Error in creating Latest News info") {
           this.addFailureAlert();

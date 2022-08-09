@@ -77,7 +77,7 @@ class AdminPlayerModal extends React.Component{
         }));
         /* Add Board Member to database...*/
         let data = Array(this.state.name, this.state.jersey,this.state.division, this.state.playerType, 0)  
-        updateDatabase('http://db.hdevine.org/db/AddPlayer.php', { data })
+        updateDatabase('http://softball-pi4/db/AddPlayer.php', { data })
       .then(data => {
         if (data.message === "Player created successfully") {
           this.props.setPlayerAdded(true);

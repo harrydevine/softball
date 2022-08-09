@@ -48,7 +48,7 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Field Status
-      fetch("http://db.hdevine.org/db/GetFields.php")
+      fetch("http://softball-pi4/db/GetFields.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setFieldData(jsonResponse);
@@ -82,7 +82,7 @@ const FieldInfo = ({ children }) => {
 
      useEffect(() => {
       // Fetch data for Locality locations
-      fetch("http://db.hdevine.org/db/GetLocalities.php")
+      fetch("http://softball-pi4/db/GetLocalities.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setLocalityData(jsonResponse);

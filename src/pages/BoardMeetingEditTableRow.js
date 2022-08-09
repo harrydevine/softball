@@ -29,7 +29,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
 
   const updateMeetingInfo = (id) => {
     let updateArray = Array(id, editedDate, editedTime);
-    updateDatabase('http://db.hdevine.org/db/UpdateBoardMeetings.php', { updateArray })      
+    updateDatabase('http://softball-pi4/db/UpdateBoardMeetings.php', { updateArray })      
     .then(data => {
       if (data.message === "Board Meeting info updated successfully") {
         addSuccessAlert("Board Meeting info updated successfully");
@@ -46,7 +46,7 @@ const BoardMeetingEditTableRow = ({ children, ...props }) => {
   const removeMeetingInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://db.hdevine.org/db/DeleteBoardMeetings.php', {delID})
+      updateDatabase('http://softball-pi4/db/DeleteBoardMeetings.php', {delID})
       .then(data => {
         if (data.message === "Board Meeting deleted successfully") {
           addSuccessAlert("Board Meeting deleted successfully");

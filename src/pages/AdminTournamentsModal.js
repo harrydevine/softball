@@ -71,7 +71,7 @@ class AdminTournamentsModal extends React.Component{
       /* Add Tournament to database...*/
       let data = Array(this.state.title, this.state.dateStart, this.state.dateEnd, this.state.description, 
                        this.state.tourneyImg, this.state.divisions, this.state.details, this.state.registerURL);
-      updateDatabase('http://db.hdevine.org/db/AddTournament.php', { data })
+      updateDatabase('http://softball-pi4/db/AddTournament.php', { data })
       .then(data => {
         if (data.message === "Tournament created successfully") {
           this.props.setTournamentAdded(true);

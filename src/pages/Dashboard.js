@@ -34,7 +34,7 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Latest News
-      fetch(`http://db.hdevine.org/db/GetLatestNews.php`)
+      fetch(`http://softball-pi4/db/GetLatestNews.php`)
       .then(async resp => { 
         const response = await resp.json();
         setNewsData(response);
@@ -44,7 +44,7 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for next Board Meeting
-    fetch(`http://db.hdevine.org/db/GetNextBoardMeeting.php`)
+    fetch(`http://softball-pi4/db/GetNextBoardMeeting.php`)
     .then(async resp => {
       const response = await resp.json();
       setMtgData(response);
@@ -58,7 +58,7 @@ const Dashboard = ({ children }) => {
     
   useEffect(() => {
     // Fetch data for next Tournament
-    fetch(`http://db.hdevine.org/db/GetNextTournament.php`)
+    fetch(`http://softball-pi4/db/GetNextTournament.php`)
     .then(async resp => {
       const response = await resp.json();
       setTournamentData(response);

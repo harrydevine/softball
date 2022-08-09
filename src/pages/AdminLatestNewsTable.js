@@ -61,7 +61,7 @@ const AdminLatestNewsTable = ({ children }) => {
   }, [newsAdded]);
   
   const fetchNews = () => {
-    fetch(`http://db.hdevine.org/db/GetLatestNews.php`)
+    fetch(`http://softball-pi4/db/GetLatestNews.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setNewsData(jsonResponse);

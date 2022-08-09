@@ -15,11 +15,16 @@ import {
   DragDrop,
   Draggable,
   Droppable,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
   DualListSelector,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
   EmptyStateBody,
+  Form,
+  FormGroup,
   Grid,
   GridItem,
   Label,
@@ -29,7 +34,12 @@ import {
   ModalVariant,
   PageSection,
   PageSectionVariants,
+  Popover,
   Radio,
+  Select,
+  SelectDirection,
+  SelectOption,
+  SelectVariant,
   Spinner,
   Split,
   SplitItem,
@@ -52,6 +62,7 @@ import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-i
 import PlusCircleIcon from '@patternfly/react-icons/dist/js/icons/plus-circle-icon';
 import MinusCircleIcon from '@patternfly/react-icons/dist/js/icons/minus-circle-icon';
 import PficonSortCommonAscIcon from "@patternfly/react-icons/dist/esm/icons/pficon-sort-common-asc-icon";
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
 export const columnNames = {
   playerName: 'Name',
@@ -96,6 +107,10 @@ const AdminTeams = ({ children, ...props }) => {
   const [availablePlayersState, setAvailablePlayersState] = React.useState([]);
   const [chosenPlayersState, setChosenPlayersState] = React.useState([]);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
+  const [isCoachSelectOpen, setCoachOpen] = React.useState(false);
+  const [coachSelected, setCoach] = React.useState("");
+  const [localCoachData, setLocalCoachData] = React.useState(coachData);
+  const [coachSelections, setCoachSelections] = React.useState([]);
   const getSortableRowValues = players => {
     const {playerName, playerNumber} = players;
     return [playerName, playerNumber];
@@ -161,12 +176,14 @@ const AdminTeams = ({ children, ...props }) => {
   }
 
   const handleAddCoachToTeam = (id, level, name) => {
-    console.log("Add Coach To Team logic");
+//    console.log("Add Coach To Team logic");
+//    console.log(coachData);
     setTeamId(id);
     setTeamName(name);
     setDivision(level);
-    fetchCoach();
-    setAvailableCoach(coachData);
+    console.log(coachSelected);
+//    fetchCoach();
+//    setAvailableCoach(coachData);
     setAddCoachDlgOpen(true);
   }
 
@@ -192,15 +209,27 @@ const AdminTeams = ({ children, ...props }) => {
 
   const handleAddCoachModalOK = () => {
     setAddCoachDlgOpen(false);
+    console.log(coachSelected);
+
+    // Remove any coach identified above from the available coach list
+//    let hcIndex = availableCoach.indexOf(destHeadCoach.name);
+//    let a1Index = availableCoach.indexOf(destAssistantCoach1.name);
+//    let a2Index = availableCoach.indexOf(destAssistantCoach2.name);
+//    console.log(hcIndex, destHeadCoach, a1Index, destAssistantCoach1, destAssistantCoach2, a2Index);
+
+//    availableCoach.splice(hcIndex, 1);
+//    availableCoach.splice(a1Index, 1);
+//    availableCoach.splice(a2Index, 1);    
+
   }
 
   const handleAddCoachModalCancel = () => {
     setAddCoachDlgOpen(false);
-    fetchCoach();
-    setAvailableCoach(coachData);
-    setDestHeadCoach([]);
-    setDestAssistantCoach1([]);
-    setDestAssistantCoach2([]);
+//    fetchCoach();
+//    setAvailableCoach(coachData);
+//    setDestHeadCoach([]);
+//    setDestAssistantCoach1([]);
+//    setDestAssistantCoach2([]);
   }
 
   async function updateDatabase (url = '', data = {}) {
@@ -213,7 +242,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const addPlayer = (id, teamId, name, teamName) => {
     let data = Array(id, teamId);
-    updateDatabase('http://db.hdevine.org/db/AddPlayerToTeam.php', { data })      
+    updateDatabase('http://softball-pi4/db/AddPlayerToTeam.php', { data })      
     .then(data => {
       if (data.message === "Player/Team assignment updated successfully") {
         addSuccessAlert(name + " added to " + teamName + " successfully");
@@ -229,7 +258,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const removeFromTeam = async (id, playerName, team) => {
     let playerId = Array(id);
-      updateDatabase('http://db.hdevine.org/db/DeletePlayerFromTeam.php', { playerId })
+      updateDatabase('http://softball-pi4/db/DeletePlayerFromTeam.php', { playerId })
       .then(data => {
         if (data.message === "Player/Team assignment reset successfully") {
           addSuccessAlert(playerName + " removed from " + team + " successfully");
@@ -245,7 +274,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const removeTeam = async (id, name) => {
     let delID = Array(id);
-    updateDatabase("http://db.hdevine.org/db/DeleteTeam.php", { delID })
+    updateDatabase("http://softball-pi4/db/DeleteTeam.php", { delID })
     .then(data => {
       if ((data.message === "Error in deleting Team")) {
         addFailureAlert(teamName + " removal unsuccessful");
@@ -342,13 +371,49 @@ const AdminTeams = ({ children, ...props }) => {
   }, [teamAdded]);
 
   useEffect(() => {
+//    setLocalCoachData(coachData);
+    console.log(localCoachData);
     fetchRecTeams();
     fetchTravelTeams();
     fetchPlayers();
-    fetchCoach();
-    setAvailableCoach(coachData);
+//    fetchCoach();
+//    setAvailableCoach(coachData);
+    // Set up the Available Coaches selection array
+//    let coachesArray = Array();
+//    coachesArray.push(<SelectOption key={0} value={0} isPlaceholder>Select a coach</SelectOption>);
+//    if (coachData?.length > 0) {
+//      coachData.map((coach) => {
+//        coachesArray.push(<SelectOption key={coach.id} value={coach.id}>{coach.name}</SelectOption>);
+  //        console.log(coachesArray);
+//      });
+//    }
+//    else {
+//      coachesArray.push(<DropdownItem value="test">HDevine-Test</DropdownItem>);
+//    }
+//    console.log(coachesArray);
+//    setCoachSelections(coachesArray);
+  
   }, []);
 
+/*
+  function adjustAvailableCoachList(item, type, index) {
+    console.log(item, type, index);
+    availableCoach.splice(index, 1);
+    switch (type) {
+      case "headcoach":
+//        setDestHeadCoach("<span id=" + item.id + ">" + item.name);
+        setDestHeadCoach(item);
+        break;
+      case "assistant1":
+        setDestAssistantCoach1(item);
+        break;
+      case "assistant2":
+        setDestAssistantCoach2(item);
+        break;
+    }
+  }
+*/
+/*
   useEffect(() => {
     if (isAddCoachDlgOpen) {
       // Determine head coach for the selected team
@@ -359,9 +424,7 @@ const AdminTeams = ({ children, ...props }) => {
         coachData.filter(function (data) {
           return data.id === team.headcoach;
         })
-      .map(( headcoach => (
-        setDestHeadCoach(headcoach)
-      ))))))
+      .map(( headcoach => ( adjustAvailableCoachList(headcoach, "headcoach", availableCoach.indexOf(headcoach))))))))
 
       // Determine assistant coach 1 for the selected team
       teamData.filter(function (data) {
@@ -386,22 +449,12 @@ const AdminTeams = ({ children, ...props }) => {
     .map(( coach2 => (
       setDestAssistantCoach2(coach2)
     ))))))
-
-    // Remove any coach identified above from the available coach list
-    let hcIndex = availableCoach.indexOf(destHeadCoach.name);
-    let a1Index = availableCoach.indexOf(destAssistantCoach1.name);
-    let a2Index = availableCoach.indexOf(destAssistantCoach2.name);
-    console.log(hcIndex, destHeadCoach, a1Index, destAssistantCoach1, destAssistantCoach2, a2Index);
-
-    availableCoach.splice(hcIndex, 1);
-    availableCoach.splice(a1Index, 1);
-    availableCoach.splice(a2Index, 1);    
   }
   }, [isAddCoachDlgOpen]);
-
+*/
   const fetchRecTeams = () => {
     // Fetch data for Rec Teams
-    fetch(`http://db.hdevine.org/db/GetRecTeams.php`)
+    fetch(`http://softball-pi4/db/GetRecTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -415,7 +468,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const fetchTravelTeams = () => {
     // Fetch data for Travel Teams
-    fetch(`http://db.hdevine.org/db/GetTravelTeams.php`)
+    fetch(`http://softball-pi4/db/GetTravelTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTravelData(jsonResponse);
@@ -524,6 +577,37 @@ const AdminTeams = ({ children, ...props }) => {
     
   }
 
+  const onHeadCoachChange = (_, event) => {
+    setHeadCoachChecked(true);
+    setAssistant1Checked(false);
+    setAssistant2Checked(false);
+  };
+  const onAssistant1Change = (_, event) => {
+    setHeadCoachChecked(false);
+    setAssistant1Checked(true);
+    setAssistant2Checked(false);
+  };
+  const onAssistant2Change = (_, event) => {
+    setHeadCoachChecked(false);
+    setAssistant1Checked(false);
+    setAssistant2Checked(true);
+  };
+
+  const onCoachToggle = isCoachSelectOpen => {
+    console.log(isCoachSelectOpen);
+    setCoachOpen(isCoachSelectOpen);
+  };
+
+  const onCoachSelect = (event, selection, isPlaceholder) => {
+//    console.log(event, selection, isPlaceholder);
+    if (isPlaceholder){
+      setCoach(null);
+      setCoachOpen(false);
+    }
+    setCoachOpen(false);
+    setCoach(selection);
+  };
+
   return (
     <div>
       <PageSection variant={PageSectionVariants.light} key="adminTeamsSection1">
@@ -586,52 +670,94 @@ const AdminTeams = ({ children, ...props }) => {
           </Button>
         ]}
       >
-        <DragDrop onDrop={onDrop}>
-          <Grid>
-            <GridItem span={6} rowSpan={3}>
-              <Title headingLevel="h2" size="lg">Coaches</Title>
-              <Droppable droppableId={0}>
-                <List isPlain className="coach_available">
-                {!coachLoading && coachData.map((coach => (
-                  <Draggable key={"coach_" + coach.id}>
-                    <ListItem><span id={coach.id}>{coach.name}</span></ListItem>
-                  </Draggable>
-                )))}
-                </List>
-              </Droppable>
-            </GridItem>
-            <GridItem span={6} rowSpan={1}>
-              <Title headingLevel="h2" size="lg">Head Coach</Title>
-              <Droppable droppableId={1}>
-                <List isPlain className="coach_list">
-                <Draggable key={"headcoach_" + destHeadCoach.id}>
-                <ListItem><span id={destHeadCoach.id}>{destHeadCoach.name}</span></ListItem>
-                  </Draggable>
-                </List>
-              </Droppable>
-            </GridItem>
-            <GridItem span={6} rowSpan={1}>
-              <Title headingLevel="h2" size="lg">Assistant Coach 1</Title>
-              <Droppable droppableId={2}>
-                <List isPlain className="coach_list">
-                  <Draggable>
-                  <ListItem><span id={destAssistantCoach1.id}>{destAssistantCoach1.name}</span></ListItem>
-                  </Draggable>
-                </List>
-              </Droppable>
-            </GridItem>
-            <GridItem span={6} rowSpan={1}>
-              <Title headingLevel="h2" size="lg">Assistant Coach 2</Title>
-              <Droppable droppableId={3}>
-                <List isPlain className="coach_list">
-                  <Draggable>
-                  <ListItem><span id={destAssistantCoach2.id}>{destAssistantCoach2.name}</span></ListItem>
-                  </Draggable>
-                </List>
-              </Droppable>
-            </GridItem>
-          </Grid>
-          </DragDrop>
+        <Form id="add-team-form">
+          <FormGroup
+            label="Coach Type"
+            labelIcon={
+            <Popover
+               headerContent={
+                 <div>Is this Coach the Head Coach, Assistant Coach 1, or Assistant Coach 2?</div>
+               }
+               bodyContent={
+                 <div>Select a coach type (Head Coach is the default Coach type)</div>
+               }
+            >
+            <button
+              type="button"
+              aria-label="More info for the coach type field"
+              onClick={e => e.preventDefault()}
+              aria-describedby="add-coach-type"
+              className="pf-c-form__group-label-help"
+            >
+              <HelpIcon noVerticalAlign />
+            </button>
+            </Popover>
+            }
+            fieldId="add-coach-type">
+              <Radio
+                isChecked={isHeadCoachChecked}
+                id="coachType"
+                name="coachType"
+                onChange={onHeadCoachChange}
+                label="Head Coach"
+                value="headcoach"
+              >
+              </Radio>
+              <Radio
+                isChecked={isAssistant1Checked}
+                id="coachType"
+                name="coachType"
+                onChange={onAssistant1Change}
+                label="Assistant Coach 1"
+                value="assistant1"
+              >
+              </Radio>
+              <Radio
+                isChecked={isAssistant2Checked}
+                id="coachType"
+                name="coachType"
+                onChange={onAssistant2Change}
+                label="Assistant Coach 2"
+                value="assistant2"
+              >
+              </Radio>
+          </FormGroup>
+          <FormGroup
+            label="Available Coaches"
+            labelIcon={
+            <Popover
+               headerContent={
+                 <div>Available Coaches</div>
+               }
+               bodyContent={
+                 <div>Select a coach</div>
+               }
+            >
+            <button
+              type="button"
+              aria-label="More info for the select coach field"
+              onClick={e => e.preventDefault()}
+              aria-describedby="add-coach-select"
+              className="pf-c-form__group-label-help"
+            >
+              <HelpIcon noVerticalAlign />
+            </button>
+            </Popover>
+            }
+            fieldId="add-coach-select">
+            <Select
+              variant={SelectVariant.single}
+              aria-label="Select Coach"
+              onToggle={onCoachToggle}
+              onSelect={onCoachSelect}
+              selections={coachSelections}
+              isOpen={isCoachSelectOpen}
+              menuAppendTo={() => document.body}
+            >
+              {coachSelections}
+            </Select>
+          </FormGroup>
+        </Form>
       </Modal>
 
       <AdminTeamModal setTeamAdded={setTeamAdded} addSuccessAlert={addSuccessAlert} addFailureAlert={addFailureAlert}  />

@@ -32,7 +32,7 @@ class AdminTeamModal extends React.Component{
         teamTravel: false,
         teamType: "rec",
         division: "",
-        url: "http://db.hdevine.org/db/AddRecTeam.php",
+        url: "http://softball-pi4/db/AddRecTeam.php",
         alerts: []
       };
 
@@ -110,7 +110,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
       this.setState({ division: "" });
-      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
+      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
     };
 
     this.handleTeamCancel = () => {
@@ -123,7 +123,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
       this.setState({ division: "" });
-      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
+      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
     };
 
     async function updateDatabase (url = '', data = {}) {
@@ -176,13 +176,13 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamTravel: false });
       this.setState({ teamRec: true });
       this.setState({ teamType: "rec" })
-      this.setState({ url: "http://db.hdevine.org/db/AddRecTeam.php" });
+      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
     };
     this.onTeamTravelChange = (_, event) => {
       this.setState({ teamTravel: true });
       this.setState({ teamRec: false });
       this.setState({ teamType: "travel" }); 
-      this.setState({ url: "http://db.hdevine.org/db/AddTravelTeam.php" });
+      this.setState({ url: "http://softball-pi4/db/AddTravelTeam.php" });
     };
           
   }

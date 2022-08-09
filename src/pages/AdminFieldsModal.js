@@ -67,7 +67,7 @@ class AdminFieldsModal extends React.Component{
       }));
       /* Add Field to database...*/
       let data = Array(this.state.fieldNum, this.state.fieldStatus, this.state.fieldReason);
-      updateDatabase('http://db.hdevine.org/db/AddField.php', { data })
+      updateDatabase('http://softball-pi4/db/AddField.php', { data })
       .then(data => {
         if (data.message === "Error in creating field") {
           this.addFailureAlert();

@@ -64,7 +64,7 @@ const BoardMinutes = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Board Meetings
-    fetch(`http://db.hdevine.org/db/GetBoardMeetings.php`)
+    fetch(`http://softball-pi4/db/GetBoardMeetings.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);
@@ -77,7 +77,7 @@ const BoardMinutes = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetch(`http://db.hdevine.org/db/GetBoardMinutes.php`)
+    fetch(`http://softball-pi4/db/GetBoardMinutes.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);

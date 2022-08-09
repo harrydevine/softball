@@ -54,7 +54,7 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   const updateBoardInfo = (id) => {
     let updateArray = Array(id, editedName, editedTitle, editedPhone, editedEmail);
     console.log(updateArray);
-    updateDatabase('http://db.hdevine.org/db/UpdateBoardMember.php', { updateArray })      
+    updateDatabase('http://softball-pi4/db/UpdateBoardMember.php', { updateArray })      
     .then(data => {
       if (data.message === "Board Member updated successfully") {
         addSuccessAlert("Board Member updated successfully");
@@ -71,7 +71,7 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   const removeBoardInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://db.hdevine.org/db/DeleteBoardMember.php', { delID })
+      updateDatabase('http://softball-pi4/db/DeleteBoardMember.php', { delID })
       .then(data => {
         if (data.message === "Board Member deleted successfully") {
           addSuccessAlert("Board Member deleted successfully");

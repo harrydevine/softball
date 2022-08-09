@@ -28,7 +28,7 @@ const BoardMembers = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Board Members
-  fetch(`http://db.hdevine.org/db/GetBoardMembers.php`)
+  fetch(`http://softball-pi4/db/GetBoardMembers.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setBoardData(jsonResponse);

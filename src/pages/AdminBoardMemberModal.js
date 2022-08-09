@@ -75,7 +75,7 @@ class AdminBoardMemberModal extends React.Component{
           }));
         /* Add Board Member to database...*/
         let data = Array(this.state.name, this.state.position, this.state.phone, this.state.email);
-        updateDatabase('http://db.hdevine.org/db/AddBoardMember.php', { data })
+        updateDatabase('http://softball-pi4/db/AddBoardMember.php', { data })
         .then(data => {
           if (data.message === "Board Member created successfully") {
             this.props.setBoardMemberAdded(true);

@@ -30,7 +30,7 @@ const Tournaments = ({ children }) => {
 
   useEffect(() => {
     // Fetch Tournament
-    fetch(`http://db.hdevine.org/db/GetTournaments.php`)
+    fetch(`http://softball-pi4/db/GetTournaments.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTournamentData(jsonResponse);

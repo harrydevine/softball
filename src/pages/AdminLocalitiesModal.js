@@ -62,7 +62,7 @@ class AdminLocalitiesModal extends React.Component{
 
       /* Add Locality to database...*/
       let data = Array(this.state.name, this.state.street, this.state.city, this.state.usstate, this.state.zip, this.state.lat, this.state.lng, this.state.description);
-      updateDatabase('http://db.hdevine.org/db/AddLocality.php', { data })
+      updateDatabase('http://softball-pi4/db/AddLocality.php', { data })
       .then(data => {
         if (data.message === "Locality created successfully") {
           this.props.setLocalityAdded(true);

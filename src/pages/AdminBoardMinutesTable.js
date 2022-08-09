@@ -60,7 +60,7 @@ const AdminBoardMinutesTable = ({ children }) => {
   }, [boardMinutesAdded]);
   
   const fetchMinutes = () => {
-    fetch(`http://db.hdevine.org/db/GetBoardMinutes.php`)
+    fetch(`http://softball-pi4/db/GetBoardMinutes.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMinutesData(jsonResponse);

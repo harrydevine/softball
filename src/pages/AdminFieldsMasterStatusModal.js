@@ -66,7 +66,7 @@ class AdminFieldsMasterStatusModal extends React.Component{
       }));
       /* Update All Fields */
       let data = Array(this.state.fieldStatus, this.state.fieldReason);
-      updateDatabase('http://db.hdevine.org/db/UpdateAllFields.php', { data })
+      updateDatabase('http://softball-pi4/db/UpdateAllFields.php', { data })
       .then(data => {
         if (data.message === "Error in updating all fields") {
           this.addFailureAlert();
