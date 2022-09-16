@@ -71,7 +71,8 @@ export const columnNames = {
 export const coachColumnNames = {
   coachName: 'Name',
   coachPhone: 'Phone Number',
-  coachEmail: 'Email Address'
+  coachEmail: 'Email Address',
+  coachTitle: 'Title'
 };
 
 //class AdminTeams extends React.Component {
@@ -104,16 +105,22 @@ const AdminTeams = ({ children, ...props }) => {
   const [destAssistantCoach2, setDestAssistantCoach2] = React.useState([]);
   const [activeSortIndex, setActiveSortIndex] = React.useState(0); 
   const [activeSortDirection, setActiveSortDirection] = React.useState('asc');
+  const [activeCoachSortIndex, setActiveCoachSortIndex] = React.useState(0); 
+  const [activeCoachSortDirection, setActiveCoachSortDirection] = React.useState('asc');
   const [availablePlayersState, setAvailablePlayersState] = React.useState([]);
   const [chosenPlayersState, setChosenPlayersState] = React.useState([]);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
   const [isCoachSelectOpen, setCoachOpen] = React.useState(false);
-  const [coachSelected, setCoach] = React.useState("");
-  const [localCoachData, setLocalCoachData] = React.useState(coachData);
+  const [coachSelected, setCoachSelected] = React.useState(null);
   const [coachSelections, setCoachSelections] = React.useState([]);
-  const getSortableRowValues = players => {
+  const [coachName, setCoachName] = React.useState("");
+  const getSortablePlayerRowValues = players => {
     const {playerName, playerNumber} = players;
     return [playerName, playerNumber];
+  };
+  const getSortableCoachRowValues = coach => {
+    const {name, phone, email, title} = coach;
+    return [name, phone, email, title];
   };
 
   const availablePlayersActions = [
@@ -176,15 +183,13 @@ const AdminTeams = ({ children, ...props }) => {
   }
 
   const handleAddCoachToTeam = (id, level, name) => {
-//    console.log("Add Coach To Team logic");
-//    console.log(coachData);
     setTeamId(id);
     setTeamName(name);
     setDivision(level);
-    console.log(coachSelected);
-//    fetchCoach();
-//    setAvailableCoach(coachData);
     setAddCoachDlgOpen(true);
+    setHeadCoachChecked(true);
+    setAssistant1Checked(false);
+    setAssistant2Checked(false);
   }
 
   const handleRemoveTeam = (id, name) => {
@@ -209,27 +214,20 @@ const AdminTeams = ({ children, ...props }) => {
 
   const handleAddCoachModalOK = () => {
     setAddCoachDlgOpen(false);
-    console.log(coachSelected);
-
-    // Remove any coach identified above from the available coach list
-//    let hcIndex = availableCoach.indexOf(destHeadCoach.name);
-//    let a1Index = availableCoach.indexOf(destAssistantCoach1.name);
-//    let a2Index = availableCoach.indexOf(destAssistantCoach2.name);
-//    console.log(hcIndex, destHeadCoach, a1Index, destAssistantCoach1, destAssistantCoach2, a2Index);
-
-//    availableCoach.splice(hcIndex, 1);
-//    availableCoach.splice(a1Index, 1);
-//    availableCoach.splice(a2Index, 1);    
-
+    let field = "";
+    if (isHeadCoachChecked)
+      field = "headcoach";
+    if (isAssistant1Checked)
+      field = "assistantcoach1";
+    if (isAssistant2Checked)
+      field = "assistantcoach2";
+    addCoach(coachSelected, teamId, field);
+    setCoachSelected(null);
   }
 
   const handleAddCoachModalCancel = () => {
     setAddCoachDlgOpen(false);
-//    fetchCoach();
-//    setAvailableCoach(coachData);
-//    setDestHeadCoach([]);
-//    setDestAssistantCoach1([]);
-//    setDestAssistantCoach2([]);
+    setCoachSelected(null);
   }
 
   async function updateDatabase (url = '', data = {}) {
@@ -252,6 +250,22 @@ const AdminTeams = ({ children, ...props }) => {
         addFailureAlert(name + " unsuccessfully added to " + teamName);
         fetchPlayers();
         console.log("Error adding " + name + " to " + teamName);
+      }
+    });
+  }
+
+  const addCoach = (id, teamId, field) => {
+    let data = Array(id, teamId, field);
+    updateDatabase('http://softball-pi4/db/AddCoachToTeam.php', { data })      
+    .then(data => {
+      if (data.message === "Coach added to team successfully") {
+        addSuccessAlert(coachName + " added to " + teamName + " successfully");
+        fetchPlayers();
+      }
+      else {
+        addFailureAlert(coachName + " unsuccessfully added to " + teamName);
+        fetchPlayers();
+        console.log("Error adding Coach to " + teamName);
       }
     });
   }
@@ -332,8 +346,8 @@ const AdminTeams = ({ children, ...props }) => {
     let sortedPlayers = playerData;
     if (sortedPlayers !== null) {
       sortedPlayers = playerData.sort((a, b) => {
-        const aValue = getSortableRowValues(a)[activeSortIndex];
-        const bValue = getSortableRowValues(b)[activeSortIndex];
+        const aValue = getSortablePlayerRowValues(a)[activeSortIndex];
+        const bValue = getSortablePlayerRowValues(b)[activeSortIndex];
         if ((aValue === null) || (bValue === null)) {
           return 0;
         }
@@ -352,14 +366,52 @@ const AdminTeams = ({ children, ...props }) => {
     }
   }
 
+  if (coachData?.length > 0) {
+    let sortedCoach = coachData;
+    if (sortedCoach !== null) {
+      sortedCoach = coachData.sort((a, b) => {
+        const aValue = getSortableCoachRowValues(a)[activeCoachSortIndex];
+        const bValue = getSortableCoachRowValues(b)[activeCoachSortIndex];
+        if ((aValue === null) || (bValue === null) ) {
+          return 0;
+        }
+        if (typeof aValue === 'number') {
+          if (activeCoachSortDirection === 'asc') {
+            return aValue - bValue;
+          }
+          return bValue - aValue;
+        } else {
+          if (activeCoachSortDirection === 'asc') {
+            return aValue.localeCompare(bValue);
+          }
+          return bValue.localeCompare(aValue);
+        }
+      });
+    }
+  }
+
   const getSortParams = columnIndex => ({
     sortBy: {
       index: activeSortIndex,
       direction: activeSortDirection
     },
     onSort: (_event, index, direction) => {
+      console.log(index, direction, columnIndex);
       setActiveSortIndex(index);
       setActiveSortDirection(direction);
+    },
+    columnIndex
+  });
+
+  const getCoachSortParams = columnIndex => ({
+    sortBy: {
+      index: activeCoachSortIndex,
+      direction: activeCoachSortDirection
+    },
+    onSort: (_event, index, direction) => {
+      console.log(index, direction, columnIndex);
+      setActiveCoachSortIndex(index);
+      setActiveCoachSortDirection(direction);
     },
     columnIndex
   });
@@ -371,87 +423,21 @@ const AdminTeams = ({ children, ...props }) => {
   }, [teamAdded]);
 
   useEffect(() => {
-//    setLocalCoachData(coachData);
-    console.log(localCoachData);
     fetchRecTeams();
     fetchTravelTeams();
     fetchPlayers();
-//    fetchCoach();
-//    setAvailableCoach(coachData);
+    fetchCoach();
     // Set up the Available Coaches selection array
-//    let coachesArray = Array();
-//    coachesArray.push(<SelectOption key={0} value={0} isPlaceholder>Select a coach</SelectOption>);
-//    if (coachData?.length > 0) {
-//      coachData.map((coach) => {
-//        coachesArray.push(<SelectOption key={coach.id} value={coach.id}>{coach.name}</SelectOption>);
-  //        console.log(coachesArray);
-//      });
-//    }
-//    else {
-//      coachesArray.push(<DropdownItem value="test">HDevine-Test</DropdownItem>);
-//    }
-//    console.log(coachesArray);
-//    setCoachSelections(coachesArray);
-  
-  }, []);
-
-/*
-  function adjustAvailableCoachList(item, type, index) {
-    console.log(item, type, index);
-    availableCoach.splice(index, 1);
-    switch (type) {
-      case "headcoach":
-//        setDestHeadCoach("<span id=" + item.id + ">" + item.name);
-        setDestHeadCoach(item);
-        break;
-      case "assistant1":
-        setDestAssistantCoach1(item);
-        break;
-      case "assistant2":
-        setDestAssistantCoach2(item);
-        break;
+    let coachesArray = Array();
+    coachesArray.push(<SelectOption key={0} value="Select a coach" isPlaceholder />);
+    if (coachData?.length > 0) {
+      coachData.map((coach) => {
+        coachesArray.push(<SelectOption key={coach.id} value={coach.id}>{coach.name}</SelectOption>);
+      });
     }
-  }
-*/
-/*
-  useEffect(() => {
-    if (isAddCoachDlgOpen) {
-      // Determine head coach for the selected team
-      teamData.filter(function (data) {
-          return data.id === teamId;
-        })
-      .map((team => (
-        coachData.filter(function (data) {
-          return data.id === team.headcoach;
-        })
-      .map(( headcoach => ( adjustAvailableCoachList(headcoach, "headcoach", availableCoach.indexOf(headcoach))))))))
+    setCoachSelections(coachesArray); 
+  }, [coachData]);
 
-      // Determine assistant coach 1 for the selected team
-      teamData.filter(function (data) {
-        return data.id === teamId;
-      })
-    .map((team => (
-      coachData.filter(function (data) {
-        return data.id === team.assistantcoach1;
-      })
-    .map(( coach1 => (
-      setDestAssistantCoach1(coach1)
-    ))))))
-
-    // Determine assistant coach 2 for the selected team
-    teamData.filter(function (data) {
-      return data.id === teamId;
-    })
-    .map((team => (
-      coachData.filter(function (data) {
-        return data.id === team.assistantcoach2;
-      })
-    .map(( coach2 => (
-      setDestAssistantCoach2(coach2)
-    ))))))
-  }
-  }, [isAddCoachDlgOpen]);
-*/
   const fetchRecTeams = () => {
     // Fetch data for Rec Teams
     fetch(`http://softball-pi4/db/GetRecTeams.php`)
@@ -524,7 +510,6 @@ const AdminTeams = ({ children, ...props }) => {
     destClone.splice(destIndex, 0, removed);
     switch (type){
       case "headcoach":
-        console.log(destClone);
         setDestHeadCoach(destClone);
         break;
       case "assistant1":
@@ -594,18 +579,18 @@ const AdminTeams = ({ children, ...props }) => {
   };
 
   const onCoachToggle = isCoachSelectOpen => {
-    console.log(isCoachSelectOpen);
     setCoachOpen(isCoachSelectOpen);
   };
 
   const onCoachSelect = (event, selection, isPlaceholder) => {
-//    console.log(event, selection, isPlaceholder);
     if (isPlaceholder){
-      setCoach(null);
+      setCoachSelected(null);
       setCoachOpen(false);
+      setCoachName("");
     }
     setCoachOpen(false);
-    setCoach(selection);
+    setCoachSelected(selection);
+    setCoachName(event.target.innerText);
   };
 
   return (
@@ -750,8 +735,9 @@ const AdminTeams = ({ children, ...props }) => {
               aria-label="Select Coach"
               onToggle={onCoachToggle}
               onSelect={onCoachSelect}
-              selections={coachSelections}
+              selections={coachSelected}
               isOpen={isCoachSelectOpen}
+              direction={SelectDirection.down}
               menuAppendTo={() => document.body}
             >
               {coachSelections}
@@ -818,15 +804,18 @@ const AdminTeams = ({ children, ...props }) => {
                 <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                     <Thead>
                       <Tr>
-                        <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                        <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                        <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                        <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                        <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                        <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                        <Th>{coachColumnNames.coachTitle}</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
                       {!coachLoading && coachData
                       .filter(function (data) {
-                        return data.teamId === row.id;
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
                       })
                       .map((coach => (
                         <CoachTeamEditTableRow
@@ -834,6 +823,10 @@ const AdminTeams = ({ children, ...props }) => {
                           currentRow={coach}
                           division="6U"
                           teamName={row.teamName}
+                          teamId={row.id}
+                          headcoach={row.headcoach}
+                          assistant1={row.assistantcoach1}
+                          assistant2={row.assistantcoach2}
                           fetchCoach={fetchCoach}
                           addSuccessAlert={addSuccessAlert} 
                           addFailureAlert={addFailureAlert}
@@ -920,15 +913,18 @@ const AdminTeams = ({ children, ...props }) => {
                 <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                     <Thead>
                       <Tr>
-                        <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                        <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                        <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                        <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                        <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                        <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                        <Th>{coachColumnNames.coachTitle}</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
                       {!coachLoading && coachData
                       .filter(function (data) {
-                        return data.teamId === row.id;
+                        return ( (data.id === row.headcoach) ||
+                                 (data.id === row.assistantcoach1) ||
+                                 (data.id === row.assistantcoach2) );
                       })
                       .map((coach => (
                         <CoachTeamEditTableRow
@@ -936,6 +932,10 @@ const AdminTeams = ({ children, ...props }) => {
                           currentRow={coach}
                           division="8U"
                           teamName={row.teamName}
+                          teamId={row.id}
+                          headcoach={row.headcoach}
+                          assistant1={row.assistantcoach1}
+                          assistant2={row.assistantcoach2}
                           fetchCoach={fetchCoach}
                           addSuccessAlert={addSuccessAlert} 
                           addFailureAlert={addFailureAlert}
@@ -1019,12 +1019,13 @@ const AdminTeams = ({ children, ...props }) => {
                   </CardHeader>
                   <CardBody>
                     <Title headingLevel="h2" size="lg">Coaching Staff</Title>
-                    <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
+                    <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table" isStriped>
                         <Thead>
                           <Tr>
-                            <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                            <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                            <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                            <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                            <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                            <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                            <Th>{coachColumnNames.coachTitle}</Th>
                           </Tr>
                         </Thead>
                         <Tbody>
@@ -1040,6 +1041,10 @@ const AdminTeams = ({ children, ...props }) => {
                               currentRow={coach}
                               division="10U"
                               teamName={row.teamName}
+                              teamId={row.id}
+                              headcoach={row.headcoach}
+                              assistant1={row.assistantcoach1}
+                              assistant2={row.assistantcoach2}
                               fetchCoach={fetchCoach}
                               addSuccessAlert={addSuccessAlert} 
                               addFailureAlert={addFailureAlert}
@@ -1050,7 +1055,7 @@ const AdminTeams = ({ children, ...props }) => {
                     <Text component="br" />
                     <Text component="br" />
                     <Title headingLevel="h2" size="lg">Roster</Title>
-                    <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table">
+                    <TableComposable variant={TableVariant.default} aria-label="roster+{row.teamName}+table" isStriped>
                       <Thead>
                         <Tr>
                           <Th sort={getSortParams(0)}>{columnNames.playerName}</Th>
@@ -1126,15 +1131,18 @@ const AdminTeams = ({ children, ...props }) => {
                         <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                             <Thead>
                               <Tr>
-                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th>{coachColumnNames.coachTitle}</Th>
                               </Tr>
                             </Thead>
                             <Tbody>
                               {!coachLoading && coachData
                               .filter(function (data) {
-                                return data.teamId === row.id;
+                                return ( (data.id === row.headcoach) ||
+                                         (data.id === row.assistantcoach1) ||
+                                         (data.id === row.assistantcoach2) );
                               })
                               .map((coach => (
                                 <CoachTeamEditTableRow
@@ -1142,6 +1150,10 @@ const AdminTeams = ({ children, ...props }) => {
                                   currentRow={coach}
                                   division="12U"
                                   teamName={row.teamName}
+                                  teamId={row.id}
+                                  headcoach={row.headcoach}
+                                  assistant1={row.assistantcoach1}
+                                  assistant2={row.assistantcoach2}
                                   fetchCoach={fetchCoach}
                                   addSuccessAlert={addSuccessAlert} 
                                   addFailureAlert={addFailureAlert}
@@ -1228,15 +1240,18 @@ const AdminTeams = ({ children, ...props }) => {
                         <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                             <Thead>
                               <Tr>
-                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th>{coachColumnNames.coachTitle}</Th>
                               </Tr>
                             </Thead>
                             <Tbody>
                               {!coachLoading && coachData
                               .filter(function (data) {
-                                return data.teamId === row.id;
+                                return ( (data.id === row.headcoach) ||
+                                         (data.id === row.assistantcoach1) ||
+                                         (data.id === row.assistantcoach2) );
                               })
                               .map((coach => (
                                 <CoachTeamEditTableRow
@@ -1244,6 +1259,10 @@ const AdminTeams = ({ children, ...props }) => {
                                   currentRow={coach}
                                   division="14U"
                                   teamName={row.teamName}
+                                  teamId={row.id}
+                                  headcoach={row.headcoach}
+                                  assistant1={row.assistantcoach1}
+                                  assistant2={row.assistantcoach2}
                                   fetchCoach={fetchCoach}
                                   addSuccessAlert={addSuccessAlert} 
                                   addFailureAlert={addFailureAlert}
@@ -1330,15 +1349,18 @@ const AdminTeams = ({ children, ...props }) => {
                         <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                             <Thead>
                               <Tr>
-                                <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                                <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                                <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                                <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                                <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                                <Th>{coachColumnNames.coachTitle}</Th>
                               </Tr>
                             </Thead>
                             <Tbody>
                               {!coachLoading && coachData
                               .filter(function (data) {
-                                return data.teamId === row.id;
+                                return ( (data.id === row.headcoach) ||
+                                         (data.id === row.assistantcoach1) ||
+                                         (data.id === row.assistantcoach2) );
                               })
                               .map((coach => (
                                 <CoachTeamEditTableRow
@@ -1346,6 +1368,10 @@ const AdminTeams = ({ children, ...props }) => {
                                   currentRow={coach}
                                   division="16U"
                                   teamName={row.teamName}
+                                  teamId={row.id}
+                                  headcoach={row.headcoach}
+                                  assistant1={row.assistantcoach1}
+                                  assistant2={row.assistantcoach2}
                                   fetchCoach={fetchCoach}
                                   addSuccessAlert={addSuccessAlert} 
                                   addFailureAlert={addFailureAlert}
@@ -1428,15 +1454,18 @@ const AdminTeams = ({ children, ...props }) => {
                   <TableComposable variant={TableVariant.default} aria-label="coach+{row.teamName}+table">
                       <Thead>
                         <Tr>
-                          <Th sort={getSortParams(0)}>{coachColumnNames.coachName}</Th>
-                          <Th sort={getSortParams(1)}>{coachColumnNames.coachPhone}</Th>
-                          <Th sort={getSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                          <Th sort={getCoachSortParams(0)}>{coachColumnNames.coachName}</Th>
+                          <Th sort={getCoachSortParams(1)}>{coachColumnNames.coachPhone}</Th>
+                          <Th sort={getCoachSortParams(2)}>{coachColumnNames.coachEmail}</Th>
+                          <Th>{coachColumnNames.coachTitle}</Th>
                         </Tr>
                       </Thead>
                       <Tbody>
                         {!coachLoading && coachData
                         .filter(function (data) {
-                          return data.teamId === row.id;
+                          return ( (data.id === row.headcoach) ||
+                                   (data.id === row.assistantcoach1) ||
+                                   (data.id === row.assistantcoach2) );
                         })
                         .map((coach => (
                           <CoachTeamEditTableRow
@@ -1444,6 +1473,10 @@ const AdminTeams = ({ children, ...props }) => {
                             currentRow={coach}
                             division="10U"
                             teamName={row.teamName}
+                            teamId={row.id}
+                            headcoach={row.headcoach}
+                            assistant1={row.assistantcoach1}
+                            assistant2={row.assistantcoach2}
                             fetchCoach={fetchCoach}
                             addSuccessAlert={addSuccessAlert} 
                             addFailureAlert={addFailureAlert}

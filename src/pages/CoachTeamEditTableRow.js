@@ -9,8 +9,11 @@ import {
   SelectDirection,
   SelectOption,
   SelectVariant,
-  TextInput
+  Text,
+  TextInput,
+  TextVariants
 } from '@patternfly/react-core';
+import { useEffect } from 'react';
 import { Tr, Td } from '@patternfly/react-table';
 import { columnNames } from './AdminCoachTable';
 import ConfirmDialog from './ConfirmDialog';
@@ -21,48 +24,23 @@ import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
 const CoachTeamEditTableRow = ({ children, ...props }) => {
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const {key, currentRow, division, teamName, fetchCoach, addSuccessAlert, addFailureAlert } = props;
+  const {key, currentRow, division, teamName, teamId, headcoach, assistant1, assistant2, fetchCoach, addSuccessAlert, addFailureAlert } = props;
   const [editedName, setEditedName] = React.useState(currentRow.name);
   const [editedPhone, setEditedPhone] = React.useState(currentRow.phone);
   const [editedEmail, setEditedEmail] = React.useState(currentRow.email);
   const [isConfirmDlgOpen, setConfirmDlgOpen] = React.useState(false);
 
-  async function updateCoachInDatabase (url = '', data = {}) {
+  async function updateDatabase (url = '', data = {}) {
     const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  };
-
-  async function removeCoachFromTeam  (url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'PUT',
-      mode: 'cors',
-      cache: 'no-cache',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
+      method: 'POST',
       body: JSON.stringify(data)
     });
     return response.json();
   };
 
   const updateCoach = (id) => {
-    updateCoachInDatabase('http://softball-pi4:8081/coach/'+ id, { name: editedName, phone: editedPhone, email: editedEmail })      
+    let updateArray = Array(id, editedName, editedPhone, editedEmail);
+     updateDatabase('http://softball-pi4/db/UpdateCoach.php', { updateArray })      
     .then(data => {
       if (data.message === "Coach updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -77,19 +55,31 @@ const CoachTeamEditTableRow = ({ children, ...props }) => {
   }
 
   const removeFromTeam = async (id) => {
-      setIsEditMode(false);
-      removeCoachFromTeam('http://softball-pi4:8081/coach/resetTeam/'+ id, {})
-      .then(data => {
-        if (data.message === "Coach/Team assignment reset successfully") {
-          addSuccessAlert(editedName + " removed from " + teamName + " successfully");
-          fetchCoach();
-        }
-        else {
-          addFailureAlert(editedName + " removal unsuccessful");
-          fetchCoach();
-          console.log("Error removing " + editedName + "from " + teamName);
-        }
-      });
+    setIsEditMode(false);
+    let field = "";
+    if (currentRow.id === headcoach) {
+      field = "headcoach";
+    }
+    if (currentRow.id === assistant1) {
+      field = "assistantcoach1";
+    }
+    if (currentRow.id === assistant2) {
+      field = "assistantcoach2";
+    }
+    let updateArray = Array(id, teamId, field);
+    console.log(updateArray);
+    updateDatabase('http://softball-pi4/db/DeleteCoachFromTeam.php', { updateArray })
+    .then(data => {
+      if (data.message === "Coach removed from team successfully") {
+        addSuccessAlert(editedName + " removed from " + teamName + " successfully");
+        fetchCoach();
+      }
+      else {
+        addFailureAlert(editedName + " removal unsuccessful");
+        fetchCoach();
+        console.log("Error removing " + editedName + " from " + teamName);
+      }
+    });
   }
 
   const handleYes = () => {
@@ -143,6 +133,17 @@ const CoachTeamEditTableRow = ({ children, ...props }) => {
           ) : (
             editedEmail
           )}
+        </Td>
+        <Td dataLabel={columnNames.coachTitle}>
+        {(currentRow?.id === headcoach) && (
+          <Text component={TextVariants.h6}>Head Coach</Text>
+        )}
+        {(currentRow?.id === assistant1) && (
+          <Text component={TextVariants.h6}>First Assistant Coach</Text>
+        )}
+        {(currentRow?.id === assistant2) && (
+          <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+        )}
         </Td>
         <Td modifier="nowrap">
           {!isEditMode ? (

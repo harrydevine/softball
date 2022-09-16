@@ -138,7 +138,7 @@ const AdminPlayersTable = ({ children, ...props }) => {
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
-      <TableComposable variant={TableVariant.default}  aria-label="Players Table">
+      <TableComposable variant={TableVariant.default}  aria-label="Players Table" isStriped>
         <Caption>EHT Softball - Players</Caption>
         <Thead>
        <Tr>

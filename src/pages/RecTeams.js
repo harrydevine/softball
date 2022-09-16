@@ -20,6 +20,7 @@ import {
   TabContent,
   TabTitleText,
   Text,
+  TextVariants,
   Title
 } from '@patternfly/react-core';
 import { Thead, TableComposable, TableVariant, Tr, Th, Tbody, Td} from '@patternfly/react-table';
@@ -168,9 +169,10 @@ const RecTeams = ({ children }) => {
                     <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -185,6 +187,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>
@@ -251,9 +264,10 @@ const RecTeams = ({ children }) => {
                         <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -268,6 +282,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>
@@ -334,9 +359,10 @@ const RecTeams = ({ children }) => {
                     <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -351,6 +377,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>
@@ -417,9 +454,10 @@ const RecTeams = ({ children }) => {
                         <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -434,6 +472,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>
@@ -498,11 +547,12 @@ const RecTeams = ({ children }) => {
                         <CardBody>
                         <Title headingLevel="h2" size="lg">Coaching Staff</Title>
                         <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
-                    <Thead>
+                      <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -517,6 +567,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>
@@ -583,9 +644,10 @@ const RecTeams = ({ children }) => {
                         <TableComposable variant={TableVariant.default} aria-label={`coachesr${row.teamName}table`}>
                     <Thead>
                       <Tr>
-                        <Th width={50}>Coach</Th>
+                        <Th width={25}>Coach</Th>
                         <Th width={25}>Phone Number</Th>
                         <Th width={25}>Email Address</Th>
+                        <Th width={25}>Title</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -600,6 +662,17 @@ const RecTeams = ({ children }) => {
                         <Td>{coach.name}</Td>
                         <Td>{coach.phone}</Td>
                         <Td>{coach.email}</Td>
+                        <Td>
+                          {(coach?.id === row.headcoach) && (
+                            <Text component={TextVariants.h6}>Head Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach1) && (
+                            <Text component={TextVariants.h6}>First Assistant Coach</Text>
+                          )}
+                          {(coach?.id === row.assistantcoach2) && (
+                            <Text component={TextVariants.h6}>Second Assistant Coach</Text>
+                          )}
+                        </Td>
                       </Tr>
                     )))}
                     </Tbody>

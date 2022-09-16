@@ -119,7 +119,7 @@ const AdminCoachTable = ({ children, ...props }) => {
       <Text component="br" />
       <Text component="br" />
       <Text component="hr" />
-      <TableComposable variant={TableVariant.default}  aria-label="Coaches Table">
+      <TableComposable variant={TableVariant.default}  aria-label="Coaches Table" isStriped>
         <Caption>EHT Softball - Coaches</Caption>
         <Thead>
        <Tr>

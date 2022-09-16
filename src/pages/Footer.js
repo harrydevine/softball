@@ -16,25 +16,22 @@ const Footer = () => {
       <ToolbarContent>
         <ToolbarGroup
           variant="icon-button-group"
-          alignment={{ default: 'alignLeft' }}
-          spacer={{ default: '2xl', md: 'spacerMd' }}>
-          <ToolbarItem space="2xl">
+          alignment={{ default: 'alignLeft' }}>
+          <ToolbarItem spacer={{ default: "spacerMd" }}>
             <a href="https://www.facebook.com/groups/1687563661460656" target="_blank"><FacebookSquareIcon />EHT Softball Facebook Page</a>
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup
           variant="icon-button-group"
-          alignment={{ default: 'alignRight' }}
-          spacer={{ default: '2xl', md: 'spacerMd' }}>
-          <ToolbarItem spacer="2xl">
+          alignment={{ default: 'alignRight' }}>
+          <ToolbarItem spacer={{ default: "spacerMd" }}>
             <Follow username="EHTSoftball" />
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup
           variant="icon-button-group"
-          alignment={{ default: 'alignRight' }}
-          spacer={{ default: '2xl', md: 'spacerMd' }}>
-          <ToolbarItem space="md">
+          alignment={{ default: 'alignRight' }}>
+          <ToolbarItem spacer={{ default: "spacerMd" }}>
             <YouTubeSubscribe
                 theme={"default"}
               layout={"full"}
