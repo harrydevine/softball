@@ -62,7 +62,7 @@ class AdminLocalitiesModal extends React.Component{
 
       /* Add Locality to database...*/
       let data = Array(this.state.name, this.state.street, this.state.city, this.state.usstate, this.state.zip, this.state.lat, this.state.lng, this.state.description);
-      updateDatabase('http://softball-pi4/db/AddLocality.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddLocality.php', { data })
       .then(data => {
         if (data.message === "Locality created successfully") {
           this.props.setLocalityAdded(true);
@@ -159,9 +159,10 @@ class AdminLocalitiesModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add New Locality"
+	  id="add-new-locality-modal"
           description="Adds a new locality to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleLocalityAdd}
+          onClose={this.handleLocalityCancel}
           actions={[
             <Button key="addLocality" variant="primary" form="add-player-form" onClick={this.handleLocalityAdd}>
               Add Locality

@@ -40,7 +40,7 @@ const CoachTeamEditTableRow = ({ children, ...props }) => {
 
   const updateCoach = (id) => {
     let updateArray = Array(id, editedName, editedPhone, editedEmail);
-     updateDatabase('http://softball-pi4/db/UpdateCoach.php', { updateArray })      
+     updateDatabase('https://harrydevine.org/db/UpdateCoach.php', { updateArray })      
     .then(data => {
       if (data.message === "Coach updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -68,7 +68,7 @@ const CoachTeamEditTableRow = ({ children, ...props }) => {
     }
     let updateArray = Array(id, teamId, field);
     console.log(updateArray);
-    updateDatabase('http://softball-pi4/db/DeleteCoachFromTeam.php', { updateArray })
+    updateDatabase('https://harrydevine.org/db/DeleteCoachFromTeam.php', { updateArray })
     .then(data => {
       if (data.message === "Coach removed from team successfully") {
         addSuccessAlert(editedName + " removed from " + teamName + " successfully");

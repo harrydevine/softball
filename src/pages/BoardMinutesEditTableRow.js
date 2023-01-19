@@ -29,7 +29,7 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
 
   const updateMinutesInfo = (id) => {
     let updateArray = Array(id, editedDate, editedMinutes);
-    updateDatabase('http://softball-pi4/db/UpdateBoardMinutes.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateBoardMinutes.php', { updateArray })      
     .then(data => {
       if (data.message === "Board Minutes info updated successfully") {
         addSuccessAlert("Board Minutes info updated successfully");
@@ -46,7 +46,7 @@ const BoardMinutesEditTableRow = ({ children, ...props }) => {
   const removeMinutesInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteBoardMinutes.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeleteBoardMinutes.php', { delID })
       .then(data => {
         if (data.message === "Board Minutes deleted successfully") {
           addSuccessAlert("Board Minutes for " + editedDate + " deleted successfully");

@@ -44,7 +44,7 @@ const TravelTeams = ({ children }) => {
 
   useEffect(() => {
   // Fetch data for Rec Teams
-    fetch(`http://softball-pi4/db/GetTravelTeams.php`)
+    fetch(`https://harrydevine.org/db/GetTravelTeams.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setTeamData(jsonResponse);
@@ -63,7 +63,7 @@ const TravelTeams = ({ children }) => {
       })
 
       // Fetch data for Players
-      fetch(`http://softball-pi4/db/GetPlayers.php`)
+      fetch(`https://harrydevine.org/db/GetPlayers.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setPlayerData(jsonResponse);
@@ -75,7 +75,7 @@ const TravelTeams = ({ children }) => {
       })
 
       // Fetch data for Coaches
-      fetch(`http://softball-pi4/db/GetCoaches.php`)
+      fetch(`https://harrydevine.org/db/GetCoaches.php`)
       .then(async resp => {
         const jsonResponse = await resp.json()
         setCoachData(jsonResponse);

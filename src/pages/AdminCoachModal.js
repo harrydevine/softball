@@ -63,7 +63,7 @@ class AdminCoachModal extends React.Component{
         }));
       let data = Array(this.state.name, this.state.phone, this.state.email);
       /* Add Coach to database...*/
-      updateDatabase('http://softball-pi4/db/AddCoach.php', { data })      
+      updateDatabase('https://harrydevine.org/db/AddCoach.php', { data })      
         .then(data => {
         if (data.message === "Coach created successfully") {
           this.props.setCoachAdded(true);
@@ -145,9 +145,10 @@ class AdminCoachModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add New Coach"
+          id="add-new-coach-modal"
           description="Adds a new coach to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleCoachAdd}
+          onClose={this.handleCoachCancel}
           actions={[
             <Button key="addCoach" variant="primary" form="add-coach-form" onClick={this.handleCoachAdd}>
               Add Coach

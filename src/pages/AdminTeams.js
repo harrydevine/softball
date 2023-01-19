@@ -240,7 +240,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const addPlayer = (id, teamId, name, teamName) => {
     let data = Array(id, teamId);
-    updateDatabase('http://softball-pi4/db/AddPlayerToTeam.php', { data })      
+    updateDatabase('https://harrydevine.org/db/AddPlayerToTeam.php', { data })      
     .then(data => {
       if (data.message === "Player/Team assignment updated successfully") {
         addSuccessAlert(name + " added to " + teamName + " successfully");
@@ -256,7 +256,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const addCoach = (id, teamId, field) => {
     let data = Array(id, teamId, field);
-    updateDatabase('http://softball-pi4/db/AddCoachToTeam.php', { data })      
+    updateDatabase('https://harrydevine.org/db/AddCoachToTeam.php', { data })      
     .then(data => {
       if (data.message === "Coach added to team successfully") {
         addSuccessAlert(coachName + " added to " + teamName + " successfully");
@@ -272,7 +272,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const removeFromTeam = async (id, playerName, team) => {
     let playerId = Array(id);
-      updateDatabase('http://softball-pi4/db/DeletePlayerFromTeam.php', { playerId })
+      updateDatabase('https://harrydevine.org/db/DeletePlayerFromTeam.php', { playerId })
       .then(data => {
         if (data.message === "Player/Team assignment reset successfully") {
           addSuccessAlert(playerName + " removed from " + team + " successfully");
@@ -288,7 +288,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const removeTeam = async (id, name) => {
     let delID = Array(id);
-    updateDatabase("http://softball-pi4/db/DeleteTeam.php", { delID })
+    updateDatabase("https://harrydevine.org/db/DeleteTeam.php", { delID })
     .then(data => {
       if ((data.message === "Error in deleting Team")) {
         addFailureAlert(teamName + " removal unsuccessful");
@@ -422,7 +422,7 @@ const AdminTeams = ({ children, ...props }) => {
     fetchPlayers();
   }, [teamAdded]);
 
-  useEffect(() => {
+/*  useEffect(() => {
     fetchRecTeams();
     fetchTravelTeams();
     fetchPlayers();
@@ -437,10 +437,11 @@ const AdminTeams = ({ children, ...props }) => {
     }
     setCoachSelections(coachesArray); 
   }, [coachData]);
+*/
 
   const fetchRecTeams = () => {
     // Fetch data for Rec Teams
-    fetch(`http://softball-pi4/db/GetRecTeams.php`)
+    fetch(`https://harrydevine.org/db/GetRecTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTeamData(jsonResponse);
@@ -454,7 +455,7 @@ const AdminTeams = ({ children, ...props }) => {
 
   const fetchTravelTeams = () => {
     // Fetch data for Travel Teams
-    fetch(`http://softball-pi4/db/GetTravelTeams.php`)
+    fetch(`https://harrydevine.org/db/GetTravelTeams.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setTravelData(jsonResponse);
@@ -739,6 +740,7 @@ const AdminTeams = ({ children, ...props }) => {
               isOpen={isCoachSelectOpen}
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"	  
             >
               {coachSelections}
             </Select>

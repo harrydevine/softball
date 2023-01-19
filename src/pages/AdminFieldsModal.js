@@ -67,7 +67,7 @@ class AdminFieldsModal extends React.Component{
       }));
       /* Add Field to database...*/
       let data = Array(this.state.fieldNum, this.state.fieldStatus, this.state.fieldReason);
-      updateDatabase('http://softball-pi4/db/AddField.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddField.php', { data })
       .then(data => {
         if (data.message === "Error in creating field") {
           this.addFailureAlert();
@@ -161,7 +161,7 @@ class AdminFieldsModal extends React.Component{
           title="Add New Field"
           description="Adds a new field to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleFieldAdd}
+          onClose={this.handleFieldCancel}
           actions={[
             <Button key="addField" variant="primary" form="add-field-form" onClick={this.handleFieldAdd}>
               Add Field
@@ -239,6 +239,7 @@ class AdminFieldsModal extends React.Component{
               aria-labelledby="select-field-status"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.statusDropdownItems }
             </Select>

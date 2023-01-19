@@ -34,8 +34,8 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for Latest News
-    fetch(`http://192.168.2.21/db/GetLatestNews.php`)
-//    fetch(`http://softball-pi4/db/GetLatestNews.php`)
+//      fetch(`http://softball-pi4/db/GetLatestNews.php`)
+    fetch(`https://harrydevine.org/db/GetLatestNews.php`)
 //    fetch(`http://harrydevine.org/db/GetLatestNews.php`)
     .then(async resp => { 
         const response = await resp.json();
@@ -46,8 +46,8 @@ const Dashboard = ({ children }) => {
 
   useEffect(() => {
     // Fetch data for next Board Meeting
-//    fetch(`http://localhost/db/GetNextBoardMeeting.php`)
-    fetch(`http://softball-pi4/db/GetNextBoardMeeting.php`)
+//    fetch(`http://softball-pi4/db/GetNextBoardMeeting.php`)
+    fetch(`https://harrydevine.org/db/GetNextBoardMeeting.php`)
 //    fetch(`http://harrydevine.org/db/GetNextBoardMeeting.php`)
     .then(async resp => {
       const response = await resp.json();
@@ -62,8 +62,8 @@ const Dashboard = ({ children }) => {
     
   useEffect(() => {
     // Fetch data for next Tournament
-//    fetch(`http://localhost/db/GetNextTournament.php`)
-    fetch(`http://softball-pi4/db/GetNextTournament.php`)
+//    fetch(`http://softball-pi4/db/GetNextTournament.php`)
+    fetch(`https://harrydevine.org/db/GetNextTournament.php`)
 //    fetch(`http://harrydevine.org/db/GetNextTournament.php`)
     .then(async resp => {
       const response = await resp.json();

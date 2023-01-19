@@ -64,7 +64,7 @@ class AdminBoardMeetingModal extends React.Component{
 
       /* Add Meeting to database...*/
       let data = Array(this.state.mtgDate, this.state.mtgTime);
-      updateDatabase('http://softball-pi4/db/AddBoardMeetings.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddBoardMeetings.php', { data })
       .then(data => {
         if (data.message === "Board Meeting created successfully") {
           this.props.setMeetingAdded(true);
@@ -132,11 +132,12 @@ class AdminBoardMeetingModal extends React.Component{
         </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Board Meeting</Button>{'  '}
         <Modal
+	  id="board-meeting-modal"
           variant={ModalVariant.medium}
           title="Add new Board Meeting"
           description="Adds a new Board Meeting"
           isOpen={isModalOpen}
-          onClose={this.handleMeetingAdd}
+          onClose={this.handleMeetingCancel}
           actions={[
             <Button key="addMeeting" variant="primary" form="add-mtg-form" onClick={this.handleMeetingAdd}>
               Add Meeting
@@ -177,6 +178,7 @@ class AdminBoardMeetingModal extends React.Component{
                 dateFormat={this.dateFormat}
                 dateParse={this.dateParse}
                 onChange={this.onDateChange}
+                appendTo={() => document.getElementById('board-meeting-modal')}
               />
           </FormGroup>
           <FormGroup
@@ -206,7 +208,6 @@ class AdminBoardMeetingModal extends React.Component{
                 time="4:00 PM"
                 placeholder="hh:mm"
                 onChange={this.onTimeChange}
-                menuAppendTo={() => document.body}
               />
           </FormGroup>
         </Form>

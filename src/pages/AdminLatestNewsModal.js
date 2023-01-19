@@ -58,7 +58,7 @@ class AdminLatestNewsModal extends React.Component{
 
       /* Add Latest News to database...*/
       let data = Array(this.state.title, this.state.body, this.state.image);
-      updateDatabase('http://softball-pi4/db/AddNewsItem.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddNewsItem.php', { data })
       .then(data => {
         if (data.message === "Error in creating Latest News info") {
           this.addFailureAlert();
@@ -133,9 +133,10 @@ class AdminLatestNewsModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add Latest News Item"
+	  id="add-latest-news-modal"
           description="Adds a news item to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleNewsAdd}
+          onClose={this.handleNewsCancel}
           actions={[
             <Button key="addNews" variant="primary" form="add-news-form" onClick={this.handleNewsAdd}>
               Add News Item

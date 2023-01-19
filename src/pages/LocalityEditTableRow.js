@@ -34,7 +34,7 @@ const LocalityEditTableRow = ({ children, ...props }) => {
 
   const updateLocalityInfo = (id) => {
     let updateArray = Array(id, editedName, editedStreet, editedCity, editedUSState, editedZip, editedLat, editedLng, editedDescription);
-    updateDatabase('http://softball-pi4/db/UpdateLocality.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateLocality.php', { updateArray })      
     .then(data => {
       if (data.message === "Locality updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -51,7 +51,7 @@ const LocalityEditTableRow = ({ children, ...props }) => {
   const removeLocalityInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteLocality.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeleteLocality.php', { delID })
       .then(data => {
         if (data.message === "Locality deleted successfully") {
           addSuccessAlert(editedName + " deleted successfully");

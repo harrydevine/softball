@@ -30,7 +30,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
 
   const updateNewsInfo = (id) => {
     let updateArray = Array(id, editedTitle, editedBody, editedImage);
-    updateDatabase('http://softball-pi4/db/UpdateNewsItem.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateNewsItem.php', { updateArray })      
     .then(data => {
       if (data.message === "News Item updated successfully") {
         addSuccessAlert("News item updated successfully");
@@ -47,7 +47,7 @@ const LatestNewsEditTableRow = ({ children, ...props }) => {
   const removeNewsInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteNewsItem.php', {delID})
+      updateDatabase('https://harrydevine.org/db/DeleteNewsItem.php', {delID})
       .then(data => {
         if (data.message === "Latest News deleted successfully") {
           addSuccessAlert("News item deleted successfully");

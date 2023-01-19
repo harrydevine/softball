@@ -56,7 +56,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
 
   const updatePlayer = (id) => {
     let updateArray = Array (id, editedName, parseInt(editedNumber), editedDivision, editedType, parseInt(currentRow.teamId));
-    updateDatabase('http://softball-pi4/db/UpdatePlayer.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdatePlayer.php', { updateArray })      
     .then(data => {
       if (data.message === "Player updated successfully") {
         addSuccessAlert(editedName + " updated successfully");
@@ -73,7 +73,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
   const removePlayer = async (id) => {
       setIsEditMode(false);
       let delID = Array(id);
-      updateDatabase('http://softball-pi4/db/DeletePlayer.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeletePlayer.php', { delID })
       .then(data => {
         if (data.message === "Player deleted successfully") {
           addSuccessAlert(editedName + " removed successfully");
@@ -171,6 +171,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
               aria-labelledby="edit-player-division"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
               { divisionDropdownItems }
           </Select>
@@ -193,6 +194,7 @@ const PlayerEditTableRow = ({ children, ...props }) => {
               aria-labelledby="edit-player-type"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
               { typeDropdownItems }
           </Select>

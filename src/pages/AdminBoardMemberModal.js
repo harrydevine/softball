@@ -61,7 +61,8 @@ class AdminBoardMemberModal extends React.Component{
         <SelectOption key={7} value="Field Coordinator" label="Field Coordinator" />,
         <SelectOption key={8} value="Stand Coordinator" label="Stand Coordinator" />,
         <SelectOption key={9} value="Stand Scheduler" label="Stand Scheduler" />,
-        <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />
+        <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />,
+        <SelectOption key={11} value="General Board Member" label="General Board Member" />
       ];
 
       this.handleModalToggle = () => {
@@ -75,7 +76,8 @@ class AdminBoardMemberModal extends React.Component{
           }));
         /* Add Board Member to database...*/
         let data = Array(this.state.name, this.state.position, this.state.phone, this.state.email);
-        updateDatabase('http://softball-pi4/db/AddBoardMember.php', { data })
+//        updateDatabase('http://softball-pi4/db/AddBoardMember.php', { data })
+        updateDatabase('https://harrydevine.org/db/AddBoardMember.php', { data })
         .then(data => {
           if (data.message === "Board Member created successfully") {
             this.props.setBoardMemberAdded(true);
@@ -170,9 +172,10 @@ class AdminBoardMemberModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add New Board Member"
+          id="add-board-member-modal"
           description="Adds a new Board Member to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleBMAdd}
+          onClose={this.handleBMCancel}
           actions={[
             <Button key="addBoardMember" variant="primary" form="add-player-form" onClick={this.handleBMAdd}>
               Add Board Member
@@ -250,6 +253,7 @@ class AdminBoardMemberModal extends React.Component{
               aria-labelledby="select-boardmember-position-id"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.positionDropdownItems }
             </Select>

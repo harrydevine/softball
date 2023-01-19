@@ -66,7 +66,7 @@ class AdminFieldsMasterStatusModal extends React.Component{
       }));
       /* Update All Fields */
       let data = Array(this.state.fieldStatus, this.state.fieldReason);
-      updateDatabase('http://softball-pi4/db/UpdateAllFields.php', { data })
+      updateDatabase('https://harrydevine.org/db/UpdateAllFields.php', { data })
       .then(data => {
         if (data.message === "Error in updating all fields") {
           this.addFailureAlert();
@@ -155,7 +155,7 @@ class AdminFieldsMasterStatusModal extends React.Component{
           title="Master Field Update"
           description="Open/Close all fields at once for the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleFieldUpdate}
+          onClose={this.handleFieldCancel}
           actions={[
             <Button key="addField" variant="primary" form="add-field-form" onClick={this.handleFieldUpdate}>
               Update
@@ -200,6 +200,7 @@ class AdminFieldsMasterStatusModal extends React.Component{
               aria-labelledby="select-field-status"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.statusDropdownItems }
             </Select>

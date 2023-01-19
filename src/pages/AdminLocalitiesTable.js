@@ -67,7 +67,7 @@ const AdminLocalitiesTable = ({ children }) => {
   
   // Fetch data for Localities
   const fetchLocalities = () => {
-    fetch(`http://softball-pi4/db/GetLocalities.php`)
+    fetch(`https://harrydevine.org/db/GetLocalities.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setLocalityData(jsonResponse);

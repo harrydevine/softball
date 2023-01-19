@@ -36,7 +36,8 @@ class AdminAddPlayerToTeamModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add Player To Team"
-           description="Adds a player to the selected team"
+	  id="add-player-to-team-modal"
+          description="Adds a player to the selected team"
           isOpen={isModalOpen}
           onClose={this.handleAddModalCancel}
           actions={[

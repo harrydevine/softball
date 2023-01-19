@@ -71,7 +71,7 @@ class AdminTournamentsModal extends React.Component{
       /* Add Tournament to database...*/
       let data = Array(this.state.title, this.state.dateStart, this.state.dateEnd, this.state.description, 
                        this.state.tourneyImg, this.state.divisions, this.state.details, this.state.registerURL);
-      updateDatabase('http://softball-pi4/db/AddTournament.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddTournament.php', { data })
       .then(data => {
         if (data.message === "Tournament created successfully") {
           this.props.setTournamentAdded(true);
@@ -177,9 +177,10 @@ class AdminTournamentsModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add new Tournament"
+	  id="add-new-tournament-modal"
           description="Adds a new Tournament"
           isOpen={isModalOpen}
-          onClose={this.handleTournamentAdd}
+          onClose={this.handleTournamentCancel}
           actions={[
             <Button key="addTournament" variant="primary" form="add-tournament-form" onClick={this.handleTournamentAdd}>
               Add Tournament

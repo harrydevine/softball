@@ -139,7 +139,7 @@ const SoftballMasthead = ({ children }) => {
         <AboutModal
           isOpen={ isModalOpen }
           onClose={handleModalToggle}
-          trademark="Copyright &copy; {strYear} Egg Harbor Township Softball"    
+          trademark={`Copyright © ${strYear} Egg Harbor Township Softball`}
           brandImageSrc={brandImg}
           brandImageAlt="EHT Softball Logo"
           backgroundImageSrc={softballbg}

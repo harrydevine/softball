@@ -63,7 +63,7 @@ const AdminBoardMemberTable = ({ children }) => {
   }, [boardMemberAdded]);
 
   const fetchBoard = () => {
-    fetch(`http://softball-pi4/db/GetBoardMembers.php`)
+    fetch(`https://harrydevine.org/db/GetBoardMembers.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setBoardData(jsonResponse);

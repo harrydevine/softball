@@ -32,7 +32,7 @@ class AdminTeamModal extends React.Component{
         teamTravel: false,
         teamType: "rec",
         division: "",
-        url: "http://softball-pi4/db/AddRecTeam.php",
+        url: "https://harrydevine.org/db/AddRecTeam.php",
         alerts: []
       };
 
@@ -102,6 +102,7 @@ class AdminTeamModal extends React.Component{
         else {
           this.props.setTeamAdded(false);
           this.addFailureAlert(data.message);
+          console.log(this.state.team, this.state.division, this.state.teamColor);
         }
       });
     
@@ -110,7 +111,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
       this.setState({ division: "" });
-      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
+      this.setState({ url: "https://harrydevine.org/db/AddRecTeam.php" });
     };
 
     this.handleTeamCancel = () => {
@@ -123,7 +124,7 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamColor: "" });
       this.setState({ teamType: "rec" });
       this.setState({ division: "" });
-      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
+      this.setState({ url: "https://harrydevine.org/db/AddRecTeam.php" });
     };
 
     async function updateDatabase (url = '', data = {}) {
@@ -176,13 +177,13 @@ class AdminTeamModal extends React.Component{
       this.setState({ teamTravel: false });
       this.setState({ teamRec: true });
       this.setState({ teamType: "rec" })
-      this.setState({ url: "http://softball-pi4/db/AddRecTeam.php" });
+      this.setState({ url: "https://harrydevine.org/db/AddRecTeam.php" });
     };
     this.onTeamTravelChange = (_, event) => {
       this.setState({ teamTravel: true });
       this.setState({ teamRec: false });
       this.setState({ teamType: "travel" }); 
-      this.setState({ url: "http://softball-pi4/db/AddTravelTeam.php" });
+      this.setState({ url: "https://harrydevine.org/db/AddTravelTeam.php" });
     };
           
   }
@@ -212,9 +213,10 @@ class AdminTeamModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add New Team"
+          id="add-new-team-modal"
           description="Adds a new team to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handleTeamAdd}
+          onClose={this.handleTeamCancel}
           actions={[
             <Button key="addTeam" variant="primary" form="add-team-form" onClick={this.handleTeamAdd}>
               Add Team
@@ -292,6 +294,7 @@ class AdminTeamModal extends React.Component{
               aria-labelledby="select-team-color-id"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.teamColorItems }
             </Select>
@@ -371,6 +374,7 @@ class AdminTeamModal extends React.Component{
               aria-labelledby="select-team-division-id"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.divisionDropdownItems }
             </Select>

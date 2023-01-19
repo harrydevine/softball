@@ -77,7 +77,7 @@ class AdminPlayerModal extends React.Component{
         }));
         /* Add Board Member to database...*/
         let data = Array(this.state.name, this.state.jersey,this.state.division, this.state.playerType, 0)  
-        updateDatabase('http://softball-pi4/db/AddPlayer.php', { data })
+        updateDatabase('https://harrydevine.org/db/AddPlayer.php', { data })
       .then(data => {
         if (data.message === "Player created successfully") {
           this.props.setPlayerAdded(true);
@@ -180,9 +180,10 @@ class AdminPlayerModal extends React.Component{
         <Modal
           variant={ModalVariant.medium}
           title="Add New Player"
+	  id="add-new-player-modal"
           description="Adds a new player to the EHT Softball League"
           isOpen={isModalOpen}
-          onClose={this.handlePlayerAdd}
+          onClose={this.handlePlayerCancel}
           actions={[
             <Button key="addPlayer" variant="primary" form="add-player-form" onClick={this.handlePlayerAdd}>
               Add Player
@@ -292,6 +293,7 @@ class AdminPlayerModal extends React.Component{
               aria-labelledby="select-player-division-id"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
                 { this.divisionDropdownItems }
             </Select>

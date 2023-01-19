@@ -40,7 +40,8 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
     <SelectOption key={7} value="Field Coordinator" label="Field Coordinator" />,
     <SelectOption key={8} value="Stand Coordinator" label="Stand Coordinator" />,
     <SelectOption key={9} value="Stand Scheduler" label="Stand Scheduler" />,
-    <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />
+    <SelectOption key={10} value="Website Coordinator" label="Website Coordinator" />,
+    <SelectOption key={11} value="General Board Member" label="General Board Member" />
   ];
 
   async function updateDatabase (url = '', data = {}) {
@@ -54,7 +55,8 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   const updateBoardInfo = (id) => {
     let updateArray = Array(id, editedName, editedTitle, editedPhone, editedEmail);
     console.log(updateArray);
-    updateDatabase('http://softball-pi4/db/UpdateBoardMember.php', { updateArray })      
+//    updateDatabase('http://softball-pi4/db/UpdateBoardMember.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateBoardMember.php', { data })
     .then(data => {
       if (data.message === "Board Member updated successfully") {
         addSuccessAlert("Board Member updated successfully");
@@ -71,7 +73,8 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
   const removeBoardInfo = async (id) => {
       setIsEditMode(false);
       let delID=Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteBoardMember.php', { delID })
+//      updateDatabase('http://softball-pi4/db/DeleteBoardMember.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeleteBoardMember.php', { data })
       .then(data => {
         if (data.message === "Board Member deleted successfully") {
           addSuccessAlert("Board Member deleted successfully");
@@ -141,6 +144,7 @@ const BoardMemberEditTableRow = ({ children, ...props }) => {
               aria-labelledby="edit-bm-position"
               direction={SelectDirection.down}
               menuAppendTo={() => document.body}
+              maxHeight="200px"
             >
               { positionDropdownItems }
           </Select>

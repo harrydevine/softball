@@ -18,8 +18,8 @@ import Footer from "./Footer";
 
 const SoftballPageLayoutNav = ({ children}) => {
   const navigate = useNavigate();
-  //const { isAuthenticated } = useAuth0();
-  const [isAuthenticated, setAuthenticated] = React.useState(true);
+  const { isAuthenticated } = useAuth0();
+  //const [isAuthenticated, setAuthenticated] = React.useState(true);
   const [activeGroup, setActiveGroup] = React.useState("itemHome");
   const [activeItem, setActiveItem] = React.useState("itemHome");
 

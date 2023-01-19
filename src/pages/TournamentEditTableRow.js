@@ -55,7 +55,7 @@ const TournamentEditTableRow = ({ children, ...props }) => {
   const updateTournament = (id) => {
     let updateArray = Array(id, editedTitle, editedDateStart, editedDateEnd, editedDescription, 
                             editedDivisions, editedDetails, editedImage, editedRegister);
-    updateDatabase('http://softball-pi4/db/UpdateTournament.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateTournament.php', { updateArray })      
     .then(data => {
       if (data.message === "Tournament updated successfully") {
         addSuccessAlert(editedTitle + " updated successfully");
@@ -72,7 +72,7 @@ const TournamentEditTableRow = ({ children, ...props }) => {
   const removeTournament = async (id) => {
       setIsEditMode(false);
       let delID = Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteTournament.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeleteTournament.php', { delID })
       .then(data => {
         if (data.message === "Tournament deleted successfully") {
           addSuccessAlert(editedTitle + " removed successfully");
@@ -154,7 +154,7 @@ const TournamentEditTableRow = ({ children, ...props }) => {
         <Td dataLabel={columnNames.details}>
           {isEditMode ? (
             <TextInput
-              value={editedDivisions}
+              value={editedDetails}
               type="text"
               aria-label="edit-tournament-details"
               onChange={(value) => {

@@ -63,7 +63,7 @@ class AdminBoardMinutesModal extends React.Component{
  
       /* Add Minutes to database...*/
       let data = Array(this.state.boardDate, this.state.boardMinutes);
-      updateDatabase('http://softball-pi4/db/AddBoardMinutes.php', { data })
+      updateDatabase('https://harrydevine.org/db/AddBoardMinutes.php', { data })
       .then(data => {
         if (data.message === "Board Minutes created successfully") {
           this.props.setMinutesAdded(true);
@@ -131,11 +131,12 @@ class AdminBoardMinutesModal extends React.Component{
         </AlertGroup>
         <Button variant="primary" onClick={this.handleModalToggle}>Add New Board Minutes</Button>{'  '}
         <Modal
+	  id="board-minutes-modal"
           variant={ModalVariant.medium}
           title="Add new Board Minutes"
           description="Adds a new Board Minutes"
           isOpen={isModalOpen}
-          onClose={this.handleMinutesAdd}
+          onClose={this.handleMinutesCancel}
           actions={[
             <Button key="addMinutes" variant="primary" form="add-minutes-form" onClick={this.handleMinutesAdd}>
               Add Minutes
@@ -176,6 +177,7 @@ class AdminBoardMinutesModal extends React.Component{
                 dateFormat={this.dateFormat}
                 dateParse={this.dateParse}
                 onChange={this.onDateChange}
+	        appendTo={() => document.getElementById('board-minutes-modal')}
               />
           </FormGroup>
           <FormGroup

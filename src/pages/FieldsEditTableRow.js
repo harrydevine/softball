@@ -30,7 +30,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
 
   const updateFieldInfo = (id) => {
     let updateArray = Array(id, editedFieldNum, editedFieldStatus, editedFieldReason);
-    updateDatabase('http://softball-pi4/db/UpdateField.php', { updateArray })      
+    updateDatabase('https://harrydevine.org/db/UpdateField.php', { updateArray })      
     .then(data => {
       if (data.message === "Field updated successfully") {
         addSuccessAlert("Field " + editedFieldNum + " updated successfully");
@@ -47,7 +47,7 @@ const FieldsEditTableRow = ({ children, ...props }) => {
   const removeFieldInfo = async (id) => {
       setIsEditMode(false);
       let delID = Array(id);
-      updateDatabase('http://softball-pi4/db/DeleteField.php', { delID })
+      updateDatabase('https://harrydevine.org/db/DeleteField.php', { delID })
       .then(data => {
         if (data.message === "Field deleted successfully") {
           addSuccessAlert("Field " + editedFieldNum + " deleted successfully");

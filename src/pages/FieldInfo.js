@@ -49,7 +49,7 @@ const FieldInfo = ({ children }) => {
 
     useEffect(() => {
       // Fetch data for Field Status
-      fetch("http://softball-pi4/db/GetFields.php")
+      fetch("https://harrydevine.org/db/GetFields.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setFieldData(jsonResponse);
@@ -83,7 +83,7 @@ const FieldInfo = ({ children }) => {
 
      useEffect(() => {
       // Fetch data for Locality locations
-      fetch("http://softball-pi4/db/GetLocalities.php")
+      fetch("https://harrydevine.org/db/GetLocalities.php")
         .then(async (resp) => {
            const jsonResponse = await resp.json();
            setLocalityData(jsonResponse);

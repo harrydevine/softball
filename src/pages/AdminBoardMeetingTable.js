@@ -60,7 +60,7 @@ const AdminBoardMeetingTable = ({ children }) => {
   }, [boardMeetingAdded]);
   
   const fetchMeetings = () => {
-    fetch(`http://softball-pi4/db/GetBoardMeetings.php`)
+    fetch(`https://harrydevine.org/db/GetBoardMeetings.php`)
     .then(async resp => {
       const jsonResponse = await resp.json()
       setMtgData(jsonResponse);

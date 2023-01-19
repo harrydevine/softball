@@ -1,33 +1,28 @@
 const images = [
   {
-    original: '/images/IMG_0001.jpg',
-    thumbnail: '/images/IMG_0001.jpg',
-    description: "Test Image 1"
+    original: '/images/nno_2022_girls.jpg',
+    thumbnail: '/images/nno_2022_girls.jpg',
+    description: "2022 EHT National Night Out"
   },
   {
-    original: '/images/IMG_0003.jpg',
-    thumbnail: '/images/IMG_0003.jpg',	  
-    description: "Test Image 2"
+    original: '/images/nno_2022_board.jpg',
+    thumbnail: '/images/nno_2022_board.jpg',	  
+    description: "2022 EHT National Night Out"
   },
   {
-    original: '/images/IMG_0004.jpg',
-    thumbnail: '/images/IMG_0004.jpg',	  
-    description: "Test Image 3"
+    original: '/images/10u_allstars_states_062022.jpg',
+    thumbnail: '/images/10u_allstars_states_062022.jpg',	  
+    description: "2022 10U All-Stars - NJ State Tournament"
   },
   {
-    original: '/images/IMG_0006.jpg',
-    thumbnail: '/images/IMG_0006.jpg',	  
-    description: "Test Image 4"
+    original: '/images/May_Mayhem_2022_14O_Champs.jpg',
+    thumbnail: '/images/May_Mayhem_2022_14O_Champs.jpg',	  
+    description: "2022 EHT May Mayhem Tourmament - 14 Open Champions"
   },
   {
-    original: '/images/IMG_0007.jpg',
-    thumbnail: '/images/IMG_0007.jpg',
-    description: "Test Image 5"
-  },
-  {
-    original: '/images/IMG_0009.jpg',
-    thumbnail: '/images/IMG_0009.jpg',
-    description: "Test Image 6"
+    original: '/images/May_Mayhem_2022_14C_Champs.jpg',
+    thumbnail: '/images/May_Mayhem_2022_14C_Champs.jpg',
+    description: "2022 EHT May Mayhem Tournament - 14 C Champions"
   },
 ];
 
